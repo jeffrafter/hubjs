@@ -1,0 +1,126 @@
+// ==========================================================================
+// Project:   hub.js - cloud-friendly object graph sync
+// Copyright: ©2010 Erich Ocean.
+//            Portions ©2006-2009 Sprout Systems, Inc. and contributors.
+//            Portions ©2008-2009 Apple Inc. All rights reserved.
+// License:   Licensed under an MIT license (see license.js).
+// ==========================================================================
+/*globals hub module test ok equals same */
+
+// NOTE: The test below are based on the Data Hashes state chart.  This models
+// the "read_editable" event in the NestedStore portion of the diagram.
+
+var parent, store, storeKey, json;
+module("hub.NestedStore#readEditableDataHash", {
+  setup: function() {
+    parent = hub.Store.create();
+    
+    json = {
+      string: "string",
+      number: 23,
+      bool:   true
+    };
+    
+    storeKey = hub.Store.generateStoreKey();
+
+    parent.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
+    parent.editables = null ; // manually reset for testing state
+    
+    store = parent.chain();
+  }
+});
+
+test("data state=INHERITED, parent editable = false", function() {
+  
+  // test preconditions
+  equals(parent.storeKeyEditState(storeKey), hub.Store.LOCKED, 'precond - parent edit state should be LOCKED');
+  equals(store.storeKeyEditState(storeKey), hub.Store.INHERITED, 'precond - edit state should be INHERITED');
+  var oldrev = store.revisions[storeKey] ;
+
+  // perform read
+  var ret = store.readEditableDataHash(storeKey);
+  
+  // validate
+  same(ret, json, 'should return equivalent json object');
+  ok(!(ret===json), 'should not return same json instance');
+  
+  equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'edit state should be editable');
+  
+  // should not change revisions, but should copy it...
+  equals(store.revisions[storeKey], oldrev, 'should not change revision');
+  if (!hub.none(oldrev)) {
+    ok(store.revisions.hasOwnProperty(storeKey), 'should clone revision reference');
+  }
+});
+
+test("data state=INHERITED, parent editable = true", function() {
+  
+  // test preconditions
+  parent.readEditableDataHash(storeKey);
+  equals(parent.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'precond - parent edit state should be EDITABLE');
+  equals(store.storeKeyEditState(storeKey), hub.Store.INHERITED, 'precond - edit state should be INHERITED');
+  var oldrev = store.revisions[storeKey] ;
+
+  // perform read
+  var ret = store.readEditableDataHash(storeKey);
+  
+  // validate
+  same(ret, json, 'should return equivalent json object');
+  ok(!(ret===json), 'should not return same json instance');
+  
+  equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'edit state should be editable');
+  
+  // should not change revisions, but should copy it...
+  equals(store.revisions[storeKey], oldrev, 'should not change revision');
+  if (!hub.none(oldrev)) {
+    ok(store.revisions.hasOwnProperty(storeKey), 'should clone revision reference');
+  }
+  
+});
+
+test("data state=LOCKED", function() {
+  
+  // test preconditions
+  store.readDataHash(storeKey);
+  equals(store.storeKeyEditState(storeKey), hub.Store.LOCKED, 'precond - edit state should be LOCKED');
+  var oldrev = store.revisions[storeKey] ;
+
+  // perform read
+  var ret = store.readEditableDataHash(storeKey);
+  
+  // validate
+  same(ret, json, 'should return equivalent json object');
+  ok(!(ret===json), 'should not return same json instance');
+  
+  equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'edit state should be editable');
+  
+  // should not change revisions, but should copy it...
+  equals(store.revisions[storeKey], oldrev, 'should not change revision');
+  if (!hub.none(oldrev)) {
+    ok(store.revisions.hasOwnProperty(storeKey), 'should clone revision reference');
+  }
+  
+});
+
+test("data state=EDITABLE", function() {
+  
+  // test preconditions
+  json = store.readEditableDataHash(storeKey); // get editable json
+  equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'precond - edit state should be EDITABLE');
+  var oldrev = store.revisions[storeKey] ;
+
+  // perform read
+  var ret = store.readEditableDataHash(storeKey);
+  
+  // validate
+  equals(ret, json, 'should return same editable json instance');
+  
+  equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'edit state should be editable');
+  
+  // should not change revisions, but should copy it...
+  equals(store.revisions[storeKey], oldrev, 'should not change revision');
+  if (!hub.none(oldrev)) {
+    ok(store.revisions.hasOwnProperty(storeKey), 'should clone revision reference');
+  }
+  
+});
