@@ -59,10 +59,10 @@ system/nested_store.js
 system/query.js
 system/record_array.js
 
-system/uuid.js
-system/sha256.js
-system/buzhash.js
-system/base64.js
+utils/uuid.js
+utils/sha256.js
+utils/buzhash.js
+utils/base64.js
 system/database.js
 system/hub.js
 system/merge_hub.js
