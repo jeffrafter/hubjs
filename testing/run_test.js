@@ -7,32 +7,36 @@
 // ==========================================================================
 /*global window GLOBAL exports require CoreTest hub process */
 
-var sys = require("sys"), posix=require("posix");
+var sys = require("sys"), fs = require("fs");
 var argv = process.ARGV;
 
 sys.puts(argv[2]);
 
 /* Prepare Tester */
-// mix in globals
-process.mixin(GLOBAL, {
-  hub: require("../index")
-});
+var hub = require("../src/bootstrap");
+
+// some basic functions (the definition of CoreTest, etc.)
+var CoreTest = require("./src/coretest").CoreTest; 
+
+GLOBAL.hub = hub;
+GLOBAL.CoreTest = CoreTest;
+
+// We need to load the core at some point so we have something to test
+require("../src/core");
 
 // turn of .log (comment to get ALL test results)
 console.log = function() {  };
-
-// some basic functions (the definition of CoreTest, etc.)
-var CoreTestGlobal = require("./src/coretest"); // has one export: CoreTest itself.
-process.mixin(GLOBAL, CoreTestGlobal);
 
 // load array test suites (they weren't packaged on their own)
 hub.ArraySuite = require("./src/array_suites").ArraySuite;
 
 // run code
-posix.cat(argv[2]).addCallback(function(contents){
-  process.compile(contents, argv[2]);
-}).wait();
+fs.readFile(argv[2], function(err, data){
+  if (err) throw err;
+  process.compile(data, argv[2]);
+});
 
-CoreTest.Runner.begin();
+var runner = CoreTest.Runner.create();
+runner.begin();
 
 return 0;

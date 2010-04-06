@@ -22,7 +22,7 @@
 var hub ;
 
 // Handle env differences when hub.js is running on node.js vs. in the browser.
-if (typeof window === undefined) {
+if (typeof window === 'undefined') {
   if (typeof exports === 'object') {
     // We're running on node.js.
     hub = exports ;

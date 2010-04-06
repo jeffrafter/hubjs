@@ -7,7 +7,7 @@
 // ==========================================================================
 /*global window GLOBAL exports require */
 
-var sys = require("sys"), posix = require("posix");
+var sys = require("sys"), fs = require("fs");
 
 var CoreTest = {
   

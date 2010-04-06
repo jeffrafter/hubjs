@@ -25,7 +25,7 @@ exports.Runner = {
         idx ;
         
     for(idx=0;idx<len;idx++) CoreTest.mixin(ret, arguments[len]);
-    if (!ret.plan) ret.plan = CoreTest.Plan.create({ delegate: ret });
+    if (!ret.plan) ret.plan = CoreTest.plan = CoreTest.Plan.create({ delegate: ret });
     return ret ;
   },
   
@@ -34,7 +34,7 @@ exports.Runner = {
     if (plan) {
     plan.delegate = this;
     plan.run();
-    } else hub.debug("ERROR, ""NO PLAN!!!");
+    } else hub.debug("ERROR", "NO PLAN!!!");
   },
   
   planDidBegin: function(plan) {
