@@ -640,7 +640,9 @@ hub.Object.prototype = {
     @returns {hub.Object} receiver
   */
   invokeOnce: function(method) {
-    hub.RunLoop.currentRunLoop.invokeOnce(this, method) ;
+    var K = hub.RunLoop, runLoop = K.currentRunLoop ;
+    if (!runLoop) runLoop = K.currentRunLoop = K.runLoopClass.create() ;
+    runLoop.invokeOnce(this, method) ;
     return this ;
   },
   
@@ -678,7 +680,9 @@ hub.Object.prototype = {
     @returns {hub.Object} receiver
   */
   invokeLast: function(method) {
-    hub.RunLoop.currentRunLoop.invokeLast(this, method) ;
+    var K = hub.RunLoop, runLoop = K.currentRunLoop ;
+    if (!runLoop) runLoop = K.currentRunLoop = K.runLoopClass.create() ;
+    runLoop.invokeLast(this, method) ;
     return this ;
   },
   

@@ -208,10 +208,10 @@ hub.RunLoop.runLoopClass = hub.RunLoop;
   
   @returns {hub.RunLoop} receiver
 */
-hub.RunLoop.begin = function() {    
-  var runLoop = this.currentRunLoop;
-  if (!runLoop) runLoop = this.currentRunLoop = this.runLoopClass.create();
-  runLoop.beginRunLoop();
+hub.RunLoop.begin = function() {
+  var runLoop = this.currentRunLoop ;
+  if (!runLoop) runLoop = this.currentRunLoop = this.runLoopClass.create() ;
+  runLoop.beginRunLoop() ;
   return this ;
 };
 
@@ -222,11 +222,9 @@ hub.RunLoop.begin = function() {
   @returns {hub.RunLoop} receiver
 */
 hub.RunLoop.end = function() {
-  var runLoop = this.currentRunLoop;
-  if (!runLoop) {
-    throw "hub.RunLoop.end() called outside of a runloop!";
-  }
-  runLoop.endRunLoop();
+  var runLoop = this.currentRunLoop ;
+  hub_precondition(runLoop, "hub.RunLoop.end() called outside of a runloop!") ;
+  runLoop.endRunLoop() ;
   return this ;
 } ;
 

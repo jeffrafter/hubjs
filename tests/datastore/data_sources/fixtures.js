@@ -11,7 +11,6 @@ var store, fds, storeKey1,storeKey2;
 
 module("hub.FixturesDataSource", {
   setup: function() {
-    throw new Error("OHNOES!");
     hub.RunLoop.begin();
     
     var Sample = (GLOBAL.Sample= hub.Object.create());

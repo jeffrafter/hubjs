@@ -60,72 +60,77 @@ test("Should propograte bindings after the RunLoop completes (using hub.RunLoop)
 });
 
 test("Should propograte bindings after the RunLoop completes (using hub.beginRunLoop)", function() {
-  hub.beginRunLoop();
-    //Binding of output of first object to input of second object
-      binding1 = hub.Binding.from("output", first).to("input", second).connect() ;
-      
-    //Binding of output of second object to input of third object
+  hub.RunLoop.begin() ;
+  
+    // Binding of output of first object to input of second object.
+    binding1 = hub.Binding.from("output", first).to("input", second).connect() ;
+    
+    // Binding of output of second object to input of third object.
     binding2 = hub.Binding.from("output", second).to("input", third).connect() ;
     
     hub.Binding.flushPendingChanges() ; // actually sets up the connection
     
-    //Based on the above binding if you change the output of first object it should
-    //change the all the variable of first,second and third object
+    // Based on the above binding if you change the output of first object it 
+    // should change the all the variable of first, second and third object.
     first.set("output", "change") ;
     
-    //Changes the output of the first object
+    // Changes the output of the first object.
     equals(first.get("output"), "change") ;
     
-    //since binding has not taken into effect the value still remains as change.
+    // Since binding has not taken into effect the previous value remains.
     equals(second.get("output"), "first") ;
-  hub.endRunLoop(); // allows bindings to trigger...
+  
+  hub.RunLoop.end() ; // allows bindings to trigger...
   hub.Binding.flushPendingChanges() ; // actually sets up the connection
   
-  //Value of the output variable changed to 'change'
+  // Value of the output variable changed to 'change'.
   equals(first.get("output"), "change") ;
   
-  //Since binding triggered after the end loop the value changed to 'change'.
+  // Since binding triggered after the end loop the value changed to 'change'.
   equals(second.get("output"), "change") ;
 });
 
 test("Should propograte bindings after the RunLoop completes (checking invokeOnce() function)", function() {
-  hub.RunLoop.begin();
-    //Binding of output of first object to input of second object
-      binding1 = hub.Binding.from("output", first).to("input", second).connect() ;
-      
-    //Binding of output of second object to input of third object
+  hub.RunLoop.begin() ;
+  
+    // Binding of output of first object to input of second object.
+    binding1 = hub.Binding.from("output", first).to("input", second).connect() ;
+    
+    // Binding of output of second object to input of third object.
     binding2 = hub.Binding.from("output", second).to("input", third).connect() ;
     
     hub.Binding.flushPendingChanges() ; // actually sets up the connection
     
-    //Based on the above binding if you change the output of first object it should
-    //change the all the variable of first,second and third object
+    // Based on the above binding if you change the output of first object it 
+    // should change the all the variable of first,second and third object.
     first.set("output", "change") ;
     
-    //Changes the output of the first object
+    //C hanges the output of the first object.
     equals(first.get("output"), "change") ;
     
-    //since binding has not taken into effect the value still remains as change.
+    // Since binding has not taken into effect the previous value remains.
     equals(second.get("output"), "first") ;
     
-    // Call the invokeOnce function to set the function which needs to be called once
-    second.invokeOnce('second','inputDidChange');
+    // Call the invokeOnce function to set the function which needs to be 
+    // called once.
+    second.invokeOnce('second','inputDidChange') ;
     
   hub.RunLoop.end(); // allows bindings to trigger...
   
-  //Value of the output variable changed to 'change'
+  // Value of the output variable changed to 'change'.
   equals(first.get("output"), "change") ;
   
-  //Since binding triggered after the end loop the value changed to 'change'.
+  // Since binding triggered after the end loop the value changed to 'change'.
   equals(second.get("output"), "change") ;
   
-  //Set the output for the first so that the 'inputDidChange' function in the second object is called again
+  // Set the output for the first so that the 'inputDidChange' function in the 
+  // second object is called again.
   first.set("output", "againChanged") ;
   
-  //Value of the output variable changed to 'change'
+  // Value of the output variable changed to 'change'.
   equals(first.get("output"), "againChanged") ;
   
-  //Since the invoker function is called only once the value of output did not change.
+  // Since the invoker function is called only once the value of output did not 
+  // change.
   equals(second.get("output"), "change") ;
-  
 });

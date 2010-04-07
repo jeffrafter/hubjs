@@ -15,11 +15,11 @@ sys.puts(argv[2]);
 /* Prepare Tester */
 var hub = require("../hub");
 
-// hub.debug = function(type, what) {
-//   if (typeof what === 'undefined') { what = type; type = 'LOG'; }
-//   if (type === 'INFO') return ; // don't log stuff
-//   sys.puts(type + ": " + sys.inspect(what)) ;
-// };
+hub.debug = function(type, what) {
+  // if (typeof what === 'undefined') { what = type; type = 'LOG'; }
+  // if (type === 'INFO') return ; // don't log stuff
+  // sys.puts(type + ": " + sys.inspect(what)) ;
+};
 
 // some basic functions (the definition of CoreTest, etc.)
 var CoreTest = require("./src/coretest").CoreTest; 
