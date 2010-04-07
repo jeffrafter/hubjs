@@ -6,12 +6,12 @@
 # To generate a custom build of hub.js, modify this BUILD file to include the 
 # list of files you need/want in the correct order.
 # 
-# NOTE: In a production build, lines matching /.*\/(debug)\/.*/ will be 
-# skipped, and hub_assert(), hub_precondition(), hub_postconditon() and 
-# hub_invariant() will be removed from the code. Use hub.allege() when you want 
-# an assertion to remain in production code (e.g. because the test condition 
-# has a side effect and so you only want to execute the test once in 
-# development).
+# NOTE: In a production build, lines matching /^debug[/].*/ will be 
+# skipped, and calls to hub_assert(), hub_precondition(), hub_postconditon(), 
+# hub_invariant(), and hub_error() will be removed from the code completely. 
+# Use hub.allege() when you want an assertion to remain in production code 
+# (e.g. because the test condition has a side effect and so you only want to 
+# execute the test once in development).
 
 license.js
 bootstrap.js
@@ -57,6 +57,7 @@ system/store.js
 system/nested_store.js
 system/query.js
 system/record_array.js
+
 
 utils/uuid.js
 utils/sha256.js
