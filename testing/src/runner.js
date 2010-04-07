@@ -46,7 +46,7 @@ exports.Runner = {
     if (this.errors.length > 0) {
       hub.debug("ERROR", "");
       for (var i = 0; i < this.errors.length; i++) {
-        hub.debug("", this.errors[i]);
+        hub.debug("..", this.errors[i]);
       }
       hub.debug("ERROR", "Had errors.");
     }
@@ -76,12 +76,10 @@ exports.Runner = {
     for(idx=0;idx<len;idx++) {
       cur = assertions[idx];
       clean = cur.result === CoreTest.OK ? 'clean' : 'dirty';
-      hub.debug(CoreTest.fmt('%@'
-          +'%@', cur.message,
+      hub.debug(CoreTest.fmt('%@ %@', cur.message,
           (cur.result || '').toUpperCase()));
       if (clean=='dirty'){
-        this.errors.push(CoreTest.fmt('%@ '
-        +'%@', cur.message, cur.result,
+        this.errors.push(CoreTest.fmt('%@ %@', cur.message, cur.result,
         (cur.result || '').toUpperCase()));
         
       }

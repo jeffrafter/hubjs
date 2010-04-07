@@ -5,7 +5,7 @@ release: clean-release
 	tools/compile-production.sh
 
 test: all
-	node testing/run_test.js
+	node lib/test.js
 
 clean:
 	rm -f hub.js
