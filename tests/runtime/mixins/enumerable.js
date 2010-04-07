@@ -488,8 +488,8 @@ test("should trigger observer of reduced prop when array changes once property r
       observedValue = src.get("@max(balance)");
     }) ;
     
-    src.addProbe('[]') ;
-    src.addProbe('@max(balance)');
+    // src.addProbe('[]') ;
+    // src.addProbe('@max(balance)');
     
     // add record to array
     src.pushObject({ 
@@ -590,8 +590,8 @@ test("should notify observers even if reduced property is cached on prototype", 
     observedValue = source.get("@max(balance)");
   }) ;
   
-  source.addProbe('[]') ;
-  source.addProbe('@max(balance)');
+  // source.addProbe('[]') ;
+  // source.addProbe('@max(balance)');
   
   // add record to array
   source.pushObject({ 

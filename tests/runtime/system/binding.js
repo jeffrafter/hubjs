@@ -234,7 +234,7 @@ test("Binding with transforms, function to check the type of value", function() 
 
 test("two bindings to the same value should sync in the order they are initialized", function() {
 
-  hub.LOG_BINDINGS = true;
+  // hub.LOG_BINDINGS = true;
 
   hub.RunLoop.begin();
 
@@ -262,7 +262,7 @@ test("two bindings to the same value should sync in the order they are initializ
   
   var b = GLOBAL.b;
 
-  hub.LOG_BINDINGS = true;
+  // hub.LOG_BINDINGS = true;
     
   hub.RunLoop.end();
   

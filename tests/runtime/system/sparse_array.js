@@ -9,7 +9,7 @@
 
 var objectA = 23, objectB = 12, objectC = 31, numbers, new_numbers;
 
-module("hub.SparseArray") ;
+CoreTest.Plan.module("hub.SparseArray") ;
 
 test("new SparseArray has expected length", function() {
   var ary = hub.SparseArray.array(10000) ;
@@ -44,7 +44,7 @@ test("objectAt() should get the object at the specified index",function() {
   equals(arr[3],spArray.objectAt(3),'fourth object');
 });
 
-module("hub.replace",{
+CoreTest.Plan.module("hub.replace",{
   setup: function() {
     // create objects...
     numbers= [1,2,3] ;

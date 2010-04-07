@@ -7,7 +7,7 @@
 // ==========================================================================
 /*global window GLOBAL exports require hub CoreTest Q$ */
 
-exports.Suite = /** @scope CoreTest.Suite.prototype */ {
+var Suite = /** @scope CoreTest.Suite.prototype */ {
 
   /**
     Call this method to define a new test suite.  Pass one or more hashes of
@@ -148,21 +148,23 @@ exports.Suite = /** @scope CoreTest.Suite.prototype */ {
     
     {{{
       var T = this ;
-      module(T.desc(description), {
+      CoreTest.Plan.module(T.desc(description), {
         setup: function() { T.setup(); },
         teardown: function() { T.teardown(); }
       }
     }}}
     
-    @param {String} desc detailed descrition
+    @param {String} desc detailed description
     @returns {CoreTest.Suite} receiver
   */
   module: function(desc) {
     var T = this ;
-    module(T.desc(desc), {
+    CoreTest.Plan.module(T.desc(desc), {
       setup: function() { T.setup(); },
       teardown: function() { T.teardown(); }
     });
   }
   
 };
+
+exports.Suite = Suite ;

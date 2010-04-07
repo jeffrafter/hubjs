@@ -1050,8 +1050,8 @@ hub.Observable = {
       hub.needRunLoop = false ;
       if (hub.run) {
         setTimeout(hub.run(function() {
-          hub.debug.log("Manually running run loop") ;
-        }), 10) ;
+          // hub.debug("Manually running run loop") ;
+        }), 0) ;
       }
     }
     

@@ -9,7 +9,7 @@
 
 // test core array-mapping methods for ManyArray
 var store, storeKey, storeId, rec, storeIds, recs, arrayRec;
-module("hub.ManyArray core methods", {
+CoreTest.Plan.module("hub.ManyArray core methods", {
   setup: function() {
     
     // setup dummy app and store
