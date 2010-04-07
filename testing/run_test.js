@@ -15,22 +15,18 @@ sys.puts(argv[2]);
 /* Prepare Tester */
 var hub = require("../hub");
 
-hub.debug = function(type, what) {
-  // if (typeof what === 'undefined') { what = type; type = 'LOG'; }
-  // if (type === 'INFO') return ; // don't log stuff
-  // sys.puts(type + ": " + sys.inspect(what)) ;
-};
-
 // some basic functions (the definition of CoreTest, etc.)
 var CoreTest = require("./src/coretest").CoreTest; 
 
 GLOBAL.hub = hub;
 GLOBAL.CoreTest = CoreTest;
 
+GLOBAL.stdout = process.stdout ;
+
 // We need to load the core at some point so we have something to test
 
-// turn of .log (comment to get ALL test results)
-//console.log = function() {  };
+// turn of .debug (comment to get ALL test results)
+// hub.debug = function(type, what) {};
 
 // load array test suites (they weren't packaged on their own)
 hub.ArraySuite = require("./src/array_suites").ArraySuite;

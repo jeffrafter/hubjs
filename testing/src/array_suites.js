@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global window GLOBAL exports require hub CoreTest module test ok equals same */
+/*global window GLOBAL exports require hub CoreTest test ok equals same */
 
 /* MANUALLY CONCATENATED TEST SUITES FOR ARRAY */
 
@@ -274,7 +274,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("insertAt"), {
+  CoreTest.Plan.module(T.desc("insertAt"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -413,7 +413,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("popObject"), {
+  CoreTest.Plan.module(T.desc("popObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -455,7 +455,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("pushObject"), {
+  CoreTest.Plan.module(T.desc("pushObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -493,7 +493,7 @@ ArraySuite.define(function(T) {
   
   var expected, array, observer, rangeObserver ;
 
-  module(T.desc("RangeObserver Methods"), {
+  CoreTest.Plan.module(T.desc("RangeObserver Methods"), {
     setup: function() {
       expected = T.objects(10);
       array = T.newObject(expected);
@@ -654,7 +654,7 @@ ArraySuite.define(function(T) {
   // ..........................................................
   // MODULE: No explicit range
   // 
-  module(T.desc("RangeObserver Methods - No explicit range"), {
+  CoreTest.Plan.module(T.desc("RangeObserver Methods - No explicit range"), {
     setup: function() {
       expected = T.objects(10);
       array = T.newObject(expected);
@@ -764,7 +764,7 @@ ArraySuite.define(function(T) {
   // ..........................................................
   // MODULE: isDeep = NO 
   // 
-  module(T.desc("RangeObserver Methods - isDeep NO"), {
+  CoreTest.Plan.module(T.desc("RangeObserver Methods - isDeep NO"), {
     setup: function() {
       expected = T.objects(10);
       array = T.newObject(expected);
@@ -808,7 +808,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("removeAt"), {
+  CoreTest.Plan.module(T.desc("removeAt"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -899,7 +899,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("removeObject"), {
+  CoreTest.Plan.module(T.desc("removeObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -940,7 +940,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("replace"), {
+  CoreTest.Plan.module(T.desc("replace"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -1026,7 +1026,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("shiftObject"), {
+  CoreTest.Plan.module(T.desc("shiftObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -1068,7 +1068,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  module(T.desc("unshiftObject"), {
+  CoreTest.Plan.module(T.desc("unshiftObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);

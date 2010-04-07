@@ -8,7 +8,8 @@
 /*globals hub module test ok equals same */
 
 var store, child, Foo, json, foo ;
-module("hub.Record#storeDidChangeProperties", {
+
+CoreTest.Plan.module("hub.Record#storeDidChangeProperties", {
   setup: function() {
     hub.RunLoop.begin();
     
@@ -38,6 +39,7 @@ module("hub.Record#storeDidChangeProperties", {
     
     foo = store.createRecord(Foo, json);
     store.writeStatus(foo.storeKey, hub.Record.READY_CLEAN);
+    foo.storeDidChangeProperties(true) ;
     
     hub.RunLoop.end();
   }
@@ -57,14 +59,15 @@ var expect = function(fooObject, expectedStatusCnt, expectedFooCnt) {
 // BASIC BEHAVIORS
 // 
 
-test("should change status only if statusOnly=true", function() {
+test("should change status only when statusOnly is true", function() {
   checkPreconditions();
-  foo.storeDidChangeProperties(true);
+  store.writeStatus(foo.storeKey, hub.Record.READY_DIRTY) ;
+  foo.storeDidChangeProperties(true) ;
   expect(foo,1,0);
 });
 
 
-test("should change attrs  & status if statusOnly=true", function() {
+test("should change both attrs and status when statusOnly is false", function() {
   checkPreconditions();
   foo.storeDidChangeProperties(false);
   expect(foo,1,1);

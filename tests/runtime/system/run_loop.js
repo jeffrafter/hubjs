@@ -9,7 +9,7 @@
 
 var binding1, binding2, first, second, third ;
 
-module("System:run_loop() - chained binding", {
+CoreTest.Plan.module("System:run_loop() - chained binding", {
   setup: function() {
     first = hub.Object.create({ 
     output: 'first' 
