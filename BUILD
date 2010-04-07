@@ -15,7 +15,6 @@
 
 license.js
 bootstrap.js
-log.js
 debug/assert.js
 core.js
 private/observer_set.js

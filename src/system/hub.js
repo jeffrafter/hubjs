@@ -614,7 +614,8 @@ hub.Hub = hub.Store.extend(
       this.goState(0);
       return;
     }
-    if (!commit_id) commit_id = this.commitIdsByKey[version] hub.debug("Preparing Pack ... %@ : %@".fmt(version, commit_id));
+    if (!commit_id) commit_id = this.commitIdsByKey[version];
+    hub.debug("Preparing Pack ... %@ : %@".fmt(version, commit_id));
     hub_precondition(hub.typeOf(commit_id) === hub.T_NUMBER);
     this.goState(5);
     var self = this;

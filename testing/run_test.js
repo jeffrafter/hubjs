@@ -13,7 +13,7 @@ var argv = process.ARGV;
 sys.puts(argv[2]);
 
 /* Prepare Tester */
-var hub = require("../src/bootstrap");
+var hub = require("../hub");
 
 // some basic functions (the definition of CoreTest, etc.)
 var CoreTest = require("./src/coretest").CoreTest; 
@@ -22,10 +22,9 @@ GLOBAL.hub = hub;
 GLOBAL.CoreTest = CoreTest;
 
 // We need to load the core at some point so we have something to test
-require("../src/core");
 
 // turn of .log (comment to get ALL test results)
-console.log = function() {  };
+//console.log = function() {  };
 
 // load array test suites (they weren't packaged on their own)
 hub.ArraySuite = require("./src/array_suites").ArraySuite;
