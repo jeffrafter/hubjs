@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global GLOBAL exports hub CoreTest Q$ */
+/*global GLOBAL exports hub Spin Q$ */
 
 exports.Plan = {
   
@@ -18,9 +18,9 @@ exports.Plan = {
   */
   create: function(attrs) {
     var len = arguments.length,
-        ret = CoreTest.beget(this),
+        ret = Spin.beget(this),
         idx;
-    for(idx=0;idx<len;idx++) CoreTest.mixin(ret, attrs);
+    for(idx=0;idx<len;idx++) Spin.mixin(ret, attrs);
     ret.queue = ret.queue.slice(); // want an independent queue
     return ret ;
   },
@@ -42,10 +42,10 @@ exports.Plan = {
 
   /**
     Primitive used to add callbacks to the test plan queue.  Usually you will
-    not want to call this method directly but instead use the module() or 
+    not want to call this method directly but instead use the context() or 
     test() methods.
     
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   synchronize: function synchronize(callback) {
     this.queue.push(callback);
@@ -58,7 +58,7 @@ exports.Plan = {
     no further items are left in the queue, calls finish().  Usually you will
     not call this method directly.  Instead call run().
     
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   process: function process() {
     while(this.queue.length && this.isRunning) {
@@ -71,7 +71,7 @@ exports.Plan = {
     Begins running the test plan after a slight delay to avoid interupting
     any current callbacks. 
   
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   start: function() {
     var plan = this ;
@@ -90,7 +90,7 @@ exports.Plan = {
     with the alotted timeout.
     
     @param {Number} timeout optional timeout in msec
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   stop: function(timeout) {
     this.isRunning = false ;
@@ -111,9 +111,6 @@ exports.Plan = {
   */
   pause: function() {
     if (this.isRunning) {
-      var del = this.delegate;
-      if (del && del.planDidPause) del.planDidPause(this);
-      
       this.isRunning = false ;
       this.start();
     }
@@ -124,7 +121,7 @@ exports.Plan = {
     Initiates running the tests for the first time.  This will add an item 
     to the queue to call finish() on the plan when the run completes.
 
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   run: function() {
     this.isRunning = true;
@@ -151,39 +148,33 @@ exports.Plan = {
   },
 
   /**
-    Called when the test plan begins running.  This method will notify the
-    delegate.  You will not normally call this method directly.
+    Called when the test plan begins running. You will not normally call this 
+    method directly.
     
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   begin: function() {
-    var del = this.delegate;
-    if (del && del.planDidBegin) del.planDidBegin(this);
     return this ;
   },
   
   /**
-    When the test plan finishes running, this method will be called to notify
-    the delegate that the plan as finished.
+    When the test plan finishes running, this method will be called.
 
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   finish: function() {
-    var r   = this.results,
-        del = this.delegate;
-        
+    var r = this.results;        
     r.finish = new Date().getTime();
     r.runtime = r.finish - r.start;
-    
-    if (del && del.planDidFinish) del.planDidFinish(this, r);
+
     return this ;
   },
 
   /**
-    Sets the current module information.  This will be used when a test is
-    added under the module.
+    Sets the current context information.  This will be used when a test is
+    added under the contact.
 
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   module: function(desc, lifecycle) {
     if (typeof hub !== 'undefined' && hub.filename) {
@@ -201,20 +192,20 @@ exports.Plan = {
   /**
     Sets the current setup method.
     
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   setup: function(func) {
-    this.currentSetup = func || CoreTest.K;
+    this.currentSetup = func || Spin.K;
     return this;
   },
   
   /**
     Sets the current teardown method
 
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   teardown: function teardown(func) {
-    this.currentTeardown = func || CoreTest.K ;
+    this.currentTeardown = func || Spin.K ;
     return this;
   },
   
@@ -238,8 +229,8 @@ exports.Plan = {
     var name = desc ;
     if (this.currentModule) name = this.currentModule + " module: " + name;
     
-    var setup = this.currentSetup || CoreTest.K;
-    var teardown = this.currentTeardown || CoreTest.K;
+    var setup = this.currentSetup || Spin.K;
+    var teardown = this.currentTeardown || Spin.K;
     
     // add setup to queue
     this.synchronize(function() {
@@ -261,7 +252,7 @@ exports.Plan = {
         this.warn("Test not yet implemented: " + name);
       } else {
         //try {
-          if (CoreTest.trace) hub.debug("run: " + name);
+          if (Spin.trace) hub.debug("run: " + name);
           this.working.test_begin = this.now();
           func.call(this);
           this.working.test_end = this.now();
@@ -351,14 +342,12 @@ exports.Plan = {
   },
   
   /**
-    Records the results of a test.  This will add the results to the log
-    and notify the delegate.  The passed assertions array should contain 
+    Records the results of a test. The passed assertions array should contain 
     hashes with the result and message.
   */
   record: function(module, test, assertions, timings) {
     var r   = this.results,
         len = assertions.length,
-        del = this.delegate,
         idx, cur;
         
     r.tests++;
@@ -372,9 +361,19 @@ exports.Plan = {
       r.assertions.push(cur);
     }
     
-    if (del && del.planDidRecord) {
-      del.planDidRecord(this, module, test, assertions, timings) ;
-    }
+    var name = test, 
+        s    = { passed: 0, failed: 0, errors: 0, warnings: 0 }, 
+        len  = assertions.length, 
+        clean = '', 
+        idx, cur, q;
+    
+    for(idx=0;idx<len;idx++) s[assertions[idx].result]++;
+    if ((s.failed + s.errors + s.warnings) === 0) clean = "clean" ;
+    
+    if (clean=="clean") stdout.write(".") ;
+    else stdout.write("F") ;
+    
+    if (!this.errors) this.errors = [];
     
   },
   
@@ -413,7 +412,7 @@ exports.Plan = {
   pass: function(msg) {
     var w = this.working ;
     if (!w) throw "pass("+msg+") called outside of a working test";
-    w.assertions.push({ message: msg, result: CoreTest.OK });
+    w.assertions.push({ message: msg, result: Spin.OK });
     return this ;
   },
 
@@ -424,7 +423,7 @@ exports.Plan = {
   fail: function(msg) {
     var w = this.working ;
     if (!w) throw "fail("+msg+") called outside of a working test";
-    w.assertions.push({ message: msg, result: CoreTest.FAIL });
+    w.assertions.push({ message: msg, result: Spin.FAIL });
     return this ;
   },
 
@@ -435,7 +434,7 @@ exports.Plan = {
   warn: function(msg) {
     var w = this.working ;
     if (!w) throw "warn("+msg+") called outside of a working test";
-    w.assertions.push({ message: msg, result: CoreTest.WARN });
+    w.assertions.push({ message: msg, result: Spin.WARN });
     return this ;
   },
 
@@ -452,7 +451,7 @@ exports.Plan = {
       hub.debug("ERROR", e);
     }
     
-    w.assertions.push({ message: msg, result: CoreTest.ERROR });
+    w.assertions.push({ message: msg, result: Spin.ERROR });
     return this ;
   },
   
@@ -473,7 +472,7 @@ exports.Plan = {
       @param {Object} actual optional actual
       @param {Object} expected optional expected
       @param {String} msg optional message
-      @returns {CoreTest.Plan} receiver
+      @returns {Spin.Plan} receiver
     */
     ok: function ok(pass, actual, expected, msg) {
       if (msg === undefined) {
@@ -482,9 +481,9 @@ exports.Plan = {
       } else {
         if (!msg) msg = pass ? "OK" : "failed";
         if (pass) {
-          msg = msg + ": " + CoreTest.dump(expected) ;
+          msg = msg + ": " + Spin.dump(expected) ;
         } else {
-          msg = msg + ", expected: " + CoreTest.dump(expected) + " result: " + CoreTest.dump(actual);
+          msg = msg + ", expected: " + Spin.dump(expected) + " result: " + Spin.dump(actual);
         }
       }
       return !!pass ? this.pass(msg) : this.fail(msg);
@@ -499,7 +498,7 @@ exports.Plan = {
       @param {Object} actual tested object
       @param {Object} expected expected value
       @param {String} msg optional message
-      @returns {CoreTest.Plan} receiver
+      @returns {Spin.Plan} receiver
     */
     equals: function equals(actual, expected, msg) {
       if (msg === undefined) msg = null; // make sure ok logs properly
@@ -515,7 +514,7 @@ exports.Plan = {
       @param {Function} callback the function to execute
       @param {Error} expected optional, the expected error
       @param {String} a description
-      @returns {CoreTest.Plan} receiver
+      @returns {Spin.Plan} receiver
     */
     should_throw: function should_throw(callback, expected, msg) {
       var actual = false ;
@@ -527,9 +526,9 @@ exports.Plan = {
       }
       
       if (expected===false) {
-        ok(actual===false, CoreTest.fmt("%@ expected no exception, actual %@", msg, actual));
+        ok(actual===false, Spin.fmt("%@ expected no exception, actual %@", msg, actual));
       } else if (expected===Error || expected===null || expected===true) {
-        ok(!!actual, CoreTest.fmt("%@ expected exception, actual %@", msg, actual));
+        ok(!!actual, Spin.fmt("%@ expected exception, actual %@", msg, actual));
       } else {
         equals(actual, expected, msg);
       }
@@ -539,7 +538,7 @@ exports.Plan = {
       Specify the number of expected assertions to gaurantee that a failed 
       test (no assertions are run at all) don't slip through
 
-      @returns {CoreTest.Plan} receiver
+      @returns {Spin.Plan} receiver
     */
     expect: function expect(asserts) {
       this.working.expected = asserts;
@@ -554,11 +553,11 @@ exports.Plan = {
       @param {Object} value tested object
       @param {Object} actual expected value
       @param {String} msg optional message
-      @returns {CoreTest.Plan} receiver
+      @returns {Spin.Plan} receiver
     */
     same: function(actual, expected, msg) {
       if (msg === undefined) msg = null ; // make sure ok logs properly
-      return this.ok(CoreTest.equiv(actual, expected), actual, expected, msg);
+      return this.ok(Spin.equiv(actual, expected), actual, expected, msg);
     },
     
     /**
@@ -567,7 +566,7 @@ exports.Plan = {
       period of time.
       
       @param {Number} timeout timeout in msec
-      @returns {CoreTest.Plan} receiver
+      @returns {Spin.Plan} receiver
     */
     stop: function(timeout) {
       return this.stop(timeout);
@@ -576,7 +575,7 @@ exports.Plan = {
     /**
       Restarts tests running.  Use this to begin tests after you stop tests.
       
-      @returns {CoreTest.Plan} receiver
+      @returns {Spin.Plan} receiver
     */
     start: function() {
       return this.start();
@@ -593,7 +592,7 @@ exports.Plan = {
     allow you to call these methods from within testing functions.  This 
     method is called automatically just before the first test is run.
     
-    @returns {CoreTest.Plan} receiver
+    @returns {Spin.Plan} receiver
   */
   prepare: function() {
     var fn   = this.fn,
@@ -622,10 +621,9 @@ exports.Plan = {
 // 
 
 exports.defaultPlan = function defaultPlan() {
-  var plan = CoreTest.plan;
+  var plan = Spin.plan;
   if (!plan) {
-    CoreTest.runner = CoreTest.Runner.create();
-    plan = CoreTest.plan = CoreTest.runner.plan;
+    plan = Spin.plan = Spin.Plan.create({});
   }
   return plan;
 };
@@ -633,11 +631,11 @@ exports.defaultPlan = function defaultPlan() {
 // create a module.  If this is the first time, create the test plan and
 // runner.  This will cause the test to run on page load
 GLOBAL._hub_module = GLOBAL.module = function(desc, l) {
-  CoreTest.defaultPlan().module(desc, l); 
+  Spin.defaultPlan().module(desc, l); 
 };
 
 // create a test.  If this is the first time, create the test plan and
 // runner.  This will cause the test to run on page load
 GLOBAL.test = function(desc, func) {
-  CoreTest.defaultPlan().test(desc, func); 
+  Spin.defaultPlan().test(desc, func); 
 };

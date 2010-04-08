@@ -9,7 +9,7 @@
 
 var sys = require("sys"), fs = require("fs");
 
-var CoreTest = {
+var Spin = {
   
   /** 
     Empty function.  Useful for some operations. 
@@ -24,7 +24,7 @@ var CoreTest = {
   */
   beget: function(obj) {
     if (!obj) return null ;
-    var K = CoreTest.K; K.prototype = obj ;
+    var K = Spin.K; K.prototype = obj ;
     var ret = new K();
     K.prototype = null ; // avoid leaks
     return ret ;
@@ -45,7 +45,7 @@ var CoreTest = {
     var length = arguments.length ;
     var options ;
 
-    // Handle case where we have only one item...extend CoreTest
+    // Handle case where we have only one item...extend Spin
     if (length === 1) {
       target = this || {};
       idx=0;
@@ -153,10 +153,10 @@ var CoreTest = {
     if (!ret.expect) {
       ret.expect = function(callCount) {
         if (callCount === true) {
-          ok(this.callCount > 0, CoreTest.fmt("%@ should be called at least once", this.stubName));
+          ok(this.callCount > 0, Spin.fmt("%@ should be called at least once", this.stubName));
         } else {
           if (callCount === false) callCount = 0;
-          equals(this.callCount, callCount, CoreTest.fmt("%@ should be called X times", this.stubName));
+          equals(this.callCount, callCount, Spin.fmt("%@ should be called X times", this.stubName));
         }
       };
     }
@@ -181,11 +181,10 @@ var CoreTest = {
   
   Plan: require("./plan").Plan,
   defaultPlan: require("./plan").defaultPlan,
-  Runner: require("./runner").Runner,
   Suite: require("./suite").Suite,
   dump: require("./dump").dump,
   jsDump: require("./dump").jsDump,
   equiv: require("./equiv").equiv
 };
 
-exports.CoreTest = CoreTest ;
+exports.Spin = Spin ;

@@ -13,23 +13,17 @@ var argv = process.ARGV;
 sys.puts(argv[2]);
 
 /* Prepare Tester */
-var hub = require("../hub");
+var hub = require("../../hub");
 
-// some basic functions (the definition of CoreTest, etc.)
-var CoreTest = require("./src/coretest").CoreTest; 
+// some basic functions (the definition of Spin, etc.)
+var Spin = require("./src/coretest").Spin; 
 
 GLOBAL.hub = hub;
-GLOBAL.CoreTest = CoreTest;
-
+GLOBAL.Spin = Spin;
 GLOBAL.stdout = process.stdout ;
 
-// We need to load the core at some point so we have something to test
-
-// turn of .debug (comment to get ALL test results)
-// hub.debug = function(type, what) {};
-
 // load array test suites (they weren't packaged on their own)
-hub.ArraySuite = require("./src/array_suites").ArraySuite;
+// hub.ArraySuite = require("./src/array_suites").ArraySuite;
 
 // run code
 fs.readFile(argv[2], function(err, data){
@@ -37,7 +31,6 @@ fs.readFile(argv[2], function(err, data){
   process.compile(data, argv[2]);
 });
 
-var runner = CoreTest.Runner.create();
-runner.begin();
+Spin.defaultPlan().run();
 
 return 0;
