@@ -5,12 +5,9 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global window GLOBAL exports require hub CoreTest test ok equals same */
+/*global window GLOBAL exports require hub Spin test ok equals same */
 
 /* MANUALLY CONCATENATED TEST SUITES FOR ARRAY */
-
-// FIXME: Unconcatenate.
-// FIXME: Rename from CoreTest.
 
 /**
   Adds a new module of unit tests to verify that the passed object implements
@@ -23,7 +20,7 @@
   destroyObject() method, which should destroy a passed object.
   
   {{{
-    hub.ArrayTests.generate("Array", {
+    Spin.ArrayTests.generate("Array", {
       newObject:  function() { return []; }
     });
   }}}
@@ -37,7 +34,7 @@
   parameter passed will be the instance of ArrayTests you should work with.
   
   {{{
-    hub.ArrayTests.define(function(T) {
+    Spin.ArrayTests.define(function(T) {
       T.module("length");
       
       test("verify length", function() {
@@ -50,7 +47,7 @@
   
 */
 
-var ArraySuite = CoreTest.Suite.create("Verify hub.Array compliance: %@#%@", {
+var ArraySuite = Spin.Suite.create("Verify hub.Array compliance: %@#%@", {
   
   /** 
     Override to return a set of simple values such as numbers or strings.
@@ -274,7 +271,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("insertAt"), {
+  Spin.Plan.module(T.desc("insertAt"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -413,7 +410,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("popObject"), {
+  Spin.Plan.module(T.desc("popObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -455,7 +452,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("pushObject"), {
+  Spin.Plan.module(T.desc("pushObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -493,7 +490,7 @@ ArraySuite.define(function(T) {
   
   var expected, array, observer, rangeObserver ;
 
-  CoreTest.Plan.module(T.desc("RangeObserver Methods"), {
+  Spin.Plan.module(T.desc("RangeObserver Methods"), {
     setup: function() {
       expected = T.objects(10);
       array = T.newObject(expected);
@@ -654,7 +651,7 @@ ArraySuite.define(function(T) {
   // ..........................................................
   // MODULE: No explicit range
   // 
-  CoreTest.Plan.module(T.desc("RangeObserver Methods - No explicit range"), {
+  Spin.Plan.module(T.desc("RangeObserver Methods - No explicit range"), {
     setup: function() {
       expected = T.objects(10);
       array = T.newObject(expected);
@@ -764,7 +761,7 @@ ArraySuite.define(function(T) {
   // ..........................................................
   // MODULE: isDeep = NO 
   // 
-  CoreTest.Plan.module(T.desc("RangeObserver Methods - isDeep NO"), {
+  Spin.Plan.module(T.desc("RangeObserver Methods - isDeep NO"), {
     setup: function() {
       expected = T.objects(10);
       array = T.newObject(expected);
@@ -808,7 +805,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("removeAt"), {
+  Spin.Plan.module(T.desc("removeAt"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -899,7 +896,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("removeObject"), {
+  Spin.Plan.module(T.desc("removeObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -940,7 +937,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("replace"), {
+  Spin.Plan.module(T.desc("replace"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -1026,7 +1023,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("shiftObject"), {
+  Spin.Plan.module(T.desc("shiftObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);
@@ -1068,7 +1065,7 @@ ArraySuite.define(function(T) {
   
   var observer, obj ;
   
-  CoreTest.Plan.module(T.desc("unshiftObject"), {
+  Spin.Plan.module(T.desc("unshiftObject"), {
     setup: function() {
       obj = T.newObject();
       observer = T.observer(obj);

@@ -9,7 +9,7 @@
 
 var store, child, Foo, json, foo ;
 
-CoreTest.Plan.module("hub.Record#storeDidChangeProperties", {
+Spin.Plan.module("hub.Record#storeDidChangeProperties", {
   setup: function() {
     hub.RunLoop.begin();
     

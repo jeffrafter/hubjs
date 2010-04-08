@@ -58,7 +58,7 @@ function queryEquals(q, location, recordType, conditions, extra, desc) {
 // location
 function performBasicTests(methodName, loc) {
 
-  CoreTest.Plan.module("hub.Query.%@()".fmt(methodName), {
+  Spin.Plan.module("hub.Query.%@()".fmt(methodName), {
     setup: function() {
       GLOBAL.TestRecord = TestRecord;
       GLOBAL.TestRecord2 = TestRecord2;

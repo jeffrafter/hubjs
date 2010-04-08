@@ -13,7 +13,7 @@
 // BUILT-IN ARRAY
 // 
 
-hub.ArraySuite.generate("built-in Array");
+Spin.ArraySuite.generate("built-in Array");
 
 // ..........................................................
 // DUMMY ARRAY (BASIC FAKE IMPLEMENTATION)
@@ -48,7 +48,7 @@ var DummyArray = hub.Object.extend(hub.Array, {
   
 });
 
-hub.ArraySuite.generate("DummyArray", {
+Spin.ArraySuite.generate("DummyArray", {
   newObject: function(expected) {
     if (!expected || typeof expected === hub.T_NUMBER) {
       expected = this.expected(expected); 

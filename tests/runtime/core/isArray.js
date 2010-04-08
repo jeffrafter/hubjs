@@ -7,7 +7,7 @@
 // ==========================================================================
 /*globals hub module test ok equals same */
 
-// FIXME: Is this still relevant, now that we have hub.ArraySuite?
+// FIXME: Is this still relevant, now that we have Spin.ArraySuite?
 
 var objectA,objectB,objectC, objectD, objectE; //global variables
 

@@ -5,24 +5,24 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global window GLOBAL exports require hub CoreTest Q$ */
+/*global window GLOBAL exports require hub Spin Q$ */
 
-var Suite = /** @scope CoreTest.Suite.prototype */ {
+var Suite = /** @scope Spin.Suite.prototype */ {
 
   /**
     Call this method to define a new test suite.  Pass one or more hashes of
     properties you want added to the new suite.  
     
     @param {Hash} attrs one or more attribute hashes
-    @returns {CoreTest.Suite} subclass of suite.
+    @returns {Spin.Suite} subclass of suite.
   */
   create: function(desc, attrs) {
     var len = arguments.length,
-        ret = CoreTest.beget(this),
+        ret = Spin.beget(this),
         idx;
         
     // copy any attributes
-    for(idx=1;idx<len;idx++) CoreTest.mixin(ret, arguments[idx]);
+    for(idx=1;idx<len;idx++) Spin.mixin(ret, arguments[idx]);
     
     if (desc) ret.basedesc = desc;
     
@@ -42,15 +42,15 @@ var Suite = /** @scope CoreTest.Suite.prototype */ {
     
     @param {String} desc suite description
     @param {Hash} attrs one or more attribute hashes
-    @returns {CoreTest.Suite} suite instance
+    @returns {Spin.Suite} suite instance
   */
   generate: function(desc, attrs) {
     var len = arguments.length,
-        ret = CoreTest.beget(this),
+        ret = Spin.beget(this),
         idx, defs;
         
     // apply attributes - skip first argument b/c it is a string
-    for(idx=1;idx<len;idx++) CoreTest.mixin(ret, arguments[idx]);    
+    for(idx=1;idx<len;idx++) Spin.mixin(ret, arguments[idx]);    
     ret.subdesc = desc ;
     
     // invoke definitions
@@ -70,7 +70,7 @@ var Suite = /** @scope CoreTest.Suite.prototype */ {
     a module and tests, which will be added to the test suite.
     
     @param {Function} func definition function
-    @returns {CoreTest.Suite} receiver
+    @returns {Spin.Suite} receiver
   */
   define: function(func) {
     this.definitions.push(func);
@@ -148,18 +148,18 @@ var Suite = /** @scope CoreTest.Suite.prototype */ {
     
     {{{
       var T = this ;
-      CoreTest.Plan.module(T.desc(description), {
+      Spin.Plan.module(T.desc(description), {
         setup: function() { T.setup(); },
         teardown: function() { T.teardown(); }
       }
     }}}
     
     @param {String} desc detailed description
-    @returns {CoreTest.Suite} receiver
+    @returns {Spin.Suite} receiver
   */
   module: function(desc) {
     var T = this ;
-    CoreTest.Plan.module(T.desc(desc), {
+    Spin.Plan.module(T.desc(desc), {
       setup: function() { T.setup(); },
       teardown: function() { T.teardown(); }
     });

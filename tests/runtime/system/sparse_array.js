@@ -9,7 +9,7 @@
 
 var objectA = 23, objectB = 12, objectC = 31, numbers, new_numbers;
 
-CoreTest.Plan.module("hub.SparseArray") ;
+Spin.Plan.module("hub.SparseArray") ;
 
 test("new SparseArray has expected length", function() {
   var ary = hub.SparseArray.array(10000) ;
@@ -44,7 +44,7 @@ test("objectAt() should get the object at the specified index",function() {
   equals(arr[3],spArray.objectAt(3),'fourth object');
 });
 
-CoreTest.Plan.module("hub.replace",{
+Spin.Plan.module("hub.replace",{
   setup: function() {
     // create objects...
     numbers= [1,2,3] ;
@@ -188,7 +188,7 @@ var DummyDelegate = hub.Object.extend({
   
 });
 
-hub.ArraySuite.generate("hub.SparseArray", {
+Spin.ArraySuite.generate("hub.SparseArray", {
   newObject: function(amt) {
     if (amt === undefined || typeof amt === hub.T_NUMBER) {
       amt = this.expected(amt);
