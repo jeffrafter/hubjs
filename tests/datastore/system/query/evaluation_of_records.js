@@ -12,7 +12,7 @@ var store, storeKey, rec1, rec2, rec3, rec4, rec5, MyApp, q;
 module("hub.Query evaluation of records", {
   setup: function() {
     
-    hub.RunLoop.begin();
+    
     
     // setup dummy app and store
     MyApp = hub.Object.create({
@@ -38,7 +38,7 @@ module("hub.Query evaluation of records", {
     rec5 = MyApp.store.find(MyApp.Foo,5);
     
 
-    hub.RunLoop.end();
+    
     
     q = hub.Query.create();
   }

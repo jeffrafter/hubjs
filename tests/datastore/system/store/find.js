@@ -10,7 +10,7 @@
 // test querying through find() on the store
 module("hub.Query querying find() on a store", {
   setup: function() {
-    hub.RunLoop.begin();
+    
     // setup dummy app and store
     MyApp = hub.Object.create({});
     
@@ -71,12 +71,12 @@ module("hub.Query querying find() on a store", {
     
     // load some data
     MyApp.DataSource.storeKeys = MyApp.store.loadRecords(MyApp.Foo, records);
-    hub.RunLoop.end();
     
-    hub.RunLoop.begin();
+    
+    
     // for sanity check, load two record types
     MyApp.store.loadRecords(MyApp.Bar, records);
-    hub.RunLoop.end();
+    
     
   },
   
@@ -155,21 +155,21 @@ test("data source must get the right calls", function() {
 // 
 
 test("should find records based on boolean", function() {
-  hub.RunLoop.begin();
+  
   var q = hub.Query.local(MyApp.Foo, "married=true");
   var records = MyApp.store.find(q);
   equals(records.get('length'), 4, 'record length should be 4');
-  hub.RunLoop.end();
+  
 });
 
 test("should find records based on query string", function() {
   
-  hub.RunLoop.begin();
+  
   var q = hub.Query.local(MyApp.Foo, { conditions:"firstName = 'John'" });
   var records = MyApp.store.find(q);
   equals(records.get('length'), 1, 'record length should be 1');
   equals(records.objectAt(0).get('firstName'), 'John', 'name should be John');
-  hub.RunLoop.end();
+  
 });
 
 test("should find records based on hub.Query", function() {
@@ -191,21 +191,21 @@ test("modifying a record should update RecordArray automatically", function() {
   equals(recs.get('length'), 1, 'record length should be 1');
   equals(recs.objectAt(0).get('firstName'), 'Jane', 'name should be Jane');
   
-  hub.RunLoop.begin();
+  
 
   var r2 = MyApp.store.find(MyApp.Foo, 3);
   ok(r2.get('firstName') !== 'Jane', 'precond - firstName is not Jane');
   r2.set('firstName', 'Jane');
 
-  hub.RunLoop.end();
+  
   
   equals(recs.get('length'), 2, 'record length should increase');
   same(recs.getEach('firstName'), ['Jane', 'Jane'], 'check all firstNames are Jane');
   
   // try the other direction...
-  hub.RunLoop.begin();
+  
   r2.set('firstName', 'Ester');
-  hub.RunLoop.end(); 
+   
   
   equals(recs.get('length'), 1, 'record length should decrease');
 
@@ -223,7 +223,7 @@ test("should find records based on hub.Query without recordType", function() {
 
 test("should find records within a passed record array", function() {
 
-  hub.RunLoop.begin();
+  
   
   var q = hub.Query.create({ 
     recordType: MyApp.Foo, 
@@ -236,7 +236,7 @@ test("should find records within a passed record array", function() {
   equals(records.get('length'), 1, 'record length should be 1');
   equals(records.objectAt(0).get('firstName'), 'Emily', 'name should be Emily');
 
-  hub.RunLoop.end();
+  
   
 });
 
@@ -245,17 +245,17 @@ test("sending a new store key array from the data source should update record ar
   var q       = hub.Query.remote(MyApp.Foo),
       records = MyApp.store.find(q);
   
-  hub.RunLoop.begin();
+  
   equals(records.get('length'), 5, 'record length should be 5');
-  hub.RunLoop.end();
+  
   
   var newStoreKeys = MyApp.DataSource.storeKeys.copy();
   newStoreKeys.pop();
   
   // .replace() will call .enumerableContentDidChange()
-  hub.RunLoop.begin();
+  
   MyApp.store.loadQueryResults(q, newStoreKeys);
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 4, 'record length should be 4');
 
@@ -268,13 +268,13 @@ test("loading more data into the store should propagate to record array", functi
   
   equals(records.get('length'), 5, 'record length before should be 5');
 
-  hub.RunLoop.begin();
+  
   
   var newStoreKeys = MyApp.store.loadRecords(MyApp.Foo, [
     { guid: 10, firstName: "John", lastName: "Johnson" }
   ]);
   
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 6, 'record length after should be 6');
 });
@@ -286,22 +286,22 @@ test("loading more data into the store should propagate to record array with que
   
   equals(records.get('length'), 1, 'record length before should be 1');
 
-  hub.RunLoop.begin();
+  
   var newStoreKeys = MyApp.store.loadRecords(MyApp.Foo, [
     { guid: 10, firstName: "John", lastName: "Johnson" }
   ]);
-  hub.RunLoop.end();
+  
   
   // .replace() will call .enumerableContentDidChange()
   // and should fire original hub.Query again
   equals(records.get('length'), 2, 'record length after should be 2');
   
   // subsequent updates to store keys should also work
-  hub.RunLoop.begin();
+  
   var newStoreKeys2 = MyApp.store.loadRecords(MyApp.Foo, [
     { guid: 11, firstName: "John", lastName: "Norman" }
   ]);
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 3, 'record length after should be 3');
 });
@@ -320,9 +320,9 @@ test("Loading records after hub.Query should show up", function() {
     { guid: 22, firstName: "Barbara", lastName: "Jones" }
   ];
   
-  hub.RunLoop.begin();
+  
   MyApp.store.loadRecords(MyApp.Foo, recordsToLoad);
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 3, 'record length should be 3');
   
@@ -341,9 +341,9 @@ test("Loading records after getting empty record array based on hub.Query should
     { guid: 20, firstName: "Maria", lastName: "Johnson" }
   ];
   
-  hub.RunLoop.begin();
+  
   MyApp.store.loadRecords(MyApp.Foo, recordsToLoad);
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 1, 'record length should be 1');
   
@@ -358,10 +358,10 @@ test("Changing a record should make it show up in RecordArrays based on hub.Quer
   records = MyApp.store.find(q);
   equals(records.get('length'), 0, 'record length should be 0');
   
-  hub.RunLoop.begin();
+  
   record = MyApp.store.find(MyApp.Foo, 1);
   record.set('firstName', 'Maria');
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 1, 'record length should be 1');
   equals(records.objectAt(0).get('firstName'), 'Maria', 'name should be Maria');
@@ -375,9 +375,9 @@ test("Deleting a record should make the RecordArray based on hub.Query update ac
   records = MyApp.store.find(q);
   equals(records.get('length'), 1, 'record length should be 1');
   
-  hub.RunLoop.begin();
+  
   records.objectAt(0).destroy();
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 0, 'record length should be 0');
 });
@@ -386,7 +386,7 @@ test("Using find() with hub.Query on store with no data source should work", fun
 
   var q, records, recordsToLoad;
   
-  hub.RunLoop.begin();
+  
   
   // create a store with no data source
   MyApp.store3 = hub.Store.create();
@@ -403,7 +403,7 @@ test("Using find() with hub.Query on store with no data source should work", fun
 
   MyApp.store3.loadRecords(MyApp.Foo, recordsToLoad);
   
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 2, 'record length should be 2');  
 });
@@ -430,11 +430,11 @@ test("Using orderBy in hub.Query returned from find() and loading more records t
   equals(records.objectAt(0).get('firstName'), 'Bert', 'name should be Bert');
   equals(records.objectAt(4).get('firstName'), 'Johnny', 'name should be Johnny');
   
-  hub.RunLoop.begin();
+  
   newStoreKeys2 = MyApp.store.loadRecords(MyApp.Foo, [
     { guid: 11, firstName: "Anna", lastName: "Petterson" }
   ]);
-  hub.RunLoop.end();
+  
   
   equals(records.objectAt(0).get('firstName'), 'Anna', 'name should be Anna');
   equals(records.objectAt(1).get('firstName'), 'Bert', 'name should be Bert');
@@ -447,7 +447,7 @@ test("Using orderBy in hub.Query and loading more records to the store", functio
 
   var q, records;
   
-  hub.RunLoop.begin();
+  
   q = hub.Query.local(MyApp.Foo, { orderBy:"firstName ASC" });
   records = MyApp.store.find(q);
   equals(records.get('length'), 5, 'record length should be 5');
@@ -456,7 +456,7 @@ test("Using orderBy in hub.Query and loading more records to the store", functio
   MyApp.store.loadRecords(MyApp.Foo, [
     { guid: 11, firstName: "Anna", lastName: "Petterson" }
   ]);
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 6, 'record length should be 6');
   
@@ -485,7 +485,7 @@ test("Chaining find() queries and loading more records", function() {
 
   var q, q2, records;
   
-  hub.RunLoop.begin();
+  
   q = hub.Query.local(MyApp.Foo, "lastName='Doe'");
   q2 = hub.Query.local(MyApp.Foo, "firstName='John'");
   
@@ -495,7 +495,7 @@ test("Chaining find() queries and loading more records", function() {
   MyApp.store.loadRecords(MyApp.Foo, [
     { guid: 11, firstName: "John", lastName: "Doe" }
   ]);
-  hub.RunLoop.end();
+  
   
   equals(records.get('length'), 2, 'record length should be 2');  
 });

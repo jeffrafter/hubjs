@@ -23,9 +23,9 @@ module("hub.NestedStore#dataHashDidChange", {
     
     storeKey = hub.Store.generateStoreKey();
     
-    hub.RunLoop.begin();
+    
     parent.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
-    hub.RunLoop.end();
+    
     
     parent.editables = null; // manually patch to setup test state
     

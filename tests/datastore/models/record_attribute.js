@@ -67,7 +67,7 @@ module("hub.RecordAttribute core methods", {
       relatedMany: hub.Record.toMany('MyApp.Foo', { aggregate: true })
     });
     
-    hub.RunLoop.begin();
+    
     storeKeys = MyApp.store.loadRecords(MyApp.Foo, [
       { 
         guid: 'foo1', 
@@ -104,7 +104,7 @@ module("hub.RecordAttribute core methods", {
       { guid: 'bar1', city: "Chicago", parent: 'foo2', relatedMany: ['foo1', 'foo2'] }
     ]);
     
-    hub.RunLoop.end();
+    
     
     rec = MyApp.store.find(MyApp.Foo, 'foo1');
     rec2 = MyApp.store.find(MyApp.Foo, 'foo2');

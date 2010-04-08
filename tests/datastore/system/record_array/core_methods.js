@@ -68,9 +68,9 @@ test("modifying the underlying storeKey should change the returned materialized 
   equals(recs.objectAt(0), rec, 'recs.objectAt(0) should materialize record');  
   
   // create a new record.
-  hub.RunLoop.begin();
+  
   var rec2 = store.createRecord(hub.Record, { foo: "rec2" });
-  hub.RunLoop.end();
+  
 
   var storeKey2 = rec2.get('storeKey');
   
@@ -104,9 +104,9 @@ test("adding a record to the record array should pass through storeKeys", functi
   equals(recs.objectAt(0), rec, 'recs.objectAt(0) should materialize record');  
   
   // create a new record.
-  hub.RunLoop.begin();
+  
   var rec2 = store.createRecord(hub.Record, { foo: "rec2" });
-  hub.RunLoop.end();
+  
   
   var storeKey2 = rec2.get('storeKey');
   
@@ -144,9 +144,9 @@ test("changing the underlying storeKeys should notify observers of records", fun
 test("swapping storeKey array should change recordArray and observers", function() {
 
   // setup alternate storeKeys
-  hub.RunLoop.begin();
+  
   var rec2 = store.createRecord(hub.Record, { foo: "rec2" });
-  hub.RunLoop.end();
+  
   
   var storeKey2 = rec2.get('storeKey');
   var storeKeys2 = [storeKey2];

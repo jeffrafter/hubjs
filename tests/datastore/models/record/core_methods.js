@@ -33,10 +33,7 @@ module("hub.Record core methods", {
       guid: 1
     };
     
-    hub.RunLoop.begin();
     MyApp.foo = MyApp.store.createRecord(MyApp.Foo, MyApp.json);
-    hub.RunLoop.end();
-    
   }
 });
 

@@ -11,8 +11,6 @@ var store, fds, storeKey1,storeKey2;
 
 module("hub.FixturesDataSource", {
   setup: function() {
-    hub.RunLoop.begin();
-    
     var Sample = (GLOBAL.Sample= hub.Object.create());
     Sample.File = hub.Record.extend({ test:'hello'});
 
@@ -30,10 +28,6 @@ module("hub.FixturesDataSource", {
     ];
     
     store = hub.Store.create().from(hub.Record.fixtures);
-  },
-  
-  teardown: function() {
-    hub.RunLoop.end();
   }
 });
 

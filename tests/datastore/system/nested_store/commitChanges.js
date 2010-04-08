@@ -142,7 +142,7 @@ test("commiting a changed record should immediately notify outstanding records i
     
   });
 
-  hub.RunLoop.begin();
+  
     
   var store = hub.Store.create();
   var prec  = store.createRecord(Rec, { foo: "bar", guid: 1 });
@@ -165,7 +165,7 @@ test("commiting a changed record should immediately notify outstanding records i
   equals(prec.get('foo'), 'baz', 'should push data to parent');
   prec.equals(1,1, 'after commitChanges'); // should notify immediately
   
-  hub.RunLoop.end();
+  
   
   // should not notify again after runloop - nothing to do
   prec.equals(1,1,'after runloop ends - should not notify again');

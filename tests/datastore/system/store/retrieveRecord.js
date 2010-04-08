@@ -87,7 +87,7 @@ module("hub.Store#retrieveRecord", {
 function testStates(canLoad) {
   var msg, status;
   
-  hub.RunLoop.begin();
+  
   
   store.retrieveRecord(undefined, undefined, storeKey1, true);
   status = store.readStatus( storeKey1);
@@ -155,7 +155,7 @@ function testStates(canLoad) {
     equals(status, hub.Record.READY_CLEAN, "the status should remain ready clean");
   }
   
-  hub.RunLoop.end();
+  
 }  
 
 test("Retrieve a record without a data source", function() {

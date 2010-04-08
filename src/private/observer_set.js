@@ -81,23 +81,6 @@ hub.ObserverSet = {
   },
   
   /**
-    Invokes the target/method pairs in the receiver.  Used by hub.RunLoop
-    Note: does not support context
-  */
-  invokeMethods: function() {
-    // iterate through the set, look for sets.
-    for(var key in this) {
-      if (!this.hasOwnProperty(key)) continue ;
-      var value = this[key] ;
-      if (value && value.isTargetSet) {
-        var idx = value.length;
-        var target = value.target ;
-        while(--idx>=0) value[idx].call(target);
-      }
-    }
-  },
-  
-  /**
     Returns an array of target/method pairs.  This is cached.
   */
   getMembers: function() {

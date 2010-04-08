@@ -11,7 +11,7 @@ var store, child, Foo, json, foo ;
 
 Spin.Plan.module("hub.Record#storeDidChangeProperties", {
   setup: function() {
-    hub.RunLoop.begin();
+    
     
     store = hub.Store.create();
     Foo = hub.Record.extend({
@@ -41,7 +41,7 @@ Spin.Plan.module("hub.Record#storeDidChangeProperties", {
     store.writeStatus(foo.storeKey, hub.Record.READY_CLEAN);
     foo.storeDidChangeProperties(true) ;
     
-    hub.RunLoop.end();
+    
   }
 });
 
@@ -80,9 +80,9 @@ test("should change both attrs and status when statusOnly is false", function() 
 test("editing a clean record should change all", function() {
   checkPreconditions();
   
-  hub.RunLoop.begin();
+  
   foo.writeAttribute("foo", "baz"); // NB: Must be different from "foo"
-  hub.RunLoop.end();
+  
   
   expect(foo,2,1);
 });
@@ -90,42 +90,42 @@ test("editing a clean record should change all", function() {
 test("editing an attribute to same value should do nothing", function() {
   checkPreconditions();
   
-  hub.RunLoop.begin();
+  
   foo.writeAttribute("foo", "bar"); // NB: Must be "bar"
-  hub.RunLoop.end();
+  
   
   expect(foo,0,0);
 });
 
 test("destroying a record should change all", function() {
   checkPreconditions();
-  hub.RunLoop.begin();
+  
   foo.destroy();
-  hub.RunLoop.end();
+  
   expect(foo,1,1);
 });
 
 test("refreshing a record should change status", function() {
   checkPreconditions();
-  hub.RunLoop.begin();
+  
   foo.refresh();
-  hub.RunLoop.end();
+  
   expect(foo,1,0);
 });
 
 test("committing attribute changes from nested store should change attrs", function() {
   checkPreconditions();
   
-  hub.RunLoop.begin();
+  
   var child = store.chain();
   var foo2 = child.materializeRecord(foo.storeKey);
 
   foo2.writeAttribute('foo', 'baz'); // must not be 'bar'
-  hub.RunLoop.end();
+  
   // no changes should happen yet on foo.
   expect(foo,0,0);
   
-  hub.RunLoop.begin();
+  
   // commit
   child.commitChanges();
 
@@ -140,9 +140,9 @@ test("changing attributes on a parent store should notify child store if inherit
   var childfoo = child.materializeRecord(foo.storeKey);
   equals(child.storeKeyEditState(foo.storeKey), hub.Store.INHERITED, 'precond - foo should be inherited from parent store');
   
-  hub.RunLoop.begin();
+  
   parentfoo.writeAttribute('foo', 'baz'); // must not be bar
-  hub.RunLoop.end();
+  
   
   expect(childfoo,1,1); // should reflect on child
 });
@@ -156,18 +156,18 @@ test("changing attributes on a parent store should NOT notify child store if loc
   childfoo.readAttribute('foo');
   equals(child.storeKeyEditState(foo.storeKey), hub.Store.EDITABLE, 'precond - foo should be locked from parent store');
    
-  hub.RunLoop.begin();
+  
   parentfoo.writeAttribute('foo', 'baz'); // must not be bar
-  hub.RunLoop.end();
+  
   expect(childfoo,0,0); // should not reflect on child
   expect(parentfoo,2,1);
   // discarding changes should update
 
   // NOTE: recourds should change immediately on commit/discard changes.
   // test results here BEFORE run loop ends
-  hub.RunLoop.begin();
+  
   child.discardChanges(); // make it match parent again
   expect(childfoo,1,1); //the childfoo record is reset to whatever the parentValue is.
-  hub.RunLoop.end();
+  
 
 });

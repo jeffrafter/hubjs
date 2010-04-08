@@ -33,7 +33,7 @@ module("hub.NestedStore#commitChangesFromNestedStore", {
 
 test("copies changed data hashes, statuses, and revisions", function() {
   
-  hub.RunLoop.begin();
+  
   
   // verify preconditions
   equals(store.readDataHash(storeKey), null, 'precond - should not have data yet');
@@ -41,7 +41,7 @@ test("copies changed data hashes, statuses, and revisions", function() {
   
   // perform action
   equals(store.commitChangesFromNestedStore(child, child.chainedChanges, false), store, 'should return receiver');
-  hub.RunLoop.end();
+  
   
   // verify new status
   equals(store.readDataHash(storeKey), json, 'now should have json');
@@ -52,7 +52,7 @@ test("copies changed data hashes, statuses, and revisions", function() {
 
 test("adds lock on any items not already locked", function() {
 
-  hub.RunLoop.begin();
+  
 
   var storeKey2 = hub.Store.generateStoreKey();
   var json2 = { kind: "json2" };
@@ -72,7 +72,7 @@ test("adds lock on any items not already locked", function() {
   
   // now commit back to parent
   equals(store.commitChangesFromNestedStore(child, changes, false), store, 'should return reciever');
-  hub.RunLoop.end();
+  
   
   // and verify that both have locks
   ok(store.locks[storeKey], 'storeKey should have lock after commit (actual: %@)'.fmt(store.locks[storeKey]));
@@ -82,7 +82,7 @@ test("adds lock on any items not already locked", function() {
 
 test("adds items in chainedChanges to reciever chainedChanges", function() {
 
-  hub.RunLoop.begin();
+  
 
   var key1 = hub.Store.generateStoreKey();
 
@@ -91,7 +91,7 @@ test("adds items in chainedChanges to reciever chainedChanges", function() {
   ok(child.chainedChanges.contains(storeKey), 'precond - child.chainedChanges should contain store key');
   
   equals(store.commitChangesFromNestedStore(child, child.chainedChanges, false), store, 'should return receiver');
-  hub.RunLoop.end();
+  
 
   // changelog should merge nested store & existing
   ok(store.chainedChanges.contains(key1), 'chainedChanges should still contain key1');
@@ -100,7 +100,7 @@ test("adds items in chainedChanges to reciever chainedChanges", function() {
 
 test("should set hasChanges to true if has changes", function() {
   
-  hub.RunLoop.begin();
+  
   
   var changes = child.chainedChanges;
   ok(changes.length>0, 'precond - should have some changes in child');
@@ -112,7 +112,7 @@ test("should set hasChanges to true if has changes", function() {
 
 test("should set hasChanges to false if no changes", function() {
   
-  hub.RunLoop.begin();
+  
   
   child = store.chain() ; // get a new child store
   
@@ -121,7 +121,7 @@ test("should set hasChanges to false if no changes", function() {
   equals(store.get('hasChanges'), false, 'precond - store should not have changes');
   
   store.commitChangesFromNestedStore(child, changes, false);
-  hub.RunLoop.end();
+  
   
   equals(store.get('hasChanges'), false, 'store should NOT now have changes');
 });
@@ -132,7 +132,7 @@ test("should set hasChanges to false if no changes", function() {
 
 test("committing changes should chain back each step", function() {
 
-  hub.RunLoop.begin();
+  
 
   // preconditions
   equals(child.readDataHash(storeKey), json, 'precond - child should have data');
@@ -148,6 +148,6 @@ test("committing changes should chain back each step", function() {
   store.commitChanges();
   equals(store.get('hasChanges'), false, 'store should no longer have changes');
   equals(parent.readDataHash(storeKey), json, 'parent should now have json');
-  hub.RunLoop.end();
+  
   
 });

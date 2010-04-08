@@ -11,9 +11,6 @@
 var storeKeys, rec, rec2, rec3, rec4;
 module("hub.Record normalize method", {
   setup: function() {
-
-    hub.RunLoop.begin();
- 
     MyApp = hub.Object.create({
       store: hub.Store.create()
     });
@@ -87,12 +84,7 @@ module("hub.Record normalize method", {
     
     equals(rec.storeKey, storeKeys[0], 'should find record');
     
-  },
-  
-  teardown: function() {
-    hub.RunLoop.end();
   }
-  
 });
 
 // ..........................................................

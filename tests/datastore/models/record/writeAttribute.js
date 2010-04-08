@@ -10,7 +10,7 @@
 var store, Foo, json, foo ;
 module("hub.Record#writeAttribute", {
   setup: function() {
-    hub.RunLoop.begin();
+    
     store = hub.Store.create();
     Foo = hub.Record.extend();
     json = { 
@@ -23,7 +23,7 @@ module("hub.Record#writeAttribute", {
     
     foo = store.createRecord(Foo, json);
     store.writeStatus(foo.storeKey, hub.Record.READY_CLEAN);
-    hub.RunLoop.end();
+    
   }
 });
 
@@ -35,10 +35,10 @@ test("first time writing should mark record as dirty", function() {
   // precondition
   equals(foo.get('status'), hub.Record.READY_CLEAN, 'precond - start clean');
 
-  hub.RunLoop.begin();
+  
   // action
   foo.writeAttribute("bar", "baz");
-  hub.RunLoop.end();
+  
   
   // evaluate
   equals(foo.get('status'), hub.Record.READY_DIRTY, 'should make READY_DIRTY after write');
@@ -49,7 +49,7 @@ test("state change should be deferred if writing inside of a beginEditing()/endE
   // precondition
   equals(foo.get('status'), hub.Record.READY_CLEAN, 'precond - start clean');
 
-  hub.RunLoop.begin();
+  
   // action
   foo.beginEditing();
   
@@ -59,7 +59,7 @@ test("state change should be deferred if writing inside of a beginEditing()/endE
 
   foo.endEditing();
   
-  hub.RunLoop.end();
+  
   
   // evaluate
   equals(foo.get('status'), hub.Record.READY_DIRTY, 'should make READY_DIRTY after write');
@@ -88,9 +88,9 @@ test("Writing to an attribute in chained store sets correct status", function() 
   var chainedRecord = chainedStore.find(Foo, foo.get('id'));
   equals(chainedRecord.get('status'), hub.Record.READY_CLEAN, 'precon - status should be READY_CLEAN');
   
-  hub.RunLoop.begin();
+  
   chainedRecord.writeAttribute('foo', 'newValue');
-  hub.RunLoop.end();
+  
   //chainedRecord.set('foo', 'newValue');
   
   equals(chainedRecord.get('status'), hub.Record.READY_DIRTY, 'status should be READY_DIRTY');

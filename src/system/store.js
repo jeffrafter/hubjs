@@ -512,10 +512,7 @@ hub.Store = hub.Object.extend(
     return this ;
   },
   
-  /** @private 
-    Will push all changes to a the recordPropertyChanges property
-    and execute flush() once at the end of the runloop.
-  */
+  /** @private */
   _hub_notifyRecordPropertyChange: function(storeKey, statusOnly, key) {
     hub_precondition(typeof storeKey === hub.T_NUMBER);
     var records      = this.records, 
@@ -585,16 +582,14 @@ hub.Store = hub.Object.extend(
       }
     }
     
-    this.invokeOnce(this.flush);
+    this.flush();
     return this;
   },
 
   /**
-    Delivers any pending changes to materialized records.  Normally this 
-    happens once, automatically, at the end of the RunLoop.  If you have
-    updated some records and need to update records immediately, however, 
-    you may call this manually.
-
+    Delivers any pending changes to materialized records.  You normally do not 
+    need to call this.
+    
     @returns {hub.Store} receiver
   */
   flush: function() {
@@ -1108,7 +1103,8 @@ hub.Store = hub.Object.extend(
     
     // if commit records is enabled
     if(this.get('commitRecordsAutomatically')){
-      this.invokeLast(this.commitRecords);
+      var that = this ;
+      setTimeout( function() { that.commitRecords(); }, 0) ;
     }
     
     // finally return materialized record
@@ -1188,7 +1184,8 @@ hub.Store = hub.Object.extend(
     
     // if commit records is enabled
     if(this.get('commitRecordsAutomatically')){
-      this.invokeLast(this.commitRecords);
+      var that = this ;
+      setTimeout( function() { that.commitRecords(); }, 0) ;
     }
     
     return this ;
@@ -1279,7 +1276,8 @@ hub.Store = hub.Object.extend(
     
     // if commit records is enabled
     if(this.get('commitRecordsAutomatically')){
-      this.invokeLast(this.commitRecords);
+      var that = this ;
+      setTimeout( function() { that.commitRecords(); }, 0) ;
     }
     
     return this ;

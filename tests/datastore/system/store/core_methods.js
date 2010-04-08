@@ -51,12 +51,12 @@ module("hub.Store Core Methods", {
       ]
     };
     
-    hub.RunLoop.begin();
+    
     store = hub.Store.create({ name: 'Test store'} ).from(dataSource);
     for(var i in Application.Data) {
       store.loadRecords(Application[i], Application.Data[i]);
     }
-    hub.RunLoop.end();
+    
     
     // make sure RecordType by String can map
     GLOBAL.Application = Application;
@@ -104,13 +104,13 @@ test("loading more records should not sending _flushRecordChanges() until the en
       { guid: '57',name: 'Library', fileType: 'library', url: '/emily_parker/Library', isDirectory: true, parent: '10', children: 'Collection', createdAt: 'June 15, 2007', modifiedAt: 'October 21, 2007', filetype: 'directory', isShared: false}
   ];
   
-  hub.RunLoop.begin();
+  
   
   var storeKeys = store.loadRecords(Application.File, moreData);
   equals(storeKeys.length, 3, 'precon - should have loaded three records');
   equals(store.recordPropertyChanges.storeKeys.length, 3, 'should be three storeKeys in changelog');
   
-  hub.RunLoop.end();
+  
   
   // recordPropertyChanges may not exist after notifications have gone out.
   // treat that like having len=0
@@ -136,9 +136,9 @@ test("Make sure that setting an attribute on a record will only notify respectiv
   var file = store.find(Application.File, '14');
   Application._hub_nameDidChange = 0 ;
   
-  hub.RunLoop.begin();
+  
   file.writeAttribute('name', 'My Great New Name');
-  hub.RunLoop.end();
+  
   
   equals(Application._hub_nameDidChange, 1, 'observer was only fired once');
 

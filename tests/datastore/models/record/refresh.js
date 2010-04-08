@@ -10,11 +10,10 @@
 var MyFoo = null, callInfo ;
 module("hub.Record#refresh", {
   setup: function() {
-    hub.RunLoop.begin();
     MyApp = hub.Object.create({
       store: hub.Store.create()
-    })  ;
-  
+    });
+    
     MyApp.Foo = hub.Record.extend();
     MyApp.json = { 
       foo: "bar", 
@@ -31,12 +30,7 @@ module("hub.Record#refresh", {
     MyApp.store.refreshRecord = function(records) {
       callInfo = hub.A(arguments) ; // save method call
     };
-  },
-  
-  teardown: function() {
-    hub.RunLoop.end();
   }
-  
 });
 
 test("calling refresh should call refreshRecord() on store", function() {

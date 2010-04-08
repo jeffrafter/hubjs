@@ -10,7 +10,6 @@
 var store, Foo, json, foo ;
 module("hub.Record#readAttribute", {
   setup: function() {
-    hub.RunLoop.begin();
     store = hub.Store.create();
     Foo = hub.Record.extend();
     json = { 
@@ -22,10 +21,6 @@ module("hub.Record#readAttribute", {
     
     foo = store.createRecord(Foo, json);
     store.writeStatus(foo.storeKey, hub.Record.READY_CLEAN); 
-  },
-  
-  teardown: function() {
-    hub.RunLoop.end();
   }
 });
 

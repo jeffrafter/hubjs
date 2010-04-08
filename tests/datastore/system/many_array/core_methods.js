@@ -20,7 +20,7 @@ Spin.Plan.module("hub.ManyArray core methods", {
     // setup a dummy model
     MyApp.Foo = hub.Record.extend({});
     
-    hub.RunLoop.begin();
+    
     
     // load some data
     storeIds = [1,2,3,4];
@@ -51,7 +51,7 @@ Spin.Plan.module("hub.ManyArray core methods", {
   },
   
   teardown: function() {
-    hub.RunLoop.end();
+    
   }
 });
 
@@ -182,8 +182,8 @@ test("swapping storeIds array should change ManyArray and observers", function()
   obj.cnt = 0 ;
   arrayRec.writeAttribute('fooMany', storeIds2);
 
-  hub.RunLoop.end();
-  hub.RunLoop.begin();
+  
+  
   
   // verify observer fired and record changed
   equals(obj.cnt, 1, 'observer should have fired after swap');

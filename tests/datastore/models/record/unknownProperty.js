@@ -10,7 +10,7 @@
 var MyFoo = null ;
 module("hub.Record#unknownProperty", {
   setup: function() {
-    hub.RunLoop.begin();
+    
     MyApp = hub.Object.create({
       store: hub.Store.create()
     })  ;
@@ -36,7 +36,7 @@ module("hub.Record#unknownProperty", {
   },
   
   teardown: function() {
-    hub.RunLoop.end();
+    
   }
 });
 

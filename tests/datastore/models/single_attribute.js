@@ -39,7 +39,7 @@ module("hub.RecordAttribute core methods", {
       foo: hub.Record.toOne('MyApp.Foo', { inverse: 'bar', isMaster: false })
     });
     
-    hub.RunLoop.begin();
+    
     storeKeys = MyApp.store.loadRecords(MyApp.Foo, [
       { 
         guid: 'foo1', 
@@ -85,7 +85,7 @@ module("hub.RecordAttribute core methods", {
       { guid: "bar2", city: "New York", foo: 'foo3' }
     ]);
     
-    hub.RunLoop.end();
+    
     
     rec = MyApp.store.find(MyApp.Foo, 'foo1');
     rec2 = MyApp.store.find(MyApp.Foo, 'foo2');

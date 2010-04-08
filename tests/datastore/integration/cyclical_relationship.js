@@ -81,14 +81,9 @@ module("Cyclical relationships", {
         group: 101,
         isFavorite: false }
     ];
-    
-    
-    hub.RunLoop.begin();
-    
   },
   
   teardown: function() {
-    hub.RunLoop.end(); 
     AB = null;
   }
 });
@@ -109,8 +104,6 @@ test("finding favoriteContacts", function() {
   
   var c = AB.store.find(AB.Contact, 4) ;
   c.set('group', group); // move to group...
-  hub.RunLoop.end();
-  hub.RunLoop.begin();
   
   expected.push(c);
   same(group.get('favoriteContacts'), expected, 'favoriteContacts after adding extra');

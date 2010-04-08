@@ -106,75 +106,75 @@ test("chained store changes should propagate reliably", function() {
   // times in the same app
   
   // trial 1
-  hub.RunLoop.begin();
+  
   store = parent.chain();
   rec2  = store.find(Rec, 1);
   ok(rec2 && rec2.get('title')==='foo', 'chain store should have record');
   
   rec.reset();
   rec2.set('title', 'bar');
-  hub.RunLoop.end();
+  
   
   equals(rec2.get('title'), 'bar', 'chained rec.title should changed');
   equals(rec.get('title'), 'foo', 'original rec.title should NOT change');
   equals(store.get('hasChanges'), true, 'chained store.hasChanges');
   equals(rec.fired, false, 'original rec.title should not have notified');
   
-  hub.RunLoop.begin();
+  
   rec.reset();
   store.commitChanges();
   store.destroy();
-  hub.RunLoop.end();
+  
 
   equals(rec.get('title'), 'bar', 'original rec.title should change');
   equals(rec.fired, true, 'original rec.title should have notified');  
 
 
   // trial 2
-  hub.RunLoop.begin();
+  
   store = parent.chain();
   rec2  = store.find(Rec, 1);
   ok(rec2 && rec2.get('title')==='bar', 'chain store should have record');
   
   rec.reset();
   rec2.set('title', 'baz');
-  hub.RunLoop.end();
+  
   
   equals(rec2.get('title'), 'baz', 'chained rec.title should changed');
   equals(rec.get('title'), 'bar', 'original rec.title should NOT change');
   equals(store.get('hasChanges'), true, 'chained store.hasChanges');
   equals(rec.fired, false, 'original rec.title should not have notified');
   
-  hub.RunLoop.begin();
+  
   rec.reset();
   store.commitChanges();
   store.destroy();
-  hub.RunLoop.end();
+  
 
   equals(rec.get('title'), 'baz', 'original rec.title should change');
   equals(rec.fired, true, 'original rec.title should have notified');  
   
 
   // trial 1
-  hub.RunLoop.begin();
+  
   store = parent.chain();
   rec2  = store.find(Rec, 1);
   ok(rec2 && rec2.get('title')==='baz', 'chain store should have record');
   
   rec.reset();
   rec2.set('title', 'FOO2');
-  hub.RunLoop.end();
+  
   
   equals(rec2.get('title'), 'FOO2', 'chained rec.title should changed');
   equals(rec.get('title'), 'baz', 'original rec.title should NOT change');
   equals(store.get('hasChanges'), true, 'chained store.hasChanges');
   equals(rec.fired, false, 'original rec.title should not have notified');
   
-  hub.RunLoop.begin();
+  
   rec.reset();
   store.commitChanges();
   store.destroy();
-  hub.RunLoop.end();
+  
 
   equals(rec.get('title'), 'FOO2', 'original rec.title should change');
   equals(rec.fired, true, 'original rec.title should have notified');  

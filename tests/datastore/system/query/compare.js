@@ -12,7 +12,7 @@ var store, storeKey, rec1, rec2, rec3, rec4, rec5, MyApp, q;
 module("hub.Query comparison of records", {
   setup: function() {
     
-    hub.RunLoop.begin();
+    
     
     // setup dummy app and store
     MyApp = hub.Object.create({
@@ -31,7 +31,7 @@ module("hub.Query comparison of records", {
       { guid: 5, firstName: "Bert", lastName: "Berthold", active: true }
     ]);
     
-    hub.RunLoop.end();
+    
     
     rec1 = MyApp.store.find(MyApp.Foo,1);
     rec2 = MyApp.store.find(MyApp.Foo,2);

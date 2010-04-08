@@ -631,62 +631,6 @@ hub.Object.prototype = {
   },
 
   /**
-    Invokes the passed method or method name one time during the runloop.  You
-    can use this method to schedule methods that need to execute but may be 
-    too expensive to execute more than once, such as methods that update the
-    DOM.
-    
-    @param {Funciton|String} method method or method name
-    @returns {hub.Object} receiver
-  */
-  invokeOnce: function(method) {
-    var K = hub.RunLoop, runLoop = K.currentRunLoop ;
-    if (!runLoop) runLoop = K.currentRunLoop = K.runLoopClass.create() ;
-    runLoop.invokeOnce(this, method) ;
-    return this ;
-  },
-  
-  /**
-    Invokes the passed method once at the beginning of the next runloop, 
-    before any other methods (including events) are processed. This is useful
-    for situations where you know you need to update something, but due to
-    the way the run loop works, you can't actually do the update until the
-    run loop has completed.
-    
-    A simple example is setting the selection on a collection controller to a 
-    newly created object. Because the collection controller won't have its
-    content collection updated until later in the run loop, setting the 
-    selection immediately will have no affect. In this situation, you could do
-    this instead:
-    
-    {{{
-      // Creates a new MyRecord object and sets the selection of the
-      // myRecord collection controller to the new object.
-      createObjectAction: function(sender, evt) {
-        // create a new record and add it to the store
-        var obj = MyRecord.newRecord() ;
-        
-        // update the collection controller's selection
-        MyApp.myRecordCollectionController.invokeLast( function() {
-          this.set('selection', [obj]) ;
-        });
-      }
-    }}}
-    
-    You can call invokeLast as many times as you like and the method will
-    only be invoked once.
-    
-    @param {Funciton|String} method method or method name
-    @returns {hub.Object} receiver
-  */
-  invokeLast: function(method) {
-    var K = hub.RunLoop, runLoop = K.currentRunLoop ;
-    if (!runLoop) runLoop = K.currentRunLoop = K.runLoopClass.create() ;
-    runLoop.invokeLast(this, method) ;
-    return this ;
-  },
-  
-  /**
     The properties named in this array will be concatenated in subclasses
     instead of replaced.  This allows you to name special properties that
     should contain any values you specify *plus* values specified by parents.

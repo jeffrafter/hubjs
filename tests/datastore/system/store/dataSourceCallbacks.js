@@ -152,12 +152,12 @@ module("hub.Store#dataSourceCallbacks", {
     storeKey16 = hub.Store.generateStoreKey();
     store.writeDataHash(storeKey16, json16, hub.Record.BUSY_LOADING);
   
-    hub.RunLoop.begin();
+    
   
   },
   
   teardown: function() {
-    hub.RunLoop.end();
+    
   }
 });
 

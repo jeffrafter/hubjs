@@ -44,12 +44,12 @@ module("hub.NestedStore Core Methods", {
       ]
     };
     
-    hub.RunLoop.begin();
+    
     store = hub.Store.create({ name: 'Test nested store'} ).from(dataSource);
     for(var i in Application.Data) {
       store.loadRecords(Application[i], Application.Data[i]);
     }
-    hub.RunLoop.end();
+    
     
     // make sure RecordType by String can map
     GLOBAL.Application = Application;
@@ -63,9 +63,9 @@ test("Make sure that setting an attribute on a record will only notify respectiv
   var file = nestedStore.find(Application.File, '14');
   Application._hub_nameDidChange = 0 ;
   
-  hub.RunLoop.begin();
+  
   file.writeAttribute('name', 'My Great New Name');
-  hub.RunLoop.end();
+  
   
   equals(Application._hub_nameDidChange, 1, 'observer was only fired once');
 

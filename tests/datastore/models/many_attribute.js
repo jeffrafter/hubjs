@@ -13,7 +13,6 @@ var foo1, foo2, foo3, bar1, bar2, bar3;
 
 module("hub.ManyAttribute core methods", {
   setup: function() {
-    hub.RunLoop.begin();
     MyApp = hub.Object.create({
       store: hub.Store.create()
     });
@@ -112,8 +111,6 @@ module("hub.ManyAttribute core methods", {
     bar1 = MyApp.store.find(MyApp.Bar, "bar1");
     bar2 = MyApp.store.find(MyApp.Bar, 'bar2');
     bar3 = MyApp.store.find(MyApp.Bar, 'bar3');
-    
-    hub.RunLoop.end();
   },
   
   teardown: function() {
@@ -185,9 +182,7 @@ test("writing to a to-many relationship should update set guids", function() {
   equals(rec3.get('id'), 3, 'precond - should find record 3');
   equals(rec3.get('fooMany').objectAt(0), rec, 'should get rec1 instance for rec3.fooMany');
   
-  hub.RunLoop.begin();
   rec3.set('fooMany', [rec2, rec4]);
-  hub.RunLoop.end();
   
   equals(rec3.get('fooMany').objectAt(0), rec2, 'should get rec2 instance for rec3.fooMany');
   equals(rec3.get('fooMany').objectAt(1), rec4, 'should get rec4 instance for rec3.fooMany');
@@ -198,9 +193,7 @@ test("writing to a to-many relationship should update set guids when using a dif
   equals(rec4.get('id'), 4, 'precond - should find record 4');
   equals(rec4.get('fooManyKeyed').objectAt(0), rec, 'should get rec1 instance for rec4.fooManyKeyed');
 
-  hub.RunLoop.begin();
   rec4.set('fooManyKeyed', [rec2, rec3]);
-  hub.RunLoop.end();
 
   ok(rec4.get('fooIds').isEqual([2,3]), 'should get array of guids (2, 3) for rec4.fooIds');
 });
@@ -224,16 +217,13 @@ test("modifying a toMany array should mark the record as changed", function() {
   equals(rec3.get('status'), hub.Record.READY_CLEAN, 'precond - rec3.status should be READY_CLEAN');
   ok(!!rec4, 'precond - rec4 should be defined');
   
-  hub.RunLoop.begin();
   recs.pushObject(rec4);
-  hub.RunLoop.end();
   
   equals(rec3.get('status'), hub.Record.READY_DIRTY, 'record status should have changed to dirty');
 
 });
 
 test("modifying a toMany array within a nested store", function() {
-
   var child = MyApp.store.chain() ; // get a chained store
   var parentFooMany = rec3.get('fooMany'); // base foo many
   
@@ -249,16 +239,12 @@ test("modifying a toMany array within a nested store", function() {
   childFooMany.pushObject(childRec4);
   equals(childFooMany.get('length'), 3, 'childFooMany should have 1 more item');
   
-  hub.RunLoop.end(); // allow notifications to process, if there were any...
-  
   same(parentFooMany.getEach('storeKey'), expected, 'parent.fooMany should not have changed yet');
   equals(rec3.get('status'), hub.Record.READY_CLEAN, 'parent rec3 should still be READY_CLEAN');
   
   expected = childFooMany.getEach('storeKey'); // update for after commit
-
-  hub.RunLoop.begin();
+  
   child.commitChanges();
-  hub.RunLoop.end();
   
   // NOTE: not getting fooMany from parent again also tests changing an array
   // underneath.  Does it clear caches, etc?
@@ -269,7 +255,6 @@ test("modifying a toMany array within a nested store", function() {
 });
 
 test("should be able to modify an initially empty record", function() {
-  
   same(rec.get('fooMany').getEach('storeKey'), [], 'precond - fooMany should be empty');
   rec.get('fooMany').pushObject(rec4);
   same(rec.get('fooMany').getEach('storeKey'), [rec4.get('storeKey')], 'after edit should have new array');

@@ -32,7 +32,7 @@ module("hub.Store#commitChangesFromNestedStore", {
 
 test("copies changed data hashes, statuses, and revisions", function() {
   
-  hub.RunLoop.begin();
+  
   
   // verify preconditions
   equals(store.readDataHash(storeKey), null, 'precond - should not have data yet');
@@ -46,14 +46,14 @@ test("copies changed data hashes, statuses, and revisions", function() {
   equals(store.readStatus(storeKey), hub.Record.READY_DIRTY, 'now should have status');
   equals(store.revisions[storeKey], child.revisions[storeKey], 'now shoulave have revision from child');  
     
-  hub.RunLoop.end();
+  
 });
 
 test("adds items in changelog to reciever changelog", function() {
 
   var key1 = hub.Store.generateStoreKey();
 
-  hub.RunLoop.begin();
+  
   
   store.changelog = hub.Set.create();
   store.changelog.add(key1);
@@ -66,7 +66,7 @@ test("adds items in changelog to reciever changelog", function() {
   ok(store.changelog.contains(key1), 'changelog should still contain key1');
   ok(store.changelog.contains(storeKey), 'changelog should also contain storeKey');
   
-  hub.RunLoop.end();
+  
 });
 
 test("ignores changed data hashes not passed in changes set", function() {

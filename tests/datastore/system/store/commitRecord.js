@@ -100,7 +100,7 @@ module("hub.Store#commitRecord", {
       bool:   true
     };
     
-    hub.RunLoop.begin();
+    
     storeKey1 = hub.Store.generateStoreKey();
     store.writeDataHash(storeKey1, json1, hub.Record.READY_CLEAN);
     storeKey2 = hub.Store.generateStoreKey();
@@ -115,7 +115,7 @@ module("hub.Store#commitRecord", {
     store.writeDataHash(storeKey6, json6, hub.Record.READY_ERROR);
     storeKey7 = hub.Store.generateStoreKey();
     store.writeDataHash(storeKey7, json7, hub.Record.READY_DESTROYED_CLEAN);
-    hub.RunLoop.end();
+    
   }
 });
 

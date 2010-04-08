@@ -1046,15 +1046,6 @@ hub.Observable = {
     
     if (log) hub.KVO_SPACES = spaces.slice(0, -2);
     
-    if (hub.needRunLoop) {
-      hub.needRunLoop = false ;
-      if (hub.run) {
-        setTimeout(hub.run(function() {
-          // hub.debug("Manually running run loop") ;
-        }), 0) ;
-      }
-    }
-    
     return true ; // finished successfully
   },
 

@@ -16,7 +16,7 @@ module("hub.RecordArray Error Methods", {
       name: hub.Record.attr(String)
     });
 
-    hub.RunLoop.begin();
+    
     store = hub.Store.create();
 
     var records = [
@@ -27,7 +27,7 @@ module("hub.RecordArray Error Methods", {
     var types = [ Application.Thing, Application.Thing ];
 
     store.loadRecords(types, records);
-    hub.RunLoop.end();
+    
   },
 
   teardown: function() {
@@ -40,10 +40,10 @@ test("Verify error methods behave correctly", function() {
   var q = hub.Query.local(Application.Thing);
   var things = store.find(q);
 
-  hub.RunLoop.begin();
+  
   things.set('status', hub.Record.BUSY_LOADING);
   store.dataSourceDidErrorQuery(q, hub.Record.GENERIC_ERROR);
-  hub.RunLoop.end();
+  
 
   ok(things.get('isError'), "isError on things array should be true");
 

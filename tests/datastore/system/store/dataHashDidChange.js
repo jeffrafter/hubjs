@@ -66,21 +66,21 @@ function testStateTransition(fromState, toState) {
 } 
 
 test("edit state = LOCKED", function() {
-  hub.RunLoop.begin();
+  
   
   store.readDataHash(storeKey); // lock
   testStateTransition(hub.Store.LOCKED, hub.Store.LOCKED);
   
-  hub.RunLoop.end();
+  
 }) ;
 
 test("edit state = EDITABLE", function() {
-  hub.RunLoop.begin();
+  
   
   store.readEditableDataHash(storeKey); // make editable
   testStateTransition(hub.Store.EDITABLE, hub.Store.EDITABLE);
   
-  hub.RunLoop.end();
+  
 }) ;
 
 // ..........................................................
@@ -88,7 +88,7 @@ test("edit state = EDITABLE", function() {
 // 
 
 test("calling with array of storeKeys will edit all store keys", function() {
-  hub.RunLoop.begin();
+  
   
   var storeKeys = [storeKey, hub.Store.generateStoreKey()], idx ;
   store.dataHashDidChange(storeKeys, 2000) ;
@@ -96,11 +96,11 @@ test("calling with array of storeKeys will edit all store keys", function() {
     equals(store.revisions[storeKeys[idx]], 2000, 'storeKey at index %@ should have new revision'.fmt(idx));
   }
   
-  hub.RunLoop.end();
+  
 });
 
 test("calling dataHashDidChange twice with different statusOnly values before flush is called should trigger a non-statusOnly flush if any of the statusOnly values were false", function() {
-  hub.RunLoop.begin();
+  
 
   // Create a phony record because that's the only way the 'hasDataChanges'
   // data structure will be used.
@@ -112,11 +112,11 @@ test("calling dataHashDidChange twice with different statusOnly values before fl
   
   ok(store.recordPropertyChanges.hasDataChanges.contains(storeKey), 'recordPropertyChanges.hasDataChanges should contain the storeKey %@'.fmt(storeKey)) ;
 
-  hub.RunLoop.end();
+  
 });
 
 test("calling _notifyRecordPropertyChange twice, once with a key and once without, before flush is called should invalidate all cached properties when flush is finally called", function() {
-  hub.RunLoop.begin();
+  
 
   var mainStore = hub.Store.create();
   var record    = mainStore.createRecord(MyApp.Foo, {});
@@ -150,7 +150,7 @@ test("calling _notifyRecordPropertyChange twice, once with a key and once withou
   mainStore._hub_notifyRecordPropertyChange(storeKey, false, 'prop3');
 
   // Let the flush happen.
-  hub.RunLoop.end();
+  
 
 
   // Finally, read 'prop1' from the main store's object.  It should be the new
