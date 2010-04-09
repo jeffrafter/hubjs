@@ -7,25 +7,12 @@
 // ==========================================================================
 /*globals hub module test ok equals same */
 
-// FIXME: Is this still relevant, now that we have Spin.ArraySuite?
+module("hub.isArray") ;
 
-var objectA,objectB,objectC, objectD, objectE; //global variables
-
-module("hub.isArray" , {
-  
-  setup: function(){
-    objectA = [1,2,3];
-    objectB = 23;
-    objectC = ["Hello","Hi"];
-    objectD = "Hello";
-    objectE  = {};
-  }
-});
-
-test("should check if a given object is an array or not " ,function(){
-  equals(hub.isArray(objectA),true);
-  equals(hub.isArray(objectB),false);
-  equals(hub.isArray(objectC),true);
-  equals(hub.isArray(objectD),false);
-  equals(hub.isArray(objectE),false);
+test("returns true/false when needed" ,function() {
+  equals(hub.isArray([1,2,3]), true) ;
+  equals(hub.isArray(["Hello","Hi"]), true) ;
+  equals(hub.isArray("Hello"), false) ;
+  equals(hub.isArray(23), false) ;
+  equals(hub.isArray({}), false) ;
 });
