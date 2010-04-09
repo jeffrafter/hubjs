@@ -56,37 +56,3 @@ if (typeof window === 'undefined') {
     console.log = console.info = console.warn = console.error = function(){};
   }
 }
-
-/**
-  This bind method was ported from the prototype for use in the AJAX callbacks.
-  
-  Function#bind(object[, args...]) -> Function
-  - object (Object): The object to bind to.
-  
-  Wraps the function in another, locking its execution scope to an object
-  specified by `object`.
-  
-  FIXME: Remove hub.bind() usage in hub.js (and this function).
-*/
-Function.prototype.bind = function (context) {
-  var slice = Array.prototype.slice;
-  
-  var update = function(array, args) {
-    var arrayLength = array.length, length = args.length ;
-    while (length--) array[arrayLength + length] = args[length] ;
-    return array ;
-  };
-  
-  var merge = function(array, args) {
-    array = slice.call(array, 0) ;
-    return update(array, args) ;
-  };
-  
-  if (arguments.length < 2 && hub.none(arguments[0])) return this ;
-  var __method = this, args = slice.call(arguments, 1) ;
-  
-  return function() {
-    var a = merge(args, arguments) ;
-    return __method.apply(context, a) ;
-  };
-};
