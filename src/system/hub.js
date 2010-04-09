@@ -76,12 +76,12 @@ hub.Hub = hub.Store.extend(
   state: 0,
   dbState: "a",
   goState: function(newState) {
-    hub.debug("Going to state: %@".fmt(newState));
-    this.state = newState;
+    hub.debug(hub.fmt("Going to state: %@", newState)) ;
+    this.state = newState ;
   },
   goDbState: function(newState) {
-    hub.debug("Going to DB state: %@".fmt(newState));
-    this.dbState = newState;
+    hub.debug(hub.fmt("Going to DB state: %@", newState)) ;
+    this.dbState = newState ;
   },
 
   // ..........................................................
@@ -271,7 +271,7 @@ hub.Hub = hub.Store.extend(
   },
 
   setMaxStoreKey: function(maxStoreKey) {
-    hub.debug('VersionedStore.setMaxStoreKey to %@'.fmt(maxStoreKey));
+    hub.debug(hub.fmt('VersionedStore.setMaxStoreKey to %@', maxStoreKey));
     hub.Store.prototype.nextStoreIndex = maxStoreKey;
     hub.Store.nextStoreKey = maxStoreKey;
   },
@@ -358,10 +358,10 @@ hub.Hub = hub.Store.extend(
         // Walk through each instance
         self._keysByType[type].forEach(function(instanceKey) {
           var data = self._recordsByKey[instanceKey];
-          // hub.debug("saving data for: %@".fmt(data.storeKey));
+          // hub.debug(hub.fmt("saving data for: %@", data.storeKey));
           tx.executeSql(insert_data_sql, [data.key, data.created_on, data.storage, data.bytes, 0, data.storeKey, commit_id],
           function() {
-            // hub.debug("Saved instance data entry %@".fmt(data.key));
+            // hub.debug(hub.fmt("Saved instance data entry %@", data.key));
           },
           function(tx, error) {
             // hub.debug("Error saving data entry 144");
@@ -402,7 +402,7 @@ hub.Hub = hub.Store.extend(
         var type_key = hub.SHA256("" + type_bytes + childMetaDataKeys.sort().join(""));
         tx.executeSql(insert_data_sql, [type_key, type_time, 0, type_bytes, 1, null, commit_id],
         function() {
-          // hub.debug("Saved type data entry %@".fmt(type_key));
+          // hub.debug(hub.fmt("Saved type data entry %@", type_key));
         },
         function(tx, error) {
           // hub.debug("Error saving type data entry");
@@ -448,7 +448,7 @@ hub.Hub = hub.Store.extend(
       store_key = hub.SHA256("" + store_bytes + typeMetaKeys.sort().join(""));
       tx.executeSql(insert_data_sql, [store_key, store_time, store_bytes.length, store_bytes, 0, null, commit_id],
       function() {
-        // hub.debug("Saved store data entry %@".fmt(type_key));
+        // hub.debug(hub.fmt("Saved store data entry %@", type_key));
       },
       function(tx, error) {
         // hub.debug("Error saving store data entry");
@@ -605,8 +605,8 @@ hub.Hub = hub.Store.extend(
   sendPack: function(version, commit_id) {
     var state = this.state;
     // if (state !== 0 && state !== 2) {
-    //   hub.debug("Can't push to server in this state (%@)".fmt(state));
-    //   alert("Can't push to server in this state (%@)".fmt(state));
+    //   hub.debug(hub.fmt("Can't push to server in this state (%@)", state));
+    //   alert(hub.fmt("Can't push to server in this state (%@)", state));
     //   return false;
     // }
     if (hub.OfflineMode) {
@@ -615,7 +615,7 @@ hub.Hub = hub.Store.extend(
       return;
     }
     if (!commit_id) commit_id = this.commitIdsByKey[version];
-    hub.debug("Preparing Pack ... %@ : %@".fmt(version, commit_id));
+    hub.debug(hub.fmt("Preparing Pack ... %@ : %@", version, commit_id));
     hub_precondition(hub.typeOf(commit_id) === hub.T_NUMBER);
     this.goState(5);
     var self = this;
@@ -666,7 +666,7 @@ hub.Hub = hub.Store.extend(
         toAdd["metaData"] = true;
         self._sendPack.call(self, version, pack, toAdd);
       });
-      hub.debug("Finding commit with id: %@".fmt(commit_id));
+      hub.debug(hub.fmt("Finding commit with id: %@", commit_id));
       tx.executeSql("SELECT * FROM commits WHERE commit_id = ?", [commit_id],
       function(tx, result) {
         var row = result.rows.item(0),
@@ -692,7 +692,7 @@ hub.Hub = hub.Store.extend(
   _sendPack: function(version, pack, toAdd) {
     if (toAdd.data && toAdd.metaData && toAdd.commit) {
       var dataHash = pack,
-      url = this._sendPackURL.fmt(version);
+      url = hub.fmt(this._sendPackURL, version);
       hub.debug("Calling packCommited call back");
       // if (this.get('hasSocket')) { // Send Via Socket if we have one.
       //   SproutDB.webSocket.send(version+":"+JSON.stringify(pack)) ;
@@ -720,7 +720,7 @@ hub.Hub = hub.Store.extend(
   // },
   getPack: function(version, doCheckout) {
     var self = this,
-    url = this._receivePackURL.fmt(version);
+    url = hub.fmt(this._receivePackURL, version);
     if (!doCheckout) doCheckout = false;
     hub.Request.getUrl(url).set('isJSON', true).notify(this, this.receivePack, {
       version: version,
@@ -733,7 +733,7 @@ hub.Hub = hub.Store.extend(
     version = params.version,
     commit_id = self.commitIdsByKey[version];
     if (commit_id) {
-      hub.debug("Already have commit %@:%@".fmt(version, commit_id));
+      hub.debug(hub.fmt("Already have commit %@:%@", version, commit_id));
       return;
     }
     self.goState(2); // Start writing records
@@ -914,19 +914,19 @@ hub.Hub = hub.Store.extend(
     pullLen = toPull.length - 1;
     // pull
     toPull.forEach(function(version, idx) {
-      hub.debug("  Getting Pack: %@".fmt(version));
+      hub.debug(hub.fmt("  Getting Pack: %@", version));
       if (idx === pullLen) {
-        hub.debug(" ### get pack %@ of %@".fmt(idx, pullLen));
+        hub.debug(hub.fmt(" ### get pack %@ of %@", idx, pullLen));
         self.getPack.call(self, version, true);
       } else {
-        hub.debug(" ## get pack %@ of %@".fmt(idx, pullLen));
+        hub.debug(hub.fmt(" ## get pack %@ of %@", idx, pullLen));
         self.getPack.call(self, version);
       }
     });
     // push
     toPush.forEach(function(version) {
       var cid = self.commitIdsByKey[version];
-      hub.debug("  Sending Pack: %@ - %@".fmt(version, cid));
+      hub.debug(hub.fmt("  Sending Pack: %@ - %@", version, cid));
       self.sendPack.call(self, version, cid);
       hub.debug("... sent!");
     });
@@ -1118,7 +1118,7 @@ hub.Hub = hub.Store.extend(
     null,
     function() {
       if (commit) {
-        hub.debug("Checking out %@".fmt(commit));
+        hub.debug(hub.fmt("Checking out %@", commit));
         self.checkout.call(self, commit);
       } else {
         hub.debug("Found no commits to checkout.");
@@ -1138,7 +1138,7 @@ hub.Hub = hub.Store.extend(
     // insertHubSql = "COMMIT; BEGIN TRANSACTION; "+insertHubSql+"; COMMIT; BEGIN TRANSACTION; ";
     tx.executeSql(insertHubSql, insertHubValues,
     function(tx, res) {
-      hub.debug("Created Hub: %@: %@".fmt(self._hub.name, self._hub.key));
+      hub.debug(hub.fmt("Created Hub: %@: %@", self._hub.name, self._hub.key));
     },
     self._error);
   },
@@ -1155,7 +1155,7 @@ hub.Hub = hub.Store.extend(
           self._hub.key = row['key'];
           self._hub['name'] = row['name'];
           self._hub.head = row['head'];
-          hub.debug("Loading hub: %@; %@".fmt(self._hub.key, self._hub.name));
+          hub.debug(hub.fmt("Loading hub: %@; %@", self._hub.key, self._hub.name));
         } else {
           self.createHub.call(self, tx, {
             version: 'empty',
@@ -1168,10 +1168,10 @@ hub.Hub = hub.Store.extend(
         function(tx, res) {
           var i = res.rows.length,
           row;
-          // hub.debug("^ adding %@ commits for hub %@".fmt(i, self._hub.key)) ;
+          // hub.debug(hub.fmt("^ adding %@ commits for hub %@", i, self._hub.key)) ;
           while (i--) {
             row = res.rows.item(i);
-            // hub.debug("Adding commit %@".fmt(row['commit'])) ;
+            // hub.debug(hub.fmt("Adding commit %@", row['commit'])) ;
             self.commitKeys.add(row['commit']);
             self.commitIdsByKey[row['commit']] = parseInt(row['commit_id'], 10);
           }
@@ -1334,7 +1334,7 @@ hub.Hub = hub.Store.extend(
             // Just just need to test for 1 table, thanks to transactions we should
             // have all or none.
             new_db.transaction(function(tx) {
-              tx.executeSql("SELECT COUNT(*) FROM %@".fmt(hub ? "hub": "data"), [],
+              tx.executeSql(hub.fmt("SELECT COUNT(*) FROM %@", hub ? "hub": "data"), [],
               function(tx) {
                 hub.debug("We have our data tables.");
                 self._dbs[dbName] = new_db;

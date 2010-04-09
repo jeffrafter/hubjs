@@ -57,7 +57,7 @@ function testStateTransition(fromState, toState) {
   equals(store.storeKeyEditState(storeKey), toState, 'store key edit state is in same state');
 
   // verify revision
-  ok(oldrev !== store.revisions[storeKey], 'revisions should change. was: %@ - now: %@'.fmt(oldrev, store.revisions[storeKey]));
+  ok(oldrev !== store.revisions[storeKey], hub.fmt('revisions should change. was: %@ - now: %@', oldrev, store.revisions[storeKey]));
   ok(store.chainedChanges.contains(storeKey), 'changedChanges should now include storeKey');
   
   equals(store.get('hasChanges'), true, 'should have changes');
@@ -99,8 +99,8 @@ test("calling with array of storeKeys will edit all store keys", function() {
   var storeKeys = [storeKey, hub.Store.generateStoreKey()], idx ;
   store.dataHashDidChange(storeKeys, 2000) ;
   for(idx=0;idx<storeKeys.length;idx++) {
-    equals(store.revisions[storeKeys[idx]], 2000, 'storeKey at index %@ should have new revision'.fmt(idx));
-    ok(store.chainedChanges.contains(storeKeys[idx]), 'chainedChanges should include storeKey at index %@'.fmt(idx));
+    equals(store.revisions[storeKeys[idx]], 2000, hub.fmt('storeKey at index %@ should have new revision', idx));
+    ok(store.chainedChanges.contains(storeKeys[idx]), hub.fmt('chainedChanges should include storeKey at index %@', idx));
   }
 });
 

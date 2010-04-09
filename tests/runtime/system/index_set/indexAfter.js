@@ -16,22 +16,22 @@ module("hub.IndexSet.indexAfter", {
 });
 
 test("no earlier index in set", function(){ 
-  equals(set.indexAfter(3), 5, 'set.indexAfter(3) in %@ should start of first index range'.fmt(set));
+  equals(set.indexAfter(3), 5, hub.fmt('set.indexAfter(3) in %@ should start of first index range', set));
 });
 
 test("with index after end of set", function() {
-  equals(set.indexAfter(1000), -1, 'set.indexAfter(1000) in %@ should return -1'.fmt(set));
+  equals(set.indexAfter(1000), -1, hub.fmt('set.indexAfter(1000) in %@ should return -1', set));
 });
 
 test("inside of multi-index range", function() {
-  equals(set.indexAfter(12), 13, 'set.indexAfter(12) in %@ should return next index'.fmt(set));
+  equals(set.indexAfter(12), 13, hub.fmt('set.indexAfter(12) in %@ should return next index', set));
 });
 
 test("end of multi-index range", function() {
-  equals(set.indexAfter(14), 100, 'set.indexAfter(14) in %@ should start of next range'.fmt(set));
+  equals(set.indexAfter(14), 100, hub.fmt('set.indexAfter(14) in %@ should start of next range', set));
 });
 
 
 test("single index range", function() {
-  equals(set.indexAfter(5), 10, 'set.indexAfter(5) in %@ should start of next range multi-index range'.fmt(set));
+  equals(set.indexAfter(5), 10, hub.fmt('set.indexAfter(5) in %@ should start of next range multi-index range', set));
 });

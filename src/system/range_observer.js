@@ -31,8 +31,8 @@ hub.RangeObserver = {
   
   /** @private */
   toString: function() { 
-    var base = this.indexes ? this.indexes.toString() : "hub.IndexSet<..>";
-    return base.replace('IndexSet', 'RangeObserver(%@)'.fmt(hub.guidFor(this)));
+    var base = this.indexes ? this.indexes.toString() : "hub.IndexSet<..>" ;
+    return base.replace('IndexSet', hub.fmt('RangeObserver(%@)', hub.guidFor(this))) ;
   },
   
   /**

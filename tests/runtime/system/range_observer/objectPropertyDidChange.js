@@ -56,9 +56,9 @@ module("hub.RangeObserver#objectPropertyDidChange", {
           }
           
           if (this.indexes) {
-            ok(inIndexes && inIndexes.isIndexSet, 'passed indexes should be an index set (actual: %@)'.fmt(inIndexes));
+            ok(inIndexes && inIndexes.isIndexSet, hub.fmt('passed indexes should be an index set (actual: %@)', inIndexes));
             if (this.indexes.isIndexSet) {
-              ok(this.indexes.isEqual(inIndexes), 'passed indexes should match %@ (actual: %@)'.fmt(this.indexes, inIndexes));
+              ok(this.indexes.isEqual(inIndexes), hub.fmt('passed indexes should match %@ (actual: %@)', this.indexes, inIndexes));
             }
           } else if (this.indexes === null) {
             equals(inIndexes, null, 'passed indexes should be null');

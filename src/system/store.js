@@ -2165,7 +2165,7 @@ hub.Store = hub.Object.extend(
     }
     else {
       var ret = arguments.callee.base.apply(this, arguments) ;
-      return "%@ (%@)".fmt(name, ret);
+      return hub.fmt("%@ (%@)", name, ret);
     }
   },
 

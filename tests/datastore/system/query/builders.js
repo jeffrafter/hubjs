@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*globals GLOBAL hub module test ok equals same */
+/*globals GLOBAL hub Spin module test ok equals same */
 
 // This file tests the initial state of the store when it is first created
 // either independently or as a chained store.
@@ -58,7 +58,7 @@ function queryEquals(q, location, recordType, conditions, extra, desc) {
 // location
 function performBasicTests(methodName, loc) {
 
-  Spin.Plan.module("hub.Query.%@()".fmt(methodName), {
+  Spin.Plan.module(hub.fmt("hub.Query.%@()", methodName), {
     setup: function() {
       GLOBAL.TestRecord = TestRecord;
       GLOBAL.TestRecord2 = TestRecord2;

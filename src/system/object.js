@@ -611,7 +611,7 @@ hub.Object.prototype = {
     if (!this._hub_object_toString) {
       // only cache the string if the klass name is available
       var klassName = hub._hub_object_className(this.constructor) ;
-      var string = "%@:%@".fmt(klassName, hub.guidFor(this));
+      var string = hub.fmt("%@:%@", klassName, hub.guidFor(this));
       if (klassName) this._hub_object_toString = string ;
       else return string ;
     } 

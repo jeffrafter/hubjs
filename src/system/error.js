@@ -77,7 +77,11 @@ hub.Error = hub.Object.extend(
 
   /** @private */
   toString: function() {
-    return "hub.Error:%@:%@ (%@)".fmt(hub.guidFor(this), this.get('message'), this.get('code'));
+    return hub.fmt("hub.Error:%@:%@ (%@)",
+      hub.guidFor(this),
+      this.get('message'),
+      this.get('code')
+    );
   },
   
   /**

@@ -268,7 +268,7 @@ hub.FixturesDataSource = hub.DataSource.extend(
     @returns {String}
   */
   generateIdFor: function(recordType, dataHash, store, storeKey) {
-    return "@id%@".fmt(hub.Store.generateStoreKey());
+    return ["@id", hub.Store.generateStoreKey()].join('') ;
   },
   
   /**

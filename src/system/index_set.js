@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global hub */
+/*global hub hub_precondition */
 
 /**
   A collection of ranges.  You can use an IndexSet to keep track of non-
@@ -806,9 +806,9 @@ hub.IndexSet = hub.mixin({},
     
     for(idx=0;idx<len;idx++) {
       item = content[idx];
-      if (item !== undefined) ret.push("%@:%@".fmt(idx,item));      
+      if (item !== undefined) ret.push(hub.fmt("%@:%@", idx,item));      
     }
-    return "hub.IndexSet<%@>".fmt(ret.join(' , '));
+    return hub.fmt("hub.IndexSet<%@>", ret.join(' , '));
   },
   
   /** 
@@ -950,7 +950,7 @@ hub.IndexSet = hub.mixin({},
   */
   indexOf: function(object, startAt) {
     var source  = this.source;
-    if (!source) throw "%@.indexOf() requires source".fmt(this);
+    if (!source) throw hub.fmt("%@.indexOf() requires source", this);
     
     var len     = source.get('length'),
         
@@ -979,7 +979,7 @@ hub.IndexSet = hub.mixin({},
   */
   lastIndexOf: function(object, startAt) {
     var source  = this.source;
-    if (!source) throw "%@.lastIndexOf() requires source".fmt(this);
+    if (!source) throw hub.fmt("%@.lastIndexOf() requires source", this);
     
     // start with the last index in the set
     var len     = source.get('length'),
@@ -1014,7 +1014,7 @@ hub.IndexSet = hub.mixin({},
   */ 
   forEachObject: function(callback, target) {
     var source  = this.source;
-    if (!source) throw "%@.forEachObject() requires source".fmt(this);
+    if (!source) throw hub.fmt("%@.forEachObject() requires source", this);
 
     var content = this._hub_content,
         cur     = 0,
@@ -1048,7 +1048,7 @@ hub.IndexSet = hub.mixin({},
   */
   addObject: function(object, firstOnly) {
     var source  = this.source;
-    if (!source) throw "%@.addObject() requires source".fmt(this);
+    if (!source) throw hub.fmt("%@.addObject() requires source", this);
 
     var len = source.get('length'),
         cur = 0, idx;
@@ -1091,7 +1091,7 @@ hub.IndexSet = hub.mixin({},
   */
   removeObject: function(object, firstOnly) {
     var source  = this.source;
-    if (!source) throw "%@.removeObject() requires source".fmt(this);
+    if (!source) throw hub.fmt("%@.removeObject() requires source", this);
 
     var len = source.get('length'),
         cur = 0, idx;
@@ -1184,9 +1184,9 @@ hub.IndexSet = hub.mixin({},
   toString: function() {
     var str = [];
     this.forEachRange(function(start, length) {
-      str.push(length === 1 ? start : "%@..%@".fmt(start, start + length - 1));
+      str.push(length === 1 ? start : hub.fmt("%@..%@", start, start + length - 1));
     }, this);
-    return "hub.IndexSet<%@>".fmt(str.join(',')) ;
+    return hub.fmt("hub.IndexSet<%@>", str.join(',')) ;
   },
   
   max: 0

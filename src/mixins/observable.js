@@ -453,7 +453,7 @@ hub.Observable = {
       changes.add(key) ;
       
       if (suspended) {
-        if (log) hub.debug("%@%@".fmt(hub.KVO_SPACES,this), "will not notify observers because observing is suspended");
+        if (log) hub.debug([hub.KVO_SPACES,this].join(''), "will not notify observers because observing is suspended");
         hub.Observers.objectHasPendingChanges(this) ;
       }
       
@@ -906,8 +906,8 @@ hub.Observable = {
     var context, spaces, cache ;
 
     if (log) {
-      spaces = hub.KVO_SPACES = (hub.KVO_SPACES || '') + '  ';
-      hub.debug('%@%@'.fmt(spaces, this, key), 'notifying observers after change to key "%@"');
+      spaces = hub.KVO_SPACES = (hub.KVO_SPACES || '') + '  ' ;
+      hub.debug([spaces, this].join(''), hub.fmt('notifying observers after change to key "%@"', key)) ;
     }
     
     // Get any starObservers -- they will be notified of all changes.
@@ -948,7 +948,7 @@ hub.Observable = {
           // for each dependent key, add to set of changes.  Also, if key
           // value is a cacheable property, clear the cached value...
           if (keys && (loc = keys.length)) {
-            if (log) hub.debug("%@...including dependent keys for %@: %@".fmt(spaces, key, keys));
+            if (log) hub.debug(hub.fmt("%@...including dependent keys for %@: %@", spaces, key, keys));
             cache = this._hub_kvo_cache;
             if (!cache) cache = this._hub_kvo_cache = {};
             while(--loc >= 0) {
@@ -980,7 +980,7 @@ hub.Observable = {
             context = member[2];
             member[3] = rev;
             
-            if (log) hub.debug('%@...firing observer on %@ for key "%@"'.fmt(spaces, target, key));
+            if (log) hub.debug(hub.fmt('%@...firing observer on %@ for key "%@"', spaces, target, key));
             if (context !== undefined) {
               method.call(target, this, key, null, context, rev);
             } else {
@@ -999,7 +999,7 @@ hub.Observable = {
             member = members[memberLoc];
             method = this[member] ; // try to find observer function
             if (method) {
-              if (log) hub.debug('%@...firing local observer %@.%@ for key "%@"'.fmt(spaces, this, member, key));
+              if (log) hub.debug(hub.fmt('%@...firing local observer %@.%@ for key "%@"', spaces, this, member, key));
               method.call(this, this, key, null, rev);
             }
           }
@@ -1015,7 +1015,7 @@ hub.Observable = {
             method = member[1] ;
             context = member[2] ;
             
-            if (log) hub.debug('%@...firing * observer on %@ for key "%@"'.fmt(spaces, target, key));
+            if (log) hub.debug(hub.fmt('%@...firing * observer on %@ for key "%@"', spaces, target, key));
             if (context !== undefined) {
               method.call(target, this, key, null, context, rev);
             } else {
@@ -1026,7 +1026,7 @@ hub.Observable = {
 
         // if there is a default property observer, call that also
         if (this.propertyObserver) {
-          if (log) hub.debug('%@...firing %@.propertyObserver for key "%@"'.fmt(spaces, this, key));
+          if (log) hub.debug(hub.fmt('%@...firing %@.propertyObserver for key "%@"', spaces, this, key));
           this.propertyObserver(this, key, null, rev);
         }
       } // while(changes.length>0)
@@ -1295,7 +1295,7 @@ hub.Observable = {
     var props = hub.$A(arguments) ;
     for(var idx=0;idx<props.length; idx++) {
       var prop = props[idx] ;
-      hub.debug('%@:%@'.fmt(hub.guidFor(this), prop), this.get(prop)) ;
+      hub.debug(hub.fmt('%@:%@', hub.guidFor(this), prop), this.get(prop)) ;
     }
   },
 
@@ -1305,7 +1305,7 @@ hub.Observable = {
 
 /** @private used by addProbe/removeProbe */
 hub.logChange = function logChange(target, key, value) {
-  hub.debug("CHANGE", "%@[%@] => %@".fmt(target, key, target.get(key))) ;
+  hub.debug(hub.fmt("CHANGE", "%@[%@] => %@", target, key, target.get(key))) ;
 };
 
 // Make all Array's observable

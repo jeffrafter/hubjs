@@ -92,7 +92,7 @@ var Suite = /** @scope Spin.Suite.prototype */ {
     @returns {String} generated description
   */
   desc: function(str) {
-    return this.basedesc.fmt(this.subdesc, str);
+    return Spin.fmt(this.basedesc, this.subdesc, str);
   },
   
   /**

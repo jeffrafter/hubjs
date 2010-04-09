@@ -233,7 +233,7 @@ hub.Set = hub.mixin({},
   addEach: function(objects) {
     if (this.isFrozen) throw hub.FROZEN_ERROR;
     if (!objects || !objects.isEnumerable) {
-      throw "%@.addEach must pass enumerable".fmt(this);
+      throw hub.fmt("%@.addEach must pass enumerable", this);
     }
 
     var idx, isObservable = this.isObservable ;
@@ -305,11 +305,11 @@ hub.Set = hub.mixin({},
     @returns {hub.Set} receiver
   */
   removeEach: function(objects) {
-    if (this.isFrozen) throw hub.FROZEN_ERROR;
+    if (this.isFrozen) throw hub.FROZEN_ERROR ;
     if (!objects || !objects.isEnumerable) {
-      throw "%@.addEach must pass enumerable".fmt(this);
+      throw hub.fmt("%@.addEach must pass enumerable", this) ;
     }
-
+    
     var idx, isObservable = this.isObservable ;
     
     if (isObservable) this.beginPropertyChanges();
@@ -323,26 +323,24 @@ hub.Set = hub.mixin({},
     if (isObservable) this.endPropertyChanges();
     
     return this ;
-  },  
-
+  },
+  
   /**
-   Clones the set into a new set.  
-
+    Clones the set into a new set.
+    
     @returns {hub.Set} new copy
   */
-  copy: function() {
-    return this.constructor.create(this);    
-  },
-
+  copy: function() { return this.constructor.create(this); },
+  
   /**
     Return a set to the pool for reallocation.
-
+    
     @returns {hub.Set} receiver
   */
   destroy: function() {
     this.isFrozen = false ; // unfreeze to return to pool
-    if (!this.isObservable) hub.Set._hub_pool.push(this.clear());
-    return this;
+    if (!this.isObservable) hub.Set._hub_pool.push(this.clear()) ;
+    return this ;
   },
   
   // .......................................
@@ -361,7 +359,7 @@ hub.Set = hub.mixin({},
   toString: function() {
     var len = this.length, idx, ary = [];
     for(idx=0;idx<len;idx++) ary[idx] = this[idx];
-    return "hub.Set<%@>".fmt(ary.join(',')) ;
+    return hub.fmt("hub.Set<%@>", ary.join(',')) ;
   },
   
   // the pool used for non-observable sets

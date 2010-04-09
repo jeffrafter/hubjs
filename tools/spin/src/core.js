@@ -153,7 +153,7 @@ var Spin = {
     if (!ret.expect) {
       ret.expect = function(callCount) {
         if (callCount === true) {
-          ok(this.callCount > 0, Spin.fmt("%@ should be called at least once", this.stubName));
+          ok(this.callCount > 0, Spin, Spin.fmt("%@ should be called at least once", this.stubName));
         } else {
           if (callCount === false) callCount = 0;
           equals(this.callCount, callCount, Spin.fmt("%@ should be called X times", this.stubName));

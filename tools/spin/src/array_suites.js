@@ -176,7 +176,7 @@ var ArraySuite = Spin.Suite.create("Verify hub.Array compliance: %@#%@", {
         if (indexes !== undefined && indexes !== false) {
           if (indexes.isIndexSet) {
             ok(this.indexes && this.indexes.isIndexSet, 'indexes should be index set');
-            ok(indexes.isEqual(this.indexes), 'indexes should match %@ (actual: %@)'.fmt(indexes, this.indexes));
+            ok(indexes.isEqual(this.indexes), Spin.fmt('indexes should match %@ (actual: %@)', indexes, this.indexes));
           } else equals(this.indexes, indexes, 'indexes');
         }
           
@@ -206,9 +206,9 @@ var ArraySuite = Spin.Suite.create("Verify hub.Array compliance: %@#%@", {
   */
   validateAfter: function(obj, after, observer, lengthDidChange, enumerableDidChange) {
     var loc = after.length;
-    equals(obj.get('length'), loc, 'length should update (%@)'.fmt(obj)) ;
+    equals(obj.get('length'), loc, Spin.fmt('length should update (%@)', obj)) ;
     while(--loc >= 0) {
-      equals(obj.objectAt(loc), after[loc], 'objectAt(%@)'.fmt(loc)) ;
+      equals(obj.objectAt(loc), after[loc], Spin.fmt('objectAt(%@)', loc)) ;
     }
 
     // note: we only test that the length notification happens when we expect
@@ -253,7 +253,7 @@ ArraySuite.define(function(T) {
         idx;
         
     for(idx=0;idx<len;idx++) {
-      equals(obj.indexOf(expected[idx]), idx, 'obj.indexOf(%@) should match idx'.fmt(expected[idx]));
+      equals(obj.indexOf(expected[idx]), idx, Spin.fmt('obj.indexOf(%@) should match idx', expected[idx]));
     }
     
   });
@@ -391,7 +391,7 @@ ArraySuite.define(function(T) {
         idx;
         
     for(idx=0;idx<len;idx++) {
-      equals(obj.objectAt(idx), expected[idx], 'obj.objectAt(%@) should match'.fmt(idx));
+      equals(obj.objectAt(idx), expected[idx], Spin.fmt('obj.objectAt(%@) should match', idx));
     }
     
   });
@@ -787,7 +787,7 @@ ArraySuite.define(function(T) {
       idx = indexes[loc];
       obj = array.objectAt(idx);
       obj.set('foo', 'BAR');
-      equals(observer.callCount, 0, 'observer should not fire when editing object at index %@'.fmt(idx));
+      equals(observer.callCount, 0, Spin.fmt('observer should not fire when editing object at index %@', idx));
     }
   });
   

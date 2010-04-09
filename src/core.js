@@ -886,10 +886,9 @@ hub.mixin(Function.prototype,
 });
 
 // ..........................................................
-// FIXME: STRING ENHANCEMENT
+// STRING FUNCTIONS
 // 
 
-// Interpolate string. looks for %@ or %@1; to control the order of params.
 /**
   Apply formatting options to the string.  This will look for occurrences
   of %@ in your string and substitute them with the arguments you pass into
@@ -903,40 +902,25 @@ hub.mixin(Function.prototype,
   h3. Examples
   
   {{{
-    "Hello %@ %@".fmt('John', 'Doe') => "Hello John Doe"
-    "Hello %@2, %@1".fmt('John', 'Doe') => "Hello Doe, John"
+    hub.fmt("Hello %@ %@", 'John', 'Doe') => "Hello John Doe"
+    hub.fmt("Hello %@2, %@1", 'John', 'Doe') => "Hello Doe, John"
   }}}
   
-  @param args {Object...} optional arguments
+  @param str {String, ...} a String followed by optional arguments
   @returns {String} formatted string
 */
-String.prototype.fmt = function() {
+hub.fmt = function(str) {
   // first, replace any ORDERED replacements.
-  var args = arguments;
-  var idx  = 0; // the current index for non-numerical replacements
-  return this.replace(/%@([0-9]+)?/g, function(s, argIndex) {
+  var args = arguments,
+      idx  = 1; // the current index for non-numerical replacements
+  
+  return str.replace(/%@([0-9]+)?/g, function(s, argIndex) {
     argIndex = (argIndex) ? parseInt(argIndex,0)-1 : idx++ ;
-    s =args[argIndex];
+    s = args[argIndex];
     return ((s===null) ? '(null)' : (s===undefined) ? '' : s).toString(); 
   }) ;
 };
 
-/**
-  Localizes the string.  This will look up the reciever string as a key 
-  in the current Strings hash.  If the key matches, the loc'd value will be
-  used.  The resulting string will also be passed through fmt() to insert
-  any variables.
-  
-  @param args {Object...} optional arguments to interpolate also
-  @returns {String} the localized and formatted string.
-*/
-String.prototype.loc = function() {
-  var str = hub.STRINGS[this] || this;
-  return str.fmt.apply(str,arguments) ;
-};
-
-
-  
 /**
   Splits the string into words, separated by spaces. Empty strings are
   removed from the results.

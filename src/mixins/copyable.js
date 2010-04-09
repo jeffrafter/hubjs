@@ -52,10 +52,11 @@ hub.Copyable = {
     @returns {Object} copy of receiver or receiver
   */
   frozenCopy: function() {
-    var isFrozen = this.get ? this.get('isFrozen') : this.isFrozen;
-    if (isFrozen === true) return this;
-    else if (isFrozen === undefined) throw "%@ does not support freezing".fmt(this);
-    else return this.copy().freeze();
+    var isFrozen = this.get ? this.get('isFrozen') : this.isFrozen ;
+    if (isFrozen === true) return this ;
+    else if (isFrozen === undefined) {
+      throw hub.fmt("%@ does not support freezing", this) ;
+    } else return this.copy().freeze();
   }
 };
 

@@ -60,7 +60,7 @@ test("using without should properly hint returned index set", function() {
       loc = hub.IndexSet.HINT_SIZE;
       
   while(loc<2000) { // spot check
-    equals(actual._hub_content[loc], 0, 'index set should have hint at loc %@ - set: %@'.fmt(loc, actual.inspect()));
+    equals(actual._hub_content[loc], 0, hub.fmt('index set should have hint at loc %@ - set: %@', loc, actual.inspect()));
     loc += hub.IndexSet.HINT_SIZE;
   }
 });

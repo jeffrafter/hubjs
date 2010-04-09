@@ -573,7 +573,7 @@ hub.Record = hub.Object.extend(
   
   toString: function() {
     var attrs = this.get('attributes');
-    return "%@(%@) %@".fmt(this.constructor.toString(), hub.inspect(attrs), this.statusString());
+    return hub.fmt("%@(%@) %@", this.constructor.toString(), hub.inspect(attrs), this.statusString());
   },
   
   /** @private

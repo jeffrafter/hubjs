@@ -34,7 +34,7 @@ module("hub.RangeObserver#rangeDidChange", {
           ok(!inObject, 'object param should be null');
           equals(inKey, '[]', 'passed key should be brackets');
           if (this.indexes) {
-            ok(this.indexes.isEqual(inIndexes), 'passed indexes should be %@.  actual: %@'.fmt(this.indexes, inIndexes));
+            ok(this.indexes.isEqual(inIndexes), hub.fmt('passed indexes should be %@.  actual: %@', this.indexes, inIndexes));
           } else if (this.indexes === null) {
             equals(inIndexes, null, 'passed indexes should be null');
           }

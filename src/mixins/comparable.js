@@ -40,7 +40,7 @@ hub.Comparable = {
     @returns {Integer} the result of the comparison
   */
   compare: function(a, b) {
-    throw "%@.compare() is not implemented".fmt(this.toString());
+    throw hub.fmt("%@.compare() is not implemented", this.toString()) ;
   }
   
 };

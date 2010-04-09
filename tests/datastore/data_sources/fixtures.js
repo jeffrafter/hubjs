@@ -46,7 +46,7 @@ test("Verify find() loads all fixture data", function() {
     storeKey = rec ? rec.get('storeKey') : null;
     dataHash = storeKey ? store.readDataHash(storeKey) : null;
 
-    ok(!!dataHash, 'storeKey at result[%@] (%@) should return dataHash'.fmt(idx, storeKey));
+    ok(!!dataHash, hub.fmt('storeKey at result[%@] (%@) should return dataHash', idx, storeKey));
     
     expected.push(rec); // save record for later test
   }
@@ -58,7 +58,7 @@ test("Verify find() loads all fixture data", function() {
   len = result.get('length');
   for(idx=0;idx<len;idx++) {
     rec = result.objectAt(idx);
-    equals(rec, expected[idx], 'record returned at index %@ should be same as previous'.fmt(idx));
+    equals(rec, expected[idx], hub.fmt('record returned at index %@ should be same as previous', idx));
   }
 });
 

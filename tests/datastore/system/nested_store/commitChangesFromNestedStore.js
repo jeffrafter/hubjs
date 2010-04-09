@@ -75,8 +75,8 @@ test("adds lock on any items not already locked", function() {
   
   
   // and verify that both have locks
-  ok(store.locks[storeKey], 'storeKey should have lock after commit (actual: %@)'.fmt(store.locks[storeKey]));
-  ok(store.locks[storeKey2], 'storeKey2 should have lock after commit (actual: %@)'.fmt(store.locks[storeKey2]));
+  ok(store.locks[storeKey], hub.fmt('storeKey should have lock after commit (actual: %@)', store.locks[storeKey]));
+  ok(store.locks[storeKey2], hub.fmt('storeKey2 should have lock after commit (actual: %@)', store.locks[storeKey2]));
   
 });
 

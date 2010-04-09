@@ -26,7 +26,7 @@ test("basic copy", function() {
   
   equals(copy.isFrozen, false, 'copy should not be frozen');
   keys.forEach(function(key) {
-    equals(copy.get(key), q.get(key), 'copy.%@ should = original.%@'.fmt(key, key));
+    equals(copy.get(key), q.get(key), hub.fmt('copy.%@ should = original.%@', key, key));
   }, this);
   
 });

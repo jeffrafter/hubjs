@@ -1348,13 +1348,13 @@ hub.Query.mixin( /** @scope hub.Query */ {
     // normalize recordType
     if (typeof recordType === hub.T_STRING) {
       ret = hub.objectForPropertyPath(recordType);
-      if (!ret) throw "%@ did not resolve to a class".fmt(recordType);
+      if (!ret) throw hub.fmt("%@ did not resolve to a class", recordType);
       recordType = ret ;
     } else if (recordType && recordType.isEnumerable) {
       ret = [];
       recordType.forEach(function(t) {
         if (typeof t === hub.T_STRING) t = hub.objectForPropertyPath(t);
-        if (!t) throw "cannot resolve record types: %@".fmt(recordType);
+        if (!t) throw hub.fmt("cannot resolve record types: %@", recordType);
         ret.push(t);
       }, this);
       recordType = ret ;

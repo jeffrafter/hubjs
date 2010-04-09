@@ -58,7 +58,7 @@ hub.SingleAttribute = hub.RecordAttribute.extend(
 
       // can only take other records or null
       if (newRec && !hub.kindOf(newRec, hub.Record)) {
-        throw "%@ is not an instance of hub.Record".fmt(newRec);
+        throw hub.fmt("%@ is not an instance of hub.Record", newRec);
       }
 
       inverseKey = this.get('inverse');

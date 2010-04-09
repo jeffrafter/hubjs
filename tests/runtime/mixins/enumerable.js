@@ -115,7 +115,7 @@ test("should get enumerator that iterates through objects", function() {
     var idx = 0;
     var cur ;
     while(cur = e.nextObject()) {
-      equals(src.objectAt(idx), cur, "object at index %@".fmt(idx)) ;
+      equals(src.objectAt(idx), cur, hub.fmt("object at index %@", idx)) ;
       idx++;
     }
     

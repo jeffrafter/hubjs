@@ -83,7 +83,7 @@ test("calling storeDidChangeStoreKeys() with a matching recordType", function() 
   
   orig.unshift(storeKey); // update - must be first b/c id.bar < id.foo
   equals(recs.get('needsFlush'), false, 'should not need flush anymore');
-  same(recs.get('storeKeys'), orig, 'storeKeys should now be updated - rec1[%@]{%@} = %@, rec2[%@]{%@} = %@'.fmt(
+  same(recs.get('storeKeys'), orig, hub.fmt('storeKeys should now be updated - rec1[%@]{%@} = %@, rec2[%@]{%@} = %@', 
     rec.get('id'), rec.get('storeKey'), rec, 
     
     store.materializeRecord(storeKey).get('id'), 

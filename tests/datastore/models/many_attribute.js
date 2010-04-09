@@ -267,7 +267,7 @@ test("should be able to modify an initially empty record", function() {
 
 function checkAllClean() {
   hub.A(arguments).forEach(function(r) {
-    equals(r.get('status'), hub.Record.READY_CLEAN, 'PRECOND - %@.status should be READY_CLEAN'.fmt(r.get('id')));
+    equals(r.get('status'), hub.Record.READY_CLEAN, hub.fmt('PRECOND - %@.status should be READY_CLEAN', r.get('id')));
   }, this);
 }
 

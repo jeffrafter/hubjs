@@ -214,17 +214,17 @@ test("getting values should call function return value", function() {
   var keys = hub.w('computed computedCached dependent dependentCached');
   
   keys.forEach(function(key) {
-    equals(object.get(key), key, 'Try #1: object.get(%@) should run function'.fmt(key));
-    equals(object.get(key), key, 'Try #2: object.get(%@) should run function'.fmt(key));
+    equals(object.get(key), key, hub.fmt('Try #1: object.get(%@) should run function', key));
+    equals(object.get(key), key, hub.fmt('Try #2: object.get(%@) should run function', key));
   });
   
   // verify each call count.  cached should only be called once
   hub.w('computedCalls dependentCalls').forEach(function(key) {
-    equals(object[key].length, 2, 'non-cached property %@ should be called 2x'.fmt(key));
+    equals(object[key].length, 2, hub.fmt('non-cached property %@ should be called 2x', key));
   });
 
   hub.w('computedCachedCalls dependentCachedCalls').forEach(function(key) {
-    equals(object[key].length, 1, 'non-cached property %@ should be called 1x'.fmt(key));
+    equals(object[key].length, 1, hub.fmt('non-cached property %@ should be called 1x', key));
   });
   
 });
@@ -237,10 +237,10 @@ test("setting values should call function return value", function() {
   
   keys.forEach(function(key) {
     
-    equals(object.set(key, values[0]), object, 'Try #1: object.set(%@, %@) should run function'.fmt(key, values[0]));
+    equals(object.set(key, values[0]), object, hub.fmt('Try #1: object.set(%@, %@) should run function', key, values[0]));
 
-    equals(object.set(key, values[1]), object, 'Try #2: object.set(%@, %@) should run function'.fmt(key, values[1]));
-    equals(object.set(key, values[1]), object, 'Try #3: object.set(%@, %@) should not run function since it is setting same value as before'.fmt(key, values[1]));
+    equals(object.set(key, values[1]), object, hub.fmt('Try #2: object.set(%@, %@) should run function', key, values[1]));
+    equals(object.set(key, values[1]), object, hub.fmt('Try #3: object.set(%@, %@) should not run function since it is setting same value as before', key, values[1]));
     
   });
   
@@ -248,9 +248,9 @@ test("setting values should call function return value", function() {
   // verify each call count.  cached should only be called once
   keys.forEach(function(key) {
     var calls = object[key + 'Calls'], idx;
-    equals(calls.length, 2, 'set(%@) should be called 2x'.fmt(key));
+    equals(calls.length, 2, hub.fmt('set(%@) should be called 2x', key));
     for(idx=0;idx<2;idx++) {
-      equals(calls[idx], values[idx], 'call #%@ to set(%@) should have passed value %@'.fmt(idx+1, key, values[idx]));
+      equals(calls[idx], values[idx], hub.fmt('call #%@ to set(%@) should have passed value %@', idx+1, key, values[idx]));
     }
   });
   

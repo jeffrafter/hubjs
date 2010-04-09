@@ -211,7 +211,7 @@ hub.ManyArray = hub.Object.extend(hub.Enumerable, hub.Array,
   replace: function(idx, amt, recs) {
     
     if (!this.get('isEditable')) {
-      throw "%@.%@[] is not editable".fmt(this.get('record'), this.get('propertyName'));
+      throw hub.fmt("%@.%@[] is not editable", this.get('record'), this.get('propertyName'));
     }
     
     var storeIds = this.get('editableStoreIds'), 

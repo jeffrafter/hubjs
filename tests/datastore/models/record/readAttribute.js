@@ -28,7 +28,7 @@ test("returns unaltered JSON value for existing attributes", function() {
   var key ;
   for(key in json) {
     if (!json.hasOwnProperty(key)) continue;
-    equals(foo.get(key), json[key], 'should return value for predefined key %@'.fmt(key));
+    equals(foo.get(key), json[key], hub.fmt('should return value for predefined key %@', key));
   }
 });
 

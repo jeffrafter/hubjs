@@ -108,7 +108,7 @@ function createConflict(force) {
   
   // just to make sure verify that the lock and revision in parent do not 
   // match
-  ok(child.locks[storeKey] !== store.revisions[storeKey], 'child.lock (%@) should !== store.revision (%@)'.fmt(child.locks[storeKey], store.revisions[storeKey]));
+  ok(child.locks[storeKey] !== store.revisions[storeKey], hub.fmt('child.lock (%@) should !== store.revision (%@)', child.locks[storeKey], store.revisions[storeKey]));
   
   // step 5: now try to commit changes from child store.  This should throw
   // an exception.

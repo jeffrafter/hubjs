@@ -182,7 +182,7 @@ test("modifying a toOne relationship with an inverse from null", function() {
   equals(rec2.get('bar'), null, 'precond - foo2.bar should eq null');
   
   [rec, rec2, bar].forEach(function(r) {
-    equals(r.get('status'), hub.Record.READY_CLEAN, 'precond - %@.status should be READY_CLEAN'.fmt(r.get('id')));
+    equals(r.get('status'), hub.Record.READY_CLEAN, hub.fmt('precond - %@.status should be READY_CLEAN', r.get('id')));
   }, this);
   
   bar.set('foo', rec2);
@@ -211,7 +211,7 @@ test("modifying a toOne relationship with an inverse from other", function() {
   
   
   [foo1, foo3, bar1, bar2].forEach(function(r) {
-    equals(r.get('status'), hub.Record.READY_CLEAN, 'precond - %@.status should be READY_CLEAN'.fmt(r.get('id')));
+    equals(r.get('status'), hub.Record.READY_CLEAN, hub.fmt('precond - %@.status should be READY_CLEAN', r.get('id')));
   }, this);
   
   bar1.set('foo', foo3);

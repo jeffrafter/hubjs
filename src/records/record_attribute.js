@@ -433,9 +433,9 @@ hub.RecordAttribute.registerTransform(Date, {
     var zp = this._hub_zeropad,
         tz = 0-date.getTimezoneOffset()/60;
         
-    tz = (tz === 0) ? 'Z' : '%@:00'.fmt(zp(tz));
+    tz = (tz === 0) ? 'Z' : hub.fmt('%@:00', zp(tz));
     
-    this._hub_dates[date.getTime()] = ret = "%@-%@-%@T%@:%@:%@%@".fmt(
+    this._hub_dates[date.getTime()] = ret = hub.fmt("%@-%@-%@T%@:%@:%@%@", 
       zp(date.getFullYear()),
       zp(date.getMonth()+1),
       zp(date.getDate()),
