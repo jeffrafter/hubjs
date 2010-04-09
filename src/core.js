@@ -423,7 +423,7 @@ hub.mixin(/** @scope hub */ {
         return 0;
         
       case hub.T_OBJECT:
-        if (v.constructor.isComparable === true) return v.constructor.compare(v, w);
+        if (typeof v.constructor.compare === 'function') return v.constructor.compare(v, w);
         return 0;
 
       default:
