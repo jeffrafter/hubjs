@@ -10,7 +10,7 @@
 var sys = require("sys"), fs = require("fs");
 var argv = process.ARGV;
 
-sys.puts(argv[2]);
+sys.print(argv[2] + ' ');
 
 /* Prepare Tester */
 var hub = require("../../hub");
