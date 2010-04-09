@@ -59,7 +59,7 @@ hub.Enumerator.prototype = {
   */
   reset: function() {
     var e = this.enumerable ;
-    if (!e) throw hub.$error("Enumerator has been destroyed");
+    if (!e) throw hub.E("Enumerator has been destroyed");
     this._hub_length = e.get ? e.get('length') : e.length ;
     var len = this._hub_length;
     this._hub_index = 0;

@@ -712,7 +712,7 @@ hub.Hub = hub.Store.extend(
   },
   // _didSendPack: function(request, params) {
   //   var response  = request.get('response') ;
-  //   if (hub.$ok(response)) {
+  //   if (hub.ok(response)) {
   //     hub.debug('sendPack Success!') ;
   //   } else {
   //     hub.debug("sendPack FAILED!") ;

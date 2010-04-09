@@ -806,35 +806,35 @@ hub.Record.mixin( /** @scope hub.Record */ {
     
     @property {hub.Error}
   */
-  BAD_STATE_ERROR:     hub.$error("Internal Inconsistency"),
+  BAD_STATE_ERROR:     hub.E("Internal Inconsistency"),
 
   /**
     Error for when you try to create a new record that already exists.
     
     @property {hub.Error}
   */
-  RECORD_EXISTS_ERROR: hub.$error("Record Exists"),
+  RECORD_EXISTS_ERROR: hub.E("Record Exists"),
 
   /**
     Error for when you attempt to locate a record that is not found
     
     @property {hub.Error}
   */
-  NOT_FOUND_ERROR:     hub.$error("Not found "),
+  NOT_FOUND_ERROR:     hub.E("Not found "),
 
   /**
     Error for when you try to modify a record that is currently busy
     
     @property {hub.Error}
   */
-  BUSY_ERROR:          hub.$error("Busy"),
+  BUSY_ERROR:          hub.E("Busy"),
 
   /**
     Generic unknown record error
     
     @property {hub.Error}
   */
-  GENERIC_ERROR:       hub.$error("Generic Error"),
+  GENERIC_ERROR:       hub.E("Generic Error"),
   
   // ..........................................................
   // CLASS METHODS

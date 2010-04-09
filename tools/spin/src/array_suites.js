@@ -134,7 +134,7 @@ var ArraySuite = Spin.Suite.create("Verify hub.Array compliance: %@#%@", {
       },
 
       observe: function() {
-        var keys = hub.$A(arguments) ;
+        var keys = hub.A(arguments) ;
         var loc = keys.length ;
         while(--loc >= 0) {
           obj.addObserver(keys[loc], this, this.observer) ;

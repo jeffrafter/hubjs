@@ -48,10 +48,10 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
     key = cprops[idx]; p1 = base[key]; p2 = ext[key];
 
     if (p1) {
-      if (!(p1 instanceof Array)) p1 = hub.$A(p1);
+      if (!(p1 instanceof Array)) p1 = hub.A(p1);
       concats[key] = (p2) ? p1.concat(p2) : p2 ;
     } else {
-      if (!(p2 instanceof Array)) p2 = hub.$A(p2);
+      if (!(p2 instanceof Array)) p2 = hub.A(p2);
       concats[key] = p2 ;
     }
   }

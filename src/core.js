@@ -671,11 +671,8 @@ hub.mixin(/** @scope hub */ {
   
 }); // end mixin
 
-/** @private Alias for hub.clone() */
+/** @function Alias for hub.copy(). */
 hub.clone = hub.copy ;
-
-/** @private Alias for hub.A() */
-hub.$A = hub.A;
 
 /** @private Used by hub.compare */
 hub.ORDER_DEFINITION = [ hub.T_ERROR,
@@ -807,7 +804,7 @@ hub.mixin(Function.prototype,
     @returns {Function} the declared function instance
   */
   property: function() {
-    this.dependentKeys = hub.$A(arguments) ;
+    this.dependentKeys = hub.A(arguments) ;
     var guid = hub.guidFor(this) ;
     this.cacheKey = "__hub_cache__" + guid ;
     this.lastSetValueKey = "__hub_lastValue__" + guid ;

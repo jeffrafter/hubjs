@@ -63,11 +63,11 @@ hub.FixturesDataSource = hub.DataSource.extend(
     
     // can only handle local queries out of the box
     if (query.get('location') !== hub.Query.LOCAL) {
-      throw hub.$error('hub.Fixture data source can only fetch local queries');
+      throw hub.E('hub.Fixture data source can only fetch local queries');
     }
 
     if (!query.get('recordType') && !query.get('recordTypes')) {
-      throw hub.$error('hub.Fixture data source can only fetch queries with one or more record types');
+      throw hub.E('hub.Fixture data source can only fetch queries with one or more record types');
     }
     
     if (this.get('simulateRemoteResponse')) {

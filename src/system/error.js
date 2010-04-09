@@ -117,8 +117,8 @@ hub.Error.desc = function(description, label, value, code) {
   @param code {Number} an error code to use for testing.
   @returns {hub.Error} new error instance.
 */
-hub.$error = function(description, label, value, c) { 
-  return hub.Error.desc(description,label, value, c); 
+hub.E = function(description, label, value, c) {
+  return hub.Error.desc(description,label, value, c) ;
 } ;
 
 /**
@@ -128,11 +128,8 @@ hub.$error = function(description, label, value, c) {
   @returns {Boolean}
 */
 hub.ok = function(ret) {
-  return (ret !== false) && !(ret && ret.isError);
+  return (ret !== false) && !(ret && ret.isError) ;
 };
-
-/** @private FIXME remove */
-hub.$ok = hub.ok;
 
 /**
   Returns the value of an object.  If the passed object is an error, returns
@@ -146,9 +143,6 @@ hub.val = function(obj) {
     return obj.get ? obj.get('errorValue') : null ; // Error has no value
   } else return obj ;
 };
-
-/** @private FIXME remove */
-hub.$val = hub.val;
 
 // STANDARD ERROR OBJECTS
 

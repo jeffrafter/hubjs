@@ -1239,7 +1239,7 @@ hub.Observable = {
     @param {String...} propertyNames one or more property names
   */
   logProperty: function() {
-    var props = hub.$A(arguments) ;
+    var props = hub.A(arguments) ;
     for(var idx=0;idx<props.length; idx++) {
       var prop = props[idx] ;
       hub.debug(hub.fmt('%@:%@', hub.guidFor(this), prop), this.get(prop)) ;
