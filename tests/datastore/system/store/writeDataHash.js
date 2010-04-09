@@ -22,7 +22,7 @@ module("hub.Store#writeDataHash", {
     };
     
     storeKey = hub.Store.generateStoreKey();
-    child = store.chain();  // test multiple levels deep
+    child = store.createEditingContext();
   }
 });
 

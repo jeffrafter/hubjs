@@ -20,8 +20,8 @@ module("hub.NestedStore#commitChangesFromNestedStore", {
     
     storeKey = hub.Store.generateStoreKey();
 
-    store = parent.chain();
-    child = store.chain();  // test multiple levels deep
+    store = parent.createEditingContext();
+    child = store.createEditingContext();  // test multiple levels deep
 
     // wirte basic status
     child.writeDataHash(storeKey, json, hub.Record.READY_DIRTY);
@@ -114,7 +114,7 @@ test("should set hasChanges to false if no changes", function() {
   
   
   
-  child = store.chain() ; // get a new child store
+  child = store.createEditingContext() ; // get a new child store
   
   var changes = child.chainedChanges || hub.Set.create();
   ok(!changes || !changes.length, 'precond - should have not have changes in child');
@@ -130,7 +130,7 @@ test("should set hasChanges to false if no changes", function() {
 // SPECIAL CASES
 // 
 
-test("committing changes should chain back each step", function() {
+test("committing changes should propogate back each step", function() {
 
   
 

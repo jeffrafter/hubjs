@@ -20,7 +20,7 @@ module("hub.Store#commitChangesFromNestedStore", {
     
     storeKey = hub.Store.generateStoreKey();
 
-    child = store.chain();  // test multiple levels deep
+    child = store.createEditingContext();
 
     // wirte basic status
     child.writeDataHash(storeKey, json, hub.Record.READY_DIRTY);
@@ -94,7 +94,7 @@ function createConflict(force) {
   store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
   store.dataHashDidChange(storeKey);
   
-  // step 2: read data in chained store.  this will create lock
+  // step 2: read data in child store.  this will create lock
   child.readDataHash(storeKey);
   ok(child.locks[storeKey], 'child store should now have lock');
   
@@ -102,7 +102,7 @@ function createConflict(force) {
   store.writeDataHash(storeKey, json2, hub.Record.READY_CLEAN);
   store.dataHashDidChange(storeKey);
 
-  // step 4: modify data in chained store so we have something to commit.
+  // step 4: modify data in child store so we have something to commit.
   child.writeDataHash(storeKey, json3, hub.Record.READY_DIRTY);
   child.dataHashDidChange(storeKey);
   

@@ -825,13 +825,11 @@ hub.Hub = hub.Store.extend(
     this.checkout(lca);
 
     // 4. create nested store A and apply, in order, any local commits
-    var storeA = this.chain({},
-    hub.NestedHub);
+    var storeA = this.createEditingContext({}, hub.MergeHub);
     storeA.goTo(current);
 
     // 5. create nested store B and apply, in order, whatever commits came in on the push after the LCA commit that is now the root store
-    var storeB = this.chain({},
-    hub.NestedHub);
+    var storeB = this.createEditingContext({}, hub.MergeHub);
     storeB.goTo(version);
 
     // 6. call Hub.merge(storeA, storeB) to merge the two stores down into the root store (making a new commit – be sure to record the commit ancestors properly)

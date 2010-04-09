@@ -5,15 +5,16 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*globals hub module test ok equals same */
+/*globals hub Spin module test ok equals same */
 
 // NOTE: The test below are based on the Data Hashes state chart.  This models
 // the "commit" event in the NestedStore portion of the diagram.
 
 var parent, store, child, storeKey, json, args;
-module("hub.NestedStore#commitChanges", {
+
+Spin.Plan.module("hub.ChildStore#commitChanges", {
+  
   setup: function() {
-    
     parent = hub.Store.create();
     
     json = {
@@ -24,9 +25,9 @@ module("hub.NestedStore#commitChanges", {
     args = [];
     
     storeKey = hub.Store.generateStoreKey();
-
-    store = parent.chain(); // create nested store
-    child = store.chain();  // test multiple levels deep
+    
+    store = parent.createEditingContext(); // create nested store
+    child = store.createEditingContext();  // test multiple levels deep
     
     // override commitChangesFromNestedStore() so we can ensure it is called
     // save call history for later evaluation
@@ -40,8 +41,8 @@ module("hub.NestedStore#commitChanges", {
         force: force 
       });
     };
-    
   }
+  
 });
 
 // ..........................................................
@@ -147,7 +148,7 @@ test("commiting a changed record should immediately notify outstanding records i
   var store = hub.Store.create();
   var prec  = store.createRecord(Rec, { foo: "bar", id: 1 });
   
-  var child = store.chain();
+  var child = store.createEditingContext();
   var crec  = child.find(Rec, prec.get('id'));
   
   // check assumptions

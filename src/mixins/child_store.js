@@ -19,8 +19,16 @@
   
   @mixin
 */
-hub.Nested = {
+hub.ChildStore = {
 
+  /**
+    Walk like a duck.
+    
+    @readOnly
+    @property {Boolean}
+  */
+  isChildStore: true,
+  
   /**
     This is set to true when there are changes that have not been committed 
     yet.
@@ -41,7 +49,9 @@ hub.Nested = {
   parentStore: null,
 
   /**
-    true if the view is nested. Walk like a duck
+    true if the view is nested. Walk like a duck.
+    
+    FIXME: Remove eventually in favor of isChildStore.
     
     @property {Boolean}
   */

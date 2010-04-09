@@ -29,8 +29,8 @@ module("hub.NestedStore#dataHashDidChange", {
     
     parent.editables = null; // manually patch to setup test state
     
-    store = parent.chain(); // create nested store
-    child = store.chain();  // test multiple levels deep
+    store = parent.createEditingContext(); // create child store
+    child = store.createEditingContext();  // test multiple levels deep
   }
 });
 

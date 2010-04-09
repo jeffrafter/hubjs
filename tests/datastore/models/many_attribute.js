@@ -149,16 +149,16 @@ test("getting toMany relation should not change record state", function() {
   equals(rec3.get('status'), hub.Record.READY_CLEAN, 'getting toMany should not change state');
 });
 
-test("reading toMany in chained store", function() {
+test("reading toMany in a child store", function() {
   var recs1, recs2, store, rec3a;
   
   recs1 = rec3.get('fooMany');
-  store = MyApp.store.chain();
+  store = MyApp.store.createEditingContext();
   
   rec3a = store.find(rec3);
   recs2 = rec3a.get('fooMany');
       
-  same(recs2.getEach('storeKey'), recs1.getEach('storeKey'), 'returns arrays from chained and parent should be same');
+  same(recs2.getEach('storeKey'), recs1.getEach('storeKey'), 'returns arrays from child store and parent store should be the same');
   ok(recs2 !== recs1, 'returned arrays should not be same instance');
   
 });
@@ -223,9 +223,9 @@ test("modifying a toMany array should mark the record as changed", function() {
 
 });
 
-test("modifying a toMany array within a nested store", function() {
-  var child = MyApp.store.chain() ; // get a chained store
-  var parentFooMany = rec3.get('fooMany'); // base foo many
+test("modifying a toMany array within a child store", function() {
+  var child = MyApp.store.createEditingContext() ; // get a child store
+  var parentFooMany = rec3.get('fooMany') ; // base foo many
   
   var childRec3 = child.find(rec3); 
   var childFooMany = childRec3.get('fooMany'); // get the nested fooMany

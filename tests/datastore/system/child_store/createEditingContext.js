@@ -8,7 +8,7 @@
 /*globals hub module test ok equals same */
 
 // This file tests the initial state of the store when it is first created
-// either independently or as a chained store.
+// either independently or as a child store.
 
 var Rec = hub.Record.extend({
   
@@ -27,15 +27,15 @@ var Rec = hub.Record.extend({
 });
 
 // ..........................................................
-// hub.Store#chain - init
+// hub.Store#createEditingContext - init
 // 
-module("hub.Store#chain - init");
+module("hub.Store#createEditingContext - init");
 
-test("initial setup for chained store", function() {
-  var parent = hub.Store.create();
-  var store  = parent.chain();
+test("initial setup for child store", function() {
+  var parent = hub.Store.create(),
+      store  = parent.createEditingContext();
   
-  ok(store !== parent, 'chain should return new child store');
+  ok(store !== parent, 'createEditingContext should return new child store');
   
   equals(store.get('parentStore'), parent, 'should have parentStore');
   
@@ -56,35 +56,35 @@ test("initial setup for chained store", function() {
   ok(!store.editables, 'should not have editables');
 });
 
-test("allow for custom subclasses of hub.NestedStore", function() {
+test("allow for custom classes mixing in hub.ChildStore", function() {
   var parent = hub.Store.create();
   
   // We should get an exception if we specify a "subclass" that's not a class
   var ex = null;
   try {
-    var bogus = parent.chain({}, "I am not a class");
+    var bogus = parent.createEditingContext({}, "I am not a class");
   }
   catch(e) {
     ex = e;
   }
-  ok(ex  &&  ex.message  &&  ex.message.indexOf('not a valid class') !== -1, 'chain should report that our bogus "class" it is not a valid class');
+  ok(ex  &&  ex.message  &&  ex.message.indexOf('not a valid class') !== -1, 'createEditingContext should report that our bogus "class" it is not a valid class');
   
-  // We should get an exception if we specify a class that's not a subclass of
-  // hub.NestedStore
+  // We should get an exception if we specify a class that has not mixed in 
+  // hub.ChildStore
   ex = null;
   try {
-    bogus = parent.chain({}, hub.Store);
+    bogus = parent.createEditingContext({}, hub.Store);
   }
   catch(e2) {
     ex = e2;
   }
-  ok(ex  &&  ex.message  &&  ex.message.indexOf('is not a type of hub.NestedStore') !== -1, 'chain should report that our class needs to be a subclass of hub.NestedStore');
+  ok(ex  &&  ex.message  &&  ex.message.indexOf('did not mixin hub.ChildStore') !== -1, 'createEditingContext should report that our class needs to mixin hub.ChildStore');
   
   
   // Our specified (proper!) subclass should be respected.
-  var MyNestedStoreSubclass = hub.NestedStore.extend();
-  var nested = parent.chain({}, MyNestedStoreSubclass);
-  ok(nested.kindOf(MyNestedStoreSubclass), 'our nested store should be the hub.NestedStore subclass we specified');
+  var MyChildStoreSubclass = hub.Object.extend(hub.ChildStore, {});
+  var child = parent.createEditingContext({}, MyChildStoreSubclass);
+  ok(child.kindOf(MyChildStoreSubclass), 'our editing context should be the subclass we specified');
 }); 
 
 
@@ -92,7 +92,7 @@ test("allow for custom subclasses of hub.NestedStore", function() {
 // SPECIAL CASES
 // 
 
-test("chained store changes should propagate reliably", function() {
+test("child store changes should propagate reliably", function() {
   var parent = hub.Store.create(), rec, store, rec2;
 
   hub.run(function() {
@@ -107,18 +107,18 @@ test("chained store changes should propagate reliably", function() {
   
   // trial 1
   
-  store = parent.chain();
+  store = parent.createEditingContext();
   rec2  = store.find(Rec, 1);
-  ok(rec2 && rec2.get('title')==='foo', 'chain store should have record');
+  ok(rec2 && rec2.get('title')==='foo', 'child store should have record');
   
   rec.reset();
   rec2.set('title', 'bar');
   
   
-  equals(rec2.get('title'), 'bar', 'chained rec.title should changed');
-  equals(rec.get('title'), 'foo', 'original rec.title should NOT change');
-  equals(store.get('hasChanges'), true, 'chained store.hasChanges');
-  equals(rec.fired, false, 'original rec.title should not have notified');
+  equals(rec2.get('title'), 'bar', 'child store rec.title should change');
+  equals(rec.get('title'), 'foo', 'parent rec.title should NOT change');
+  equals(store.get('hasChanges'), true, 'child store.hasChanges');
+  equals(rec.fired, false, 'parent rec.title should not have notified');
   
   
   rec.reset();
@@ -132,18 +132,18 @@ test("chained store changes should propagate reliably", function() {
 
   // trial 2
   
-  store = parent.chain();
+  store = parent.createEditingContext();
   rec2  = store.find(Rec, 1);
-  ok(rec2 && rec2.get('title')==='bar', 'chain store should have record');
+  ok(rec2 && rec2.get('title')==='bar', 'child store should have record');
   
   rec.reset();
   rec2.set('title', 'baz');
   
   
-  equals(rec2.get('title'), 'baz', 'chained rec.title should changed');
-  equals(rec.get('title'), 'bar', 'original rec.title should NOT change');
-  equals(store.get('hasChanges'), true, 'chained store.hasChanges');
-  equals(rec.fired, false, 'original rec.title should not have notified');
+  equals(rec2.get('title'), 'baz', 'child store rec.title should change');
+  equals(rec.get('title'), 'bar', 'parent rec.title should NOT change');
+  equals(store.get('hasChanges'), true, 'child store.hasChanges');
+  equals(rec.fired, false, 'parent rec.title should not have notified');
   
   
   rec.reset();
@@ -151,24 +151,24 @@ test("chained store changes should propagate reliably", function() {
   store.destroy();
   
 
-  equals(rec.get('title'), 'baz', 'original rec.title should change');
-  equals(rec.fired, true, 'original rec.title should have notified');  
+  equals(rec.get('title'), 'baz', 'parent rec.title should change');
+  equals(rec.fired, true, 'parent rec.title should have notified');  
   
 
   // trial 1
   
-  store = parent.chain();
+  store = parent.createEditingContext();
   rec2  = store.find(Rec, 1);
-  ok(rec2 && rec2.get('title')==='baz', 'chain store should have record');
+  ok(rec2 && rec2.get('title')==='baz', 'child store should have record');
   
   rec.reset();
   rec2.set('title', 'FOO2');
   
   
-  equals(rec2.get('title'), 'FOO2', 'chained rec.title should changed');
-  equals(rec.get('title'), 'baz', 'original rec.title should NOT change');
-  equals(store.get('hasChanges'), true, 'chained store.hasChanges');
-  equals(rec.fired, false, 'original rec.title should not have notified');
+  equals(rec2.get('title'), 'FOO2', 'child store rec.title should change');
+  equals(rec.get('title'), 'baz', 'parent rec.title should NOT change');
+  equals(store.get('hasChanges'), true, 'child store.hasChanges');
+  equals(rec.fired, false, 'parent rec.title should not have notified');
   
   
   rec.reset();

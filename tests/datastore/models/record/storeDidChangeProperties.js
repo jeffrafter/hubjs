@@ -99,7 +99,7 @@ test("refreshing a record should change status", function() {
 
 test("committing attribute changes from nested store should change attrs", function() {
   checkPreconditions();
-  var child = store.chain(),
+  var child = store.createEditingContext(),
       foo2 = child.materializeRecord(foo.storeKey);
   
   foo2.writeAttribute('foo', 'baz'); // must not be 'bar'
@@ -109,7 +109,7 @@ test("committing attribute changes from nested store should change attrs", funct
 });
 
 test("changing attributes on a parent store should notify child store if inherited", function() {
-  var child = store.chain(),
+  var child = store.createEditingContext(),
       oldfoo = foo,
       parentfoo = store.materializeRecord(foo.storeKey),
       childfoo = child.materializeRecord(foo.storeKey);
@@ -120,7 +120,7 @@ test("changing attributes on a parent store should notify child store if inherit
 });
 
 test("changing attributes on a parent store should NOT notify child store if locked", function() {
-  var child = store.chain(),
+  var child = store.createEditingContext(),
       oldfoo = foo,
       parentfoo = store.materializeRecord(foo.storeKey),
       childfoo = child.materializeRecord(foo.storeKey);

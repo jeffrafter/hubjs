@@ -8,10 +8,10 @@
 /*globals hub module test ok equals same */
 
 // NOTE: The test below are based on the Data Hashes state chart.  This models
-// the "write" event in the NestedStore portion of the diagram.
+// the "remove" event in the NestedStore portion of the diagram.
 
 var parent, store, child, storeKey, json;
-module("hub.NestedStore#writeDataHash", {
+module("hub.NestedStore#removeDataHash", {
   setup: function() {
     parent = hub.Store.create();
     
@@ -26,8 +26,8 @@ module("hub.NestedStore#writeDataHash", {
     parent.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
     parent.editables = null; // manually patch to setup test state
     
-    store = parent.chain(); // create nested store
-    child = store.chain();  // test multiple levels deep
+    store = parent.createEditingContext(); // create child store
+    child = store.createEditingContext();  // test multiple levels deep
   }
 });
 
@@ -37,18 +37,17 @@ module("hub.NestedStore#writeDataHash", {
 
 // The transition from each base state performs the same operation, so just
 // run the same test on each state.
-function testWriteDataHash() {
+function testRemoveDataHash() {
   var oldrev = store.revisions[storeKey];
   
   // perform test
-  var json2 = { foo: "bar" };
-  equals(store.writeDataHash(storeKey, json2, hub.Record.READY_NEW), store, 'should return receiver');
+  equals(store.removeDataHash(storeKey, hub.Record.DESTROYED_CLEAN), store, 'should return receiver');
   
   // verify
-  equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'new edit state should be editable');
+  equals(store.storeKeyEditState(storeKey), hub.Store.LOCKED, 'new edit state should be locked');
   
-  equals(store.readDataHash(storeKey), json2, 'should have new json data hash');
-  equals(store.readStatus(storeKey), hub.Record.READY_NEW, 'should have new status');
+  equals(store.readDataHash(storeKey), null, 'should have false json data');
+  equals(store.readStatus(storeKey), hub.Record.DESTROYED_CLEAN, 'should have new status');
 
   equals(store.revisions[storeKey], oldrev, 'should not change revision');
   if (!hub.none(oldrev)) {
@@ -62,7 +61,7 @@ test("edit state=INHERITED", function() {
   // test preconditions
   equals(store.storeKeyEditState(storeKey), hub.Store.INHERITED, 'precond - edit state should be inherited');
   
-  testWriteDataHash();
+  testRemoveDataHash();
 });
 
 test("edit state=LOCKED", function() {
@@ -71,7 +70,7 @@ test("edit state=LOCKED", function() {
   store.readDataHash(storeKey);
   equals(store.storeKeyEditState(storeKey), hub.Store.LOCKED, 'precond - edit state should be locked');
   
-  testWriteDataHash();
+  testRemoveDataHash();
 
 });
 
@@ -81,26 +80,26 @@ test("edit state=EDITABLE", function() {
   store.readEditableDataHash(storeKey);
   equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'precond - edit state should be editable');
   
-  testWriteDataHash();
+  testRemoveDataHash();
 
 });
 
 // ..........................................................
-// WRITING NEW VS EXISTING
+// REMOVE NON-EXISTING 
 // 
 
-test("writing a new hash", function() {
+test("remove a non-existing hash", function() {
   storeKey = hub.Store.generateStoreKey(); // new store key!
   equals(parent.readDataHash(storeKey), null, 'precond - parent should not have a data hash for store key yet');
   equals(store.storeKeyEditState(storeKey), hub.Store.INHERITED, 'precond - edit status should be inherited');
   
   // perform write
-  equals(store.writeDataHash(storeKey, json, hub.Record.READY_NEW), store, 'should return receiver');
+  equals(store.removeDataHash(storeKey, hub.Record.DESTROYED_CLEAN), store, 'should return receiver');
   
   // verify change
-  equals(store.storeKeyEditState(storeKey), hub.Store.EDITABLE, 'new status should be editable');
-  equals(store.readDataHash(storeKey), json, 'should match new json');
-  equals(store.readStatus(storeKey), hub.Record.READY_NEW, 'should have new record status');
+  equals(store.storeKeyEditState(storeKey), hub.Store.LOCKED, 'new status should be locked');
+  equals(store.readDataHash(storeKey), null, 'should still be null');
+  equals(store.readStatus(storeKey), hub.Record.DESTROYED_CLEAN, 'should have new record status');
 });
 
 // ..........................................................
@@ -113,14 +112,13 @@ test("change should propogate to child if child edit state = INHERITED", functio
   equals(child.storeKeyEditState(storeKey), hub.Store.INHERITED, 'precond - child edit state should be INHERITED');
 
   // perform change
-  var json2 = { version: 2 };
-  store.writeDataHash(storeKey, json2, hub.Record.READY_NEW);
+  store.removeDataHash(storeKey, hub.Record.DESTROYED_CLEAN);
   
   // verify
-  same(child.readDataHash(storeKey), json2, 'child should pick up change');
+  same(child.readDataHash(storeKey), null, 'child should pick up change');
   equals(parent.readDataHash(storeKey), json, 'parent should still have old json');
   
-  equals(child.readStatus(storeKey), hub.Record.READY_NEW, 'child should pick up new status');
+  equals(child.readStatus(storeKey), hub.Record.DESTROYED_CLEAN, 'child should pick up new status');
   equals(parent.readStatus(storeKey), hub.Record.READY_CLEAN, 'parent should still have old status');
 
 });
@@ -128,8 +126,7 @@ test("change should propogate to child if child edit state = INHERITED", functio
 
 function testLockedOrEditableChild() {
   // perform change
-  var json2 = { version: 2 };
-  store.writeDataHash(storeKey, json2, hub.Record.READY_NEW);
+  store.removeDataHash(storeKey, hub.Record.DESTROYED_CLEAN);
   
   // verify
   same(child.readDataHash(storeKey), json, 'child should NOT pick up change');

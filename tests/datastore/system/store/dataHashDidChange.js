@@ -27,7 +27,7 @@ module("hub.Store#dataHashDidChange", {
 
     store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
     store.editables = null; // manually patch to setup test state
-    child = store.chain();  // test multiple levels deep
+    child = store.createEditingContext() ;
     
     
     MyApp.Foo = hub.Record.extend({
@@ -116,8 +116,6 @@ test("calling with array of storeKeys will edit all store keys", function() {
 // });
 
 test("calling _notifyRecordPropertyChange twice, once with a key and once without, before flush is called should invalidate all cached properties when flush is finally called", function() {
-  
-
   var mainStore = hub.Store.create();
   var record    = mainStore.createRecord(MyApp.Foo, {});
   
@@ -133,8 +131,8 @@ test("calling _notifyRecordPropertyChange twice, once with a key and once withou
   // another individual property change after that, but still before the flush.)
   mainStore._hub_notifyRecordPropertyChange(storeKey, false, 'prop2');
   
-  var nestedStore  = mainStore.chain();
-  var nestedRecord = nestedStore.materializeRecord(storeKey);
+  var childStore  = mainStore.createEditingContext();
+  var nestedRecord = childStore.materializeRecord(storeKey);
   
   // Now, set the values of prop1 and prop2 to be different for the records in
   // the nested store.
@@ -142,17 +140,13 @@ test("calling _notifyRecordPropertyChange twice, once with a key and once withou
   
   // Now, when we commit, we'll be changing the dataHash of the main store and
   // should notify that all properties have changed.
-  nestedStore.commitChanges();
+  childStore.commitChanges();
   
   // Now, we'll do one more innocuous "prop3 changed" notification to ensure
   // that the eventual flush does indeed invalidate *all* property caches, and
   // not just prop2 and prop3.
   mainStore._hub_notifyRecordPropertyChange(storeKey, false, 'prop3');
-
-  // Let the flush happen.
   
-
-
   // Finally, read 'prop1' from the main store's object.  It should be the new
   // value!
   equals(record.get('prop1'), 'New value', 'The main store’s record should return the correct value for prop1, not the stale cached version') ;

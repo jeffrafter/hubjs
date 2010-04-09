@@ -26,7 +26,7 @@ module("hub.NestedStore#readEditableDataHash", {
     parent.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
     parent.editables = null ; // manually reset for testing state
     
-    store = parent.chain();
+    store = parent.createEditingContext();
   }
 });
 

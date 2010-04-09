@@ -26,8 +26,8 @@ module("hub.NestedStore#readDataHash", {
     parent.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
     parent.editables = null; // manually patch to setup test state
     
-    store = parent.chain(); // create nested store
-    child = store.chain();  // for deep nested
+    store = parent.createEditingContext(); // create child store
+    child = store.createEditingContext();  // for deep nested
   }
 });
 

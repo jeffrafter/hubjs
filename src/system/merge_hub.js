@@ -10,15 +10,17 @@
 /**
   During a merge, each head is represented by a MergeHub instance.
   
-  MergeHubs are identical to hub.NestedStore, plus additional Hub-related 
-  information, such as the commit they are at, the device that made the commit, 
-  etc.
+  MergeHubs are hub.ChildStores with additional Hub-related information, such 
+  as the commit they are at, the device that made the commit, etc.
+  
+  You can still call MergeHub#createEditingContext() if you need an editing 
+  context to work with.
   
   @class
   @extends Hub
-  @extends hub.Nested
+  @extends hub.ChildStore
 */
-hub.MergeHub = hub.Hub.extend(hub.Nested,
+hub.MergeHub = hub.Hub.extend(hub.ChildStore,
   /** @scope hub.MergeHub.prototype */ {
   
   changedRecords: hub.CoreSet.create(),

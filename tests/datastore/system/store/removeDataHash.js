@@ -25,7 +25,7 @@ module("hub.Store#removeDataHash", {
 
     store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
     store.editables = null; // manually patch to setup test state
-    child = store.chain();  // test multiple levels deep
+    child = store.createEditingContext() ;
   }
 });
 

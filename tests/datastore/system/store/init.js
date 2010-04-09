@@ -7,9 +7,6 @@
 // ==========================================================================
 /*globals hub module test ok equals same */
 
-// This file tests the initial state of the store when it is first created
-// either independently or as a chained store.
-
 module("hub.Store#init");
 
 test("initial setup for root store", function() {

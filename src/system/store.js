@@ -120,42 +120,55 @@ hub.Store = hub.Object.extend(
   // STORE CHAINING
   // 
   
+  editingContextClass: 'hub.EditingContext',
+  
   /**  
-    Returns a new nested store instance that can be used to buffer changes
+    Returns a new editing context instance that can be used to buffer changes
     until you are ready to commit them.  When you are ready to commit your 
     changes, call commitChanges() or destroyChanges() and then destroy() when
-    you are finished with the chained store altogether.
+    you are finished with the editing context altogether.
     
     {{{
-      store = MyApp.store.chain();
+      editingContext = MyApp.store.createEditingContext() ;
+      .. fetch records
       .. edit edit edit
-      store.commitChanges().destroy();
+      editingContext.commitChanges().destroy() ;
     }}}
     
-    FIXME: Change chain() to something else.
-    
     @param {Hash} attrs optional attributes to set on new store
-    @param {Class} newStoreClass optional the class of the newly-created nested store (defaults to hub.NestedStore)
-    @returns {hub.NestedStore} new nested store chained to receiver
+    @param {Class} editingContextClass optional the class of the newly-created editing context (defaults to this.editingContextClass)
+    @returns {hub.ChildStore|editingContextClass} new editing context with receiver as parent
   */
-  chain: function(attrs, newStoreClass) {
+  createEditingContext: function(attrs, editingContextClass) {
     if (!attrs) attrs = {};
     attrs.parentStore = this;
     
-    if (newStoreClass) {
-      // Ensure the passed-in class is a type of nested store.
-      if (hub.typeOf(newStoreClass) !== 'class') throw new Error("%@ is not a valid class".fmt(newStoreClass));
-      if (!hub.kindOf(newStoreClass, hub.NestedStore)) throw new Error("%@ is not a type of hub.NestedStore".fmt(newStoreClass));
+    if (editingContextClass) {
+      // Ensure the passed-in class is a type of child store.
+      if (hub.typeOf(editingContextClass) !== 'class') {
+        throw new Error(hub.fmt("%@ is not a valid class", editingContextClass)) ;
+      }
     }
     else {
-      newStoreClass = hub.NestedStore;
+      editingContextClass = this.editingContextClass ;
+      if (typeof editingContextClass === 'string') {
+        // convert to class and cache
+        editingContextClass = this.editingContextClass = hub.objectForPropertyPath(editingContextClass) ;
+        if (hub.typeOf(editingContextClass) !== 'class') {
+          throw new Error(hub.fmt("%@ is not a valid class", editingContextClass)) ;
+        }
+      }
     }
     
-    var ret    = newStoreClass.create(attrs),
+    var ret = editingContextClass.create(attrs),
         nested = this.nestedStores;
-        
-    if (!nested) nested = this.nestedStores = [];
-    nested.push(ret);
+    
+    if (!ret.isChildStore) {
+      throw new Error(hub.fmt("%@ did not mixin hub.ChildStore", editingContextClass)) ;
+    }
+    
+    if (!nested) nested = this.nestedStores = [] ;
+    nested.push(ret) ;
     return ret ;
   },
   

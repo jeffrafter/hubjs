@@ -8,15 +8,15 @@
 /*global hub */
 
 /**
-  An subclass of hub.Store implementing the hub.Nested functionality.
+  An subclass of hub.Store implementing the hub.ChildStore functionality.
   
   @class
   @extends hub.Store
-  @extends hub.Nested
+  @extends hub.ChildStore
 */
-hub.NestedStore = hub.Store.extend(hub.Nested,
-  /** @scope hub.NestedStore.prototype */ {
+hub.EditingContext = hub.Store.extend(hub.ChildStore,
+  /** @scope hub.EditingContext.prototype */ {
   
-  // all of the common code is in the hub.Nested mixin
+  // all of the common code is in the hub.ChildStore mixin
   
 });

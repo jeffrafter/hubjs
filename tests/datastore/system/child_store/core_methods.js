@@ -7,7 +7,7 @@
 // ==========================================================================
 /*globals GLOBAL hub module test ok equals same */
 
-var store, nestedStore, Application, dataSource;
+var store, childStore, Application, dataSource;
 
 module("hub.NestedStore Core Methods", {
   setup: function() {
@@ -54,13 +54,13 @@ module("hub.NestedStore Core Methods", {
     // make sure RecordType by String can map
     GLOBAL.Application = Application;
     
-    nestedStore = store.chain();
+    childStore = store.createEditingContext();
   }    
 });
 
 test("Make sure that setting an attribute on a record will only notify respective observers once", function() {
   
-  var file = nestedStore.find(Application.File, '14');
+  var file = childStore.find(Application.File, '14');
   Application._hub_nameDidChange = 0 ;
   
   

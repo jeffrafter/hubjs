@@ -102,9 +102,9 @@ test("find(record)", function() {
   var rec1 = MyApp.store.find(MyApp.Foo, 1);
   equals(MyApp.store.find(rec1), rec1, 'find(rec1) should return rec1');
   
-  var rec2 = MyApp.store.chain().find(rec1);
+  var rec2 = MyApp.store.createEditingContext().find(rec1);
   ok(rec2 !== rec1, 'nested.find(rec1) should not return same instance');
-  equals(rec2.get('storeKey'), rec1.get('storeKey'), 'nested.find(rec1) should return same record in nested store');
+  equals(rec2.get('storeKey'), rec1.get('storeKey'), 'nested.find(rec1) should return same record in child store');
 });
 
 // ..........................................................
@@ -120,10 +120,10 @@ test("caching for a single store", function() {
   equals(r2, r1, 'should return same record array for multiple calls');
 });
 
-test("find() caching for a chained store", function() {
-  var r1 = MyApp.store.find(MyApp.Foo);  
+test("find() caching for a childed store", function() {
+  var r1 = MyApp.store.find(MyApp.Foo) ;
   
-  var child = MyApp.store.chain();
+  var child = MyApp.store.createEditingContext() ;
   var r2 = child.find(MyApp.Foo);
   var r3 = child.find(MyApp.Foo);
 

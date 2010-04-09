@@ -27,8 +27,8 @@ module("hub.NestedStore#discardChanges", {
     parent.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
     parent.editables = null;
     
-    store = parent.chain(); // create nested store
-    child = store.chain();  // test multiple levels deep
+    store = parent.createEditingContext(); // create child store
+    child = store.createEditingContext();  // test multiple levels deep
 
     // commitChangesFromNestedStore() should never be called.  Capture info
     // about call.

@@ -50,8 +50,8 @@ records/many_attribute.js
 records/single_attribute.js
 system/many_array.js
 system/store.js
-mixins/nested.js
-system/nested_store.js
+mixins/child_store.js
+system/editing_context.js
 system/query.js
 system/record_array.js
 
