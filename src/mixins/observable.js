@@ -8,7 +8,7 @@
 /*global hub */
 
 /**
-  Set to true to have all observing activity logged to the console.  This 
+  Set to true to have all observing activity logged to hub.debug().  This 
   should be used for debugging only.
   
   NOTE: This property is not observable.
@@ -20,19 +20,19 @@ hub.LOG_OBSERVERS = false ;
 /**
   Key-Value-Observing (KVO) simply allows one object to observe changes to a 
   property on another object. It is one of the fundamental ways that hub.js 
-  communicates changes made to your object graph. Any object that has this 
+  communicates changes made to your object graph. Any object that has this
   module applied to it can be used in KVO-operations.
   
-  This module is applied automatically to all objects that inherit from
+  This module is applied automatically to all objects that inherit from 
   hub.Object, which includes most objects bundled with hub.js.  You will not 
   generally apply this module to classes yourself, but you will use the 
   features provided by this module frequently, so it is important to understand 
   how to use it.
   
   h2. Enabling Key Value Observing
-
+  
   With KVO, you can write functions that will be called automatically whenever 
-  a property on a particular object changes.  You can use this feature to
+  a property on a particular object changes.  You can use this feature to 
   reduce the amount of "glue code" that you often write to tie the various 
   parts of your application together.
   
@@ -41,37 +41,37 @@ hub.LOG_OBSERVERS = false ;
   
   {{{
     var aName = contact.get('firstName') ;
-    contact.set('firstName', 'Charles') ;
+    contact.set('firstName', 'Erich') ;
   }}}
   
   Don't do this:
   
   {{{
     var aName = contact.firstName ;
-    contact.firstName = 'Charles' ;
+    contact.firstName = 'Erich' ;
   }}}
-
+  
   get() and set() work just like the normal "dot operators" provided by 
-  JavaScript but they provide you with much more power, including not only
+  JavaScript but they provide you with much more power, including not only 
   observing but computed properties as well.
-
+  
   h2. Observing Property Changes
-
+  
   You typically observe property changes simply by adding the observes() 
-  call to the end of your method declarations in classes that you write.  For
+  call to the end of your method declarations in classes that you write.  For 
   example:
   
   {{{
     hub.Object.create({
       valueObserver: function() {
-        // Executes whenever the 'value' property changes
+        // Executes whenever the 'value' property changes.
       }.observes('value')
     }) ;
   }}}
   
-  Although this is the most common way to add an observer, this capability is
-  actually built into the hub.Object class on top of two methods defined in
-  this mixin called addObserver() and removeObserver().  You can use these two
+  Although this is the most common way to add an observer, this capability is 
+  actually built into the hub.Object class on top of two methods defined in 
+  this mixin called addObserver() and removeObserver().  You can use these two 
   methods to add and remove observers yourself if you need to do so at run 
   time.  
   
@@ -81,8 +81,8 @@ hub.LOG_OBSERVERS = false ;
     object.addObserver('aPropertyKey', targetObject, targetAction) ;
   }}}
   
-  This will cause the 'targetAction' method on the targetObject to be called
-  whenever the value stored under 'aPropertyKey' changes.
+  This will call the 'targetAction' method of targetObject whenever the value 
+  of 'aPropertyKey' changes.
   
   h2. Observer Parameters
   
@@ -94,10 +94,10 @@ hub.LOG_OBSERVERS = false ;
     propertyObserver(target, key, value, revision) ;
   }}}
   
-  - *target* - This is the object whose value changed.  Usually this.
-  - *key* - The key of the value that changed
-  - *value* - FIXME: This property is no longer used.  It will always be null
-  - *revision* - This is the revision of the target object
+  - *target* - This is the object whose value changed.  Usually the receiver.
+  - *key* - The key of the value that changed.
+  - *value* - FIXME: This property is no longer used.  It will always be null.
+  - *revision* - The revision of the target object.
   
   h2. Implementing Manual Change Notifications
   
@@ -108,7 +108,7 @@ hub.LOG_OBSERVERS = false ;
   To do this, you need to implement a computed property for the property 
   you want to change and override automaticallyNotifiesObserversFor().
   
-  The example below will only notify if the "balance" property value actually
+  The example below will only notify if the "balance" property value actually 
   changes:
   
   {{{
@@ -133,7 +133,7 @@ hub.LOG_OBSERVERS = false ;
   
   Internally, hub.js keeps track of observable information by adding a number 
   of properties to the object adopting the observable.  All of these properties 
-  begin with "_hub_kvo_" to separate them from the rest of your object.
+  begin with "_kvo_" to separate them from the rest of your object.
   
   @mixin
 */
@@ -522,7 +522,7 @@ hub.Observable = {
   
     @param {Array} queue the queue to add functions to
     @param {Array} keys the array of dependent keys for this key
-    @param {Hash} dependents the _hub_kvo_dependents cache
+    @param {Hash} dependents the _kvo_dependents cache
     @param {hub.Set} seen already seen keys
     @returns {void}
   */
@@ -596,8 +596,8 @@ hub.Observable = {
       ret = this[kvoKey] = (type === undefined) ? [] : type.create();
       this._hub_kvo_cloned[kvoKey] = true ;
       
-    // If item does exist but has not been cloned, then clone it.  Note
-    // that all types must implement copy().
+    // if item does exist but has not been cloned, then clone it.  Note
+    // that all types must implement copy().0
     } else if (!this._hub_kvo_cloned[kvoKey]) {
       ret = this[kvoKey] = ret.copy();
       this._hub_kvo_cloned[kvoKey] = true; 
@@ -677,7 +677,7 @@ hub.Observable = {
       chain.masterMethod = method ;
       
       // Save in set for chain observers.
-      this._hub_kvo_for(hub.keyFor('_hub_kvo_chains', key)).push(chain);
+      this._hub_kvo_for(hub.keyFor('_kvo_chains', key)).push(chain);
       
     // Create observers if needed...
     } else {
@@ -690,9 +690,9 @@ hub.Observable = {
       }
 
       if (target === this) target = null ; // use null for observers only.
-      kvoKey = hub.keyFor('_hub_kvo_observers', key);
+      kvoKey = hub.keyFor('_kvo_observers', key);
       this._hub_kvo_for(kvoKey, hub.ObserverSet).add(target, method, context);
-      this._hub_kvo_for('_hub_kvo_observed_keys', hub.CoreSet).add(key) ;
+      this._hub_kvo_for('_kvo_observed_keys', hub.CoreSet).add(key) ;
     }
 
     if (this.didAddObserver) this.didAddObserver(key, target, method);
@@ -723,7 +723,7 @@ hub.Observable = {
     if (key.indexOf('.') >= 0) {
       
       // try to find matching chains
-      kvoKey = hub.keyFor('_hub_kvo_chains', key);
+      kvoKey = hub.keyFor('_kvo_chains', key);
       if (chains = this[kvoKey]) {
         
         // if chains have not been cloned yet, do so now.
@@ -742,13 +742,13 @@ hub.Observable = {
     // otherwise, just like a normal observer.
     } else {
       if (target === this) target = null ; // use null for observers only.
-      kvoKey = hub.keyFor('_hub_kvo_observers', key) ;
+      kvoKey = hub.keyFor('_kvo_observers', key) ;
       if (observers = this[kvoKey]) {
         // if observers have not been cloned yet, do so now
         observers = this._hub_kvo_for(kvoKey) ;
         observers.remove(target, method) ;
         if (observers.targets <= 0) {
-          this._hub_kvo_for('_hub_kvo_observed_keys', hub.CoreSet).remove(key);
+          this._hub_kvo_for('_kvo_observed_keys', hub.CoreSet).remove(key);
         }
       }
     }
@@ -769,8 +769,8 @@ hub.Observable = {
   hasObserverFor: function(key) {
     hub.Observers.flush(this) ; // hookup as many observers as possible.
     
-    var observers = this[hub.keyFor('_hub_kvo_observers', key)],
-        locals    = this[hub.keyFor('_hub_kvo_local', key)],
+    var observers = this[hub.keyFor('_kvo_observers', key)],
+        locals    = this[hub.keyFor('_kvo_local', key)],
         members ;
 
     if (locals && locals.length>0) return true ;
@@ -789,14 +789,14 @@ hub.Observable = {
     This method looks for several private variables, which you can setup,
     to initialize:
     
-      - _hub_observers: this should contain an array of key names for observers
-        you need to configure.
+      - _observers: this should contain an array of key names for observers
+        you need to configure. FIXME: Should be prefixed with _hub_ or _kvo_.
         
-      - _hub_bindings: this should contain an array of key names that configure
-        bindings.
+      - _bindings: this should contain an array of key names that configure
+        bindings. FIXME: Should be prefixed with _hub_ or _kvo_.
         
-      - _hub_properties: this should contain an array of key names for computed
-        properties.
+      - _properties: this should contain an array of key names for computed
+        properties. FIXME: Should be prefixed with _hub_ or _kvo_.
         
     @returns {Object} this
   */
@@ -888,7 +888,7 @@ hub.Observable = {
     @returns {Array} array of Observer objects, describing the observer.
   */
   observersForKey: function(key) {
-    var observers = this._hub_kvo_for('_hub_kvo_observers', key) ;
+    var observers = this._hub_kvo_for('_kvo_observers', key) ;
     return observers.getMembers() || [] ;
   },
   
@@ -911,7 +911,7 @@ hub.Observable = {
     }
     
     // Get any starObservers -- they will be notified of all changes.
-    starObservers =  this['_hub_kvo_observers_*'] ;
+    starObservers =  this['_kvo_observers_*'] ;
     
     // prevent notifications from being sent until complete
     this._hub_kvo_changeLevel = (this._hub_kvo_changeLevel || 0) + 1; 
@@ -932,7 +932,7 @@ hub.Observable = {
       // once finished, clear the key so the loop will end.
       if (key === '*') {
         changes.add('*') ;
-        changes.addEach(this._hub_kvo_for('_hub_kvo_observed_keys', hub.CoreSet));
+        changes.addEach(this._hub_kvo_for('_kvo_observed_keys', hub.CoreSet));
 
       } else if (key) changes.add(key) ;
 
@@ -948,9 +948,7 @@ hub.Observable = {
           // for each dependent key, add to set of changes.  Also, if key
           // value is a cacheable property, clear the cached value...
           if (keys && (loc = keys.length)) {
-            if (log) {
-              hub.debug("%@...including dependent keys for %@: %@".fmt(spaces, key, keys));
-            }
+            if (log) hub.debug("%@...including dependent keys for %@: %@".fmt(spaces, key, keys));
             cache = this._hub_kvo_cache;
             if (!cache) cache = this._hub_kvo_cache = {};
             while(--loc >= 0) {
@@ -969,7 +967,7 @@ hub.Observable = {
         key = changes.pop() ; // the changed key
 
         // find any observers and notify them...
-        observers = this[hub.keyFor('_hub_kvo_observers', key)];
+        observers = this[hub.keyFor('_kvo_observers', key)];
         if (observers) {
           members = observers.getMembers() ;
           membersLength = members.length ;
@@ -994,7 +992,7 @@ hub.Observable = {
         // look for local observers.  Local observers are added by hub.Object
         // as an optimization to avoid having to add observers for every 
         // instance when you are just observing your local object.
-        members = this[hub.keyFor('_hub_kvo_local', key)];
+        members = this[hub.keyFor('_kvo_local', key)];
         if (members) {
           membersLength = members.length ;
           for(memberLoc=0;memberLoc<membersLength;memberLoc++) {
@@ -1289,7 +1287,7 @@ hub.Observable = {
   removeProbe: function(key) { this.removeObserver(key,hub.logChange); },
 
   /**
-    Logs the named properties to the console.
+    Logs the named properties hub.debug.
     
     @param {String...} propertyNames one or more property names
   */
