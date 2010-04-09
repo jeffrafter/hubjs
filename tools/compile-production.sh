@@ -8,5 +8,5 @@ cat ../BUILD | grep "^[A-Za-z0-9_/]*.js$"  | grep -v "^debug[/]" | xargs -n 1 -P
 cd ..
 # for whatever reason, the pipe isn't fully flushed when the java command runs, resulting in an error
 sleep 1
-java -jar java/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o hub.min.js hub-production.js
+java -jar tools/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar -o hub.min.js hub-production.js
 rm hub-production.js
