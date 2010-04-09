@@ -33,13 +33,6 @@ if (typeof window === 'undefined') {
       if (typeof what === 'undefined') { what = type; type = 'LOG'; }
       sys.puts(type + ": " + sys.inspect(what)) ;
     };
-    
-    // Prevent a console.log from blowing things up if we are on a browser that
-    // does not support it. FIXME: do we still need this? (also see below...)
-    if (typeof GLOBAL.console === 'undefined') {
-      var K = function(){} ;
-      GLOBAL.console = { log: K, info: K, warn: K, error: K };
-    }
   } else {
     // We're running on an unknown system.
     throw "hub.js currently requires node.js when run outside the browser" ;
@@ -57,7 +50,7 @@ if (typeof window === 'undefined') {
   };
   
   // Prevent a console.log from blowing things up if we are on a browser that
-  // does not support it. FIXME: do we still need this?
+  // does not support it.
   if (typeof console === 'undefined') {
     window.console = {} ;
     console.log = console.info = console.warn = console.error = function(){};
