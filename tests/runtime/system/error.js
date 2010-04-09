@@ -43,7 +43,7 @@ test("hub.val should return the error value if it has one", function() {
   equals(hub.val(true), true, 'val(true) should be true');
   equals(hub.val(false), false, 'val(false) should be false');
   equals(hub.val(null), null, 'val(null) should be true');
-  equals(hub.val(undefined), undefined, 'ok(undefined) should be true');
+  equals(hub.val(undefined), undefined, 'val(undefined) should be true');
   equals(hub.val("foo"), "foo", 'val(foo) should be true');
   equals(hub.val(hub.E("foo", "FOO", "BAZ")), "BAZ", 'val(hub.Error) should be BAZ');
   equals(hub.val(hub.E("foo", "FOO")), undefined, 'val(hub.Error) should be undefined');
