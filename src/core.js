@@ -31,29 +31,29 @@ hub.allege = function(test, msg) {
 */
 hub.mixin = function() {
   // copy reference to target object
-  var target = arguments[0] || {};
-  var idx = 1;
-  var length = arguments.length ;
-  var options ;
+  var target = arguments[0] || {},
+      idx = 1,
+      len = arguments.length,
+      options, key;
 
   // Handle case where we have only one item...extend hub
-  if (length === 1) {
-    target = this || {};
-    idx=0;
+  if (len===1) {
+    target = this || {} ;
+    idx = 0 ;
   }
 
-  for ( ; idx < length; idx++ ) {
+  for (; idx<len; ++idx) {
     if (!(options = arguments[idx])) continue ;
-    for(var key in options) {
+    for(key in options) {
       if (!options.hasOwnProperty(key)) continue ;
       var copy = options[key] ;
       if (target===copy) continue ; // prevent never-ending loop
       if (copy !== undefined) target[key] = copy ;
     }
   }
-  
-  return target;
-} ;
+
+  return target ;
+};
 
 /**
   Adds properties to a target object.  Unlike hub.mixin, however, if the target
@@ -61,7 +61,7 @@ hub.mixin = function() {
   
   Takes the root object and adds the attributes for any additional 
   arguments passed.
-
+  
   @param target {Object} the target object to extend
   @param properties {Object} one or more objects with properties to copy.
   @returns {Object} the target object.
