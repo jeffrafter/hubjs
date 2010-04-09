@@ -17,7 +17,10 @@
 hub.Hub = hub.Store.extend(
 /** @scope hub.Store.prototype */
 {
-
+  
+  /** Walk like a duck. */
+  isHub: true,
+  
   // Store the most current metadata for the records in the store.
   metaData: {},
 

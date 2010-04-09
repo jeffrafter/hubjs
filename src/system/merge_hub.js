@@ -15,9 +15,10 @@
   etc.
   
   @class
-  @extends hub.NestedStore
+  @extends Hub
+  @extends hub.Nested
 */
-hub.MergeHub = hub.NestedStore.extend(
+hub.MergeHub = hub.Hub.extend(hub.Nested,
   /** @scope hub.MergeHub.prototype */ {
   
   changedRecords: hub.CoreSet.create(),
@@ -30,6 +31,7 @@ hub.MergeHub = hub.NestedStore.extend(
       return this._hub_currentCommit ;
     } else {
       var pstore = this.get('parentStore') ;
+      hub_assert(pstore && pstore.isHub) ;
       pstore.get('currentCommit') ;
     }
   }.property('_hub_currentCommit').cacheable(),
