@@ -9,7 +9,7 @@
 
 var StringA, StringB, StringC ;
 
-context("hub.isEqual – String", {
+Spin.Plan.module("hub.isEqual – String", {
   setup: function() {
     StringA = "Hello" ;
     StringB = "Hi" ;
@@ -24,7 +24,7 @@ test("strings should be equal ",function() {
 
 var num1, num2, num3 ;
 
-context("hub.isEqual – Number", {
+Spin.Plan.module("hub.isEqual – Number", {
   setup: function() {
     num1 = 24 ;
     num2 = 24 ;
@@ -39,7 +39,7 @@ test("numericals should be equal", function() {
 
 var objectA, objectB, objectC ; //global variables
 
-context("hub.isEqual – Array", {  
+Spin.Plan.module("hub.isEqual – Array", {  
   setup: function() {
     objectA = [1,2] ;
     objectB = [1,2] ;
@@ -51,4 +51,4 @@ test("array should be equal", function() {
   // NOTE: We don't test for array contents -- that would be too expensive.
   equals(hub.isEqual(objectA, objectB), false, 'two array instances with the same values should not be equal');
   equals(hub.isEqual(objectA, objectC), false, 'two array instances with different values should not be equal');
-}) ;
+});
