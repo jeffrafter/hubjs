@@ -218,7 +218,7 @@ test("should find records based on hub.Query without recordType", function() {
   var records = MyApp.store.find(q);
   equals(records.get('length'), 4, 'record length should be 2');
 
-  same(records.getEach('firstName'), 'John John Jane Jane'.w(), 'firstNames should match');
+  same(records.getEach('firstName'), hub.w('John John Jane Jane'), 'firstNames should match');
 });
 
 test("should find records within a passed record array", function() {

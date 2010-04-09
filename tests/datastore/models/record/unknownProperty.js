@@ -41,7 +41,7 @@ module("hub.Record#unknownProperty", {
 });
 
 test("get() returns attributes with no type changes if they exist", function() {
-  'foo number bool array'.w().forEach(function(key) {
+  hub.w('foo number bool array').forEach(function(key) {
     equals(MyApp.foo.get(key), MyApp.json[key], "MyApp.foo.get(%@) should === attribute".fmt(key));
   });
 });

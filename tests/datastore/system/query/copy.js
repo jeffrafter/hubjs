@@ -21,7 +21,7 @@ test("basic copy", function() {
     scope: hub.CoreSet.create()
   }).freeze();
   
-  var keys = 'conditions orderBy recordType recordTypes parameters location scope'.w();
+  var keys = hub.w('conditions orderBy recordType recordTypes parameters location scope');
   var copy = q.copy();
   
   equals(copy.isFrozen, false, 'copy should not be frozen');

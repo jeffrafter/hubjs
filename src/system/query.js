@@ -467,10 +467,10 @@ hub.Query = hub.Object.extend(hub.Copyable, hub.Freezable,
   /** @private
     Properties that need to be copied when cloning the query.
   */
-  copyKeys: 'conditions orderBy recordType recordTypes parameters location scope'.w(),
+  copyKeys: hub.w('conditions orderBy recordType recordTypes parameters location scope'),
   
   /** @private */
-  concatenatedProperties: 'copyKeys'.w(),
+  concatenatedProperties: ['copyKeys'],
 
   /** @private 
     Implement the Copyable API to clone a query object once it has been 
@@ -1306,7 +1306,7 @@ hub.Query.mixin( /** @scope hub.Query */ {
       var peopleAndCompanies = hub.Query.local([Ab.Person, Ab.Company]);
       
       var people = hub.Query.local('Ab.Person');
-      var peopleAndCompanies = hub.Query.local('Ab.Person Ab.Company'.w());
+      var peopleAndCompanies = hub.Query.local(hub.w('Ab.Person Ab.Company'));
       
       var allRecords = hub.Query.local(hub.Record);
     }}} 

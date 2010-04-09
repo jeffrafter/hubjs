@@ -30,7 +30,7 @@ module("hub.Query#queryWithScope", {
 });
 
 function verifyCopy(copy, original) {
-  var keys = 'conditions orderBy recordType recordTypes parameters location'.w();
+  var keys = hub.w('conditions orderBy recordType recordTypes parameters location');
   keys.forEach(function(key) {
     equals(copy.get(key), original.get(key), 'copy.%@ should equal original.%@'.fmt(key, key));
   });

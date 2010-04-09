@@ -211,7 +211,7 @@ module("Computed properties", {
 test("getting values should call function return value", function() {
   
   // get each property twice. Verify return.
-  var keys = 'computed computedCached dependent dependentCached'.w();
+  var keys = hub.w('computed computedCached dependent dependentCached');
   
   keys.forEach(function(key) {
     equals(object.get(key), key, 'Try #1: object.get(%@) should run function'.fmt(key));
@@ -219,11 +219,11 @@ test("getting values should call function return value", function() {
   });
   
   // verify each call count.  cached should only be called once
-  'computedCalls dependentCalls'.w().forEach(function(key) {
+  hub.w('computedCalls dependentCalls').forEach(function(key) {
     equals(object[key].length, 2, 'non-cached property %@ should be called 2x'.fmt(key));
   });
 
-  'computedCachedCalls dependentCachedCalls'.w().forEach(function(key) {
+  hub.w('computedCachedCalls dependentCachedCalls').forEach(function(key) {
     equals(object[key].length, 1, 'non-cached property %@ should be called 1x'.fmt(key));
   });
   
@@ -232,8 +232,8 @@ test("getting values should call function return value", function() {
 test("setting values should call function return value", function() {
   
   // get each property twice. Verify return.
-  var keys = 'computed dependent computedCached dependentCached'.w();
-  var values = 'value1 value2'.w();
+  var keys = hub.w('computed dependent computedCached dependentCached');
+  var values = hub.w('value1 value2');
   
   keys.forEach(function(key) {
     

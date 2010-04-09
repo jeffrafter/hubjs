@@ -120,7 +120,7 @@ function performBasicTests(methodName, loc) {
     equals(q4, q1, 'should return cached query even if using an enumerable for types');
 
     // try again using strings
-    q5 = invokeWith('TestRecord TestRecord2'.w());
+    q5 = invokeWith(hub.w('TestRecord TestRecord2'));
     equals(q5, q1, 'should return cached query even if string record names are used');
   });
   

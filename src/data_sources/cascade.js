@@ -22,7 +22,7 @@
   
   {{{
     MyApp.dataSource = hub.CascadeDataSource.create({
-      dataSources: "prefs youtube photos".w(),
+      dataSources: hub.w("prefs youtube photos"),
       
       prefs:   MyApp.PrefsDataSource.create({ root: "/prefs" }),
       youtube: YouTube.YouTubeDataSource.create({ apiKey: "123456" }),

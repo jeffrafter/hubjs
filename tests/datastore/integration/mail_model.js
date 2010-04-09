@@ -26,13 +26,13 @@ module("Sample Model from a webmail app", {
       // here is the mailbox type.  must be one of INBOX, TRASH, OTHER
       mailbox: hub.Record.attr(String, {
         isRequired: true,
-        only: 'INBOX TRASH OTHER'.w()
+        only: hub.w('INBOX TRASH OTHER')
       }),
       
       // this is the sortKey that should be used to order the mailbox.
       sortKey: hub.Record.attr(String, {
         isRequired: true,
-        only: 'subject date from to'.w()
+        only: hub.w('subject date from to')
       }),
       
       // load the list of messages.  We use the mailbox guid to load the 

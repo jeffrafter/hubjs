@@ -24,7 +24,7 @@ module("Sample Model from TestRunner Application", {
       name: hub.Record.attr(String),
       
       /** test type - one of 'app', 'framework', 'sproutcore' */
-      type: hub.Record.attr(String, { only: 'single group all'.w() }),
+      type: hub.Record.attr(String, { only: hub.w('single group all') }),
 
       /** Fetches list of tests dynamically */
       tests: hub.Record.fetch('TestRunner.Test')
