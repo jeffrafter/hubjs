@@ -9,7 +9,7 @@
 
 /* This test always happens, even in production builds.
   
-  falseTE: `hub.allege()`, not `hub_allege()`. (We don't want to pollute the 
+  NOTE: `hub.allege()`, not `hub_allege()`. (We don't want to pollute the 
   global namespace in production code.)
   
   @static
