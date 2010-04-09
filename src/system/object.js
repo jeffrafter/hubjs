@@ -63,15 +63,6 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
       properties = base._hub_properties, clonedProperties = false,
       paths, pathLoc, local ;
 
-  // outlets are treated a little differently because you can manually 
-  // name outlets in the passed in hash. If this is the case, then clone
-  // the array first.
-  var outlets = base.outlets, clonedOutlets = false ;
-  if (ext.outlets) { 
-    outlets = (outlets || hub.EMPTY_ARRAY).concat(ext.outlets);
-    clonedOutlets = true ;
-  }
-
   // now copy properties, add superclass to func.
   for(key in ext) {
     if (key === '_kvo_cloned') continue; // do not copy
@@ -80,7 +71,7 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
     // Get the value.  Use concats if defined.
     var value = (concats.hasOwnProperty(key) ? concats[key] : null) || ext[key] ;
 
-    // Add observers, outlets, and properties for functions...
+    // Add observers and properties for functions...
     if (value && (value instanceof Function)) {
 
       // add super to funcs.  Be sure not to set the base of a func to 
@@ -113,14 +104,6 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
           clonedProperties = true ;
         }
         properties[properties.length] = key ;
-
-      // handle outlets
-      } else if (value.autoconfiguredOutlet) {
-        if (!clonedOutlets) {
-          outlets = (outlets || hub.EMPTY_ARRAY).slice();
-          clonedOutlets = true ;
-        }
-        outlets[outlets.length] = key ;          
       }
     }
 
@@ -145,7 +128,6 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
   // copy observers and properties 
   base._hub_observers = observers || [] ;
   base._hub_properties = properties || [] ;
-  base.outlets = outlets || []; // FIXME: Remove outlets support.
 
   return base ;
 } ;
@@ -600,19 +582,6 @@ hub.Object.prototype = {
       else return string ;
     } 
     return this._hub_object_toString ;
-  },
-
-  /**  
-    FIXME: Remove.
-    
-    Activates any outlet connections in object and syncs any bindings.  This
-    method is called automatically for view classes but may be used for any
-    object.
-    
-    @returns {void}
-  */
-  awake: function(key) { 
-    this.outlets.forEach(function(key) { this.get(key); },this) ;
   },
 
   /**

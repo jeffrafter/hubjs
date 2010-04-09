@@ -132,6 +132,8 @@ hub.Store = hub.Object.extend(
       store.commitChanges().destroy();
     }}}
     
+    FIXME: Change chain() to something else.
+    
     @param {Hash} attrs optional attributes to set on new store
     @param {Class} newStoreClass optional the class of the newly-created nested store (defaults to hub.NestedStore)
     @returns {hub.NestedStore} new nested store chained to receiver
