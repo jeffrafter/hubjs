@@ -62,6 +62,9 @@ hub.mixin = function() {
   Takes the root object and adds the attributes for any additional 
   arguments passed.
   
+  TODO: Merge this implementation with hub.mixin(); the code is almost 
+  identical.
+  
   @param target {Object} the target object to extend
   @param properties {Object} one or more objects with properties to copy.
   @returns {Object} the target object.
@@ -103,7 +106,7 @@ hub.extend = hub.mixin ;
 // ..........................................................
 // CORE FUNCTIONS
 // 
-// Enough with the bootstrap code.  Let's define some core functions
+// Enough with the bootstrap code.  Let's define some core functions.
 
 hub.mixin(/** @scope hub */ {
   

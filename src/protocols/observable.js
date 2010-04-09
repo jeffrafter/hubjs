@@ -32,13 +32,11 @@ hub.ObservableProtocol = {
     You will often implement this observer using a switch statement on the
     key parameter, taking appropriate action. 
     
-    @param observer {null} FIXME: no longer used; usually null
     @param target {Object} the target of the change.  usually this
     @param key {String} the name of the property that changed
-    @param value {Object} the new value of the property.
     @param revision {Number} a revision you can use to quickly detect changes.
     @returns {void}
   */
-  propertyObserver: function(observer,target,key,value,revision) {}
+  propertyObserver: function(target, key, revision) {}
   
 };

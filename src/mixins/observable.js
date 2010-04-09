@@ -91,12 +91,11 @@ hub.LOG_OBSERVERS = false ;
   An observer function can have the following arguments:
   
   {{{
-    propertyObserver(target, key, value, revision) ;
+    propertyObserver(target, key, revision) ;
   }}}
   
   - *target* - This is the object whose value changed.  Usually the receiver.
   - *key* - The key of the value that changed.
-  - *value* - FIXME: This property is no longer used.  It will always be null.
   - *revision* - The revision of the target object.
   
   h2. Implementing Manual Change Notifications
@@ -1027,7 +1026,7 @@ hub.Observable = {
         // if there is a default property observer, call that also
         if (this.propertyObserver) {
           if (log) hub.debug(hub.fmt('%@...firing %@.propertyObserver for key "%@"', spaces, this, key));
-          this.propertyObserver(this, key, null, rev);
+          this.propertyObserver(this, key, rev) ;
         }
       } // while(changes.length>0)
 
