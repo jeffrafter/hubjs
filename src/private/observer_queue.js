@@ -21,11 +21,9 @@
   Whenever the observer fires, the queue will be flushed to connect any 
   pending observers.
   
-  FIXME: Name should be hub.ObserverQueue, not hub.Observers
-  
   @namespace
 */
-hub.Observers = {
+hub.ObserverQueue = {
 
   queue: [],
   

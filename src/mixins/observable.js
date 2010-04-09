@@ -368,7 +368,7 @@ hub.Observable = {
   endPropertyChanges: function() {
     this._hub_kvo_changeLevel = (this._hub_kvo_changeLevel || 1) - 1 ;
     var level = this._hub_kvo_changeLevel, changes = this._hub_kvo_changes;
-    if ((level<=0) && changes && (changes.length>0) && !hub.Observers.isObservingSuspended) {
+    if ((level<=0) && changes && (changes.length>0) && !hub.ObserverQueue.isObservingSuspended) {
       this._hub_notifyPropertyObservers() ;
     } 
     return this ;
@@ -445,7 +445,7 @@ hub.Observable = {
     }
 
     // save in the change set if queuing changes
-    var suspended = hub.Observers.isObservingSuspended;
+    var suspended = hub.ObserverQueue.isObservingSuspended;
     if ((level > 0) || suspended) {
       var changes = this._hub_kvo_changes ;
       if (!changes) changes = this._hub_kvo_changes = hub.CoreSet.create() ;
@@ -453,7 +453,7 @@ hub.Observable = {
       
       if (suspended) {
         if (log) hub.debug([hub.KVO_SPACES,this].join(''), "will not notify observers because observing is suspended");
-        hub.Observers.objectHasPendingChanges(this) ;
+        hub.ObserverQueue.objectHasPendingChanges(this) ;
       }
       
     // otherwise notify property observers immediately
@@ -766,7 +766,7 @@ hub.Observable = {
     @returns {Boolean}
   */
   hasObserverFor: function(key) {
-    hub.Observers.flush(this) ; // hookup as many observers as possible.
+    hub.ObserverQueue.flush(this) ; // hookup as many observers as possible.
     
     var observers = this[hub.keyFor('_kvo_observers', key)],
         locals    = this[hub.keyFor('_kvo_local', key)],
@@ -838,7 +838,7 @@ hub.Observable = {
               root = this; path = '';
             }
             
-            hub.Observers.addObserver(path, this, observer, root); 
+            hub.ObserverQueue.addObserver(path, this, observer, root); 
           }
         }
       }
@@ -897,7 +897,7 @@ hub.Observable = {
 
     if (!this._hub_observableInited) this.initObservable() ;
     
-    hub.Observers.flush(this) ; // hookup as many observers as possible.
+    hub.ObserverQueue.flush(this) ; // hookup as many observers as possible.
 
     var log = hub.LOG_OBSERVERS && !(this.LOG_OBSERVING===false) ;
     var observers, changes, dependents, starObservers, idx, keys, rev ;

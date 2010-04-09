@@ -133,7 +133,7 @@ hub.RangeObserver = {
     // add to pending range observers queue so that if any of these objects
     // change we will have a chance to setup observing on them.
     this.isObserving = false ;
-    hub.Observers.addPendingRangeObserver(this);
+    hub.ObserverQueue.addPendingRangeObserver(this);
 
     return this;
   },
