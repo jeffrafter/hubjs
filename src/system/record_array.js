@@ -13,29 +13,28 @@
   the storeKeys into actual hub.Record objects that the rest of your 
   application can work with.
   
-  Normally you do not create RecordArrays directly.  Instead, a RecordArray
+  Normally you do not create RecordArrays directly.  Instead, a RecordArray 
   is returned when you call hub.Store.find(), already properly configured.
-  You can usually just work with the RecordArray instance just like another
+  You can usually just work with the RecordArray instance just like another 
   array.
   
-  The information below about RecordArray internals is only intended for those
+  The information below about RecordArray internals is only intended for those 
   who need to override this class for some reason to do some special.
   
   h2. Internal Notes
   
-  Normally the RecordArray behavior is very simple.  Any array-like operations
+  Normally the RecordArray behavior is very simple.  Any array-like operations 
   will be translated into similar calls onto the underlying array of 
   storeKeys.  The underlying array can be a real array or it may be a 
   SparseArray, which is how you implement incremental loading.
   
-  If the RecordArray is created with an hub.Query objects as well (and it 
-  almost always will have a Query object), then the RecordArray will also 
-  consult the query for various delegate operations such as determining if 
-  the record array should update automatically whenever records in the store
-  changes.
+  If the RecordArray is created with a hub.Query object (this is typical), the 
+  RecordArray will also consult the query for various delegate operations such 
+  as determining if the record array should update automatically whenever 
+  records in the store change.
   
-  It will also ask the Query to refresh the storeKeys whenever records change
-  in the store.
+  It will also ask the Query to refresh the storeKeys whenever records are 
+  changed in the store.
   
   @class
   @extends hub.Object
@@ -43,7 +42,7 @@
   @extends hub.Array
 */
 
-hub.RecordArray = hub.Object.extend(hub.Enumerable, hub.Array, 
+hub.RecordArray = hub.Object.extend(hub.Enumerable, hub.Array,
   /** @scope hub.RecordArray.prototype */ {
     
   /**

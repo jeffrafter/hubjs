@@ -44,7 +44,7 @@ hub.SparseArray = hub.Object.extend(hub.Observable, hub.Enumerable, hub.Array,
   // LENGTH SUPPORT
   // 
 
-  _hub_requestingLength: 0,  
+  _hub_requestingLength: 0,
   _hub_requestingIndex: 0,
    
   /**
@@ -96,7 +96,7 @@ hub.SparseArray = hub.Object.extend(hub.Observable, hub.Enumerable, hub.Array,
   
   /*
     This array contains all the start_indexes of ranges requested. This is to 
-    avoid calling sparseArrayDidRequestRange to often. Indexes are removed and 
+    avoid calling sparseArrayDidRequestRange too often. Indexes are removed and 
     added as range requests are completed.
   */
   requestedRangeIndex: [],
