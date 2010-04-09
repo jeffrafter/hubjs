@@ -1961,10 +1961,10 @@ hub.Store = hub.Object.extend(
     hub_assert(typeof storeKey === hub.T_NUMBER) ;
     
     status = this.readStatus(storeKey) ;
-    if (status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROY_CLEAN) {
-      // status = K.DESTROY_CLEAN ;
+    if (status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROYED_CLEAN) {
+      // status = K.DESTROYED_CLEAN ;
       
-      this.removeDataHash(storeKey, K.DESTROY_CLEAN) ;
+      this.removeDataHash(storeKey, K.DESTROYED_CLEAN) ;
       this.dataHashDidChange(storeKey) ;
       return true;
     } else {
@@ -1990,7 +1990,7 @@ hub.Store = hub.Object.extend(
     hub_assert(typeof storeKey === hub.T_NUMBER) ;
     
     status = this.readStatus(storeKey) ;
-    if (status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROY_CLEAN) {
+    if (status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROYED_CLEAN) {
       // status = K.ERROR ;
       
       // Add the error to the array of record errors (for lookup later on if 

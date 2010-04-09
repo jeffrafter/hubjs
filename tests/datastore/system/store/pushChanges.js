@@ -46,19 +46,19 @@ test("Do a pushRetrieve and check if there is conflicts", function() {
   var res = store.pushRetrieve(hub.Record, undefined, undefined, storeKey1);
   ok(res, "There is no conflict, pushRetrieve was successful.");
   res = store.pushRetrieve(hub.Record, undefined, undefined, storeKey4);
-  ok(res, "There is a conflict. Because of the state, this is expected.");
+  ok(res, "There is no conflict, pushRetrieve was successful.");
 });
 
 test("Do a pushDestroy and check if there is conflicts", function() {
   var res = store.pushDestroy(hub.Record, undefined, storeKey2);
   ok(res, "There is no conflict, pushDestroy was successful.");
-  res = store.pushRetrieve(hub.Record, undefined, undefined, storeKey5);
-  ok(res, "There is a conflict. Because of the state, this is expected.");
+  res = store.pushDestroy(hub.Record, undefined, storeKey5);
+  ok(!res, "There is a conflict. Because of the state, this is expected.");
 });
 
 test("Issue a pushError and check if there is conflicts", function() {
   var res = store.pushError(hub.Record, undefined, hub.Record.NOT_FOUND_ERROR, storeKey3);
   ok(res, "There is no conflict, pushError was successful.");
-  res = store.pushRetrieve(hub.Record, undefined, undefined, storeKey6);
-  ok(res, "There is a conflict. Because of the state, this is expected.");
+  res = store.pushError(hub.Record, undefined, undefined, storeKey6);
+  ok(!res, "There is a conflict. Because of the state, this is expected.");
 });
