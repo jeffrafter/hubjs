@@ -318,7 +318,7 @@ hub.Hub = hub.Store.extend(
         recordId = hub.uuid();
         dataHash[pkName] = recordId;
       }
-      var json = hub.json.encode(dataHash),
+      var json = JSON.stringify(dataHash),
       props = {
         storeKey: storeKey,
         recordType: recordType,
@@ -338,7 +338,7 @@ hub.Hub = hub.Store.extend(
       this._recordsByKey[props.key] = props;
     }
 
-    var store_bytes = hub.json.encode("store"),
+    var store_bytes = JSON.stringify("store"),
     store_key,
     store_time = currentTime,
     insert_data_sql = self.insertSQL['Data']; // 7
@@ -350,7 +350,7 @@ hub.Hub = hub.Store.extend(
       typeMetaByKey = {};
       // Then Types Types
       self._types.forEach(function(type) {
-        var type_bytes = hub.json.encode(type),
+        var type_bytes = JSON.stringify(type),
         type_time = currentTime,
         childMetaDataKeys = [],
         metaDataByKey = {};
@@ -500,7 +500,7 @@ hub.Hub = hub.Store.extend(
     hub_precondition(hub.typeOf(p.commit_id) === hub.T_NUMBER);
     var self = this,
     totalStorage = p.totalStorage,
-    ancestors = hub.json.encode(p.ancestors ? p.ancestors: [this.currentCommit]),
+    ancestors = JSON.stringify(p.ancestors ? p.ancestors: [this.currentCommit]),
     ancestorCount = ancestors.length,
     key = hub.SHA256("" + p.name + p.committer + p.data),
     insertCommitSql = self.insertSQL['Commit'];
@@ -695,7 +695,7 @@ hub.Hub = hub.Store.extend(
       url = this._sendPackURL.fmt(version);
       hub.debug("Calling packCommited call back");
       // if (this.get('hasSocket')) { // Send Via Socket if we have one.
-      //   SproutDB.webSocket.send(version+":"+hub.json.encode(pack)) ;
+      //   SproutDB.webSocket.send(version+":"+JSON.stringify(pack)) ;
       // } else { // Else send via ajax.
       //   hub.Request.postUrl(url).set('isJSON', true)
       //     .notify(this, this._didSendPack, {
@@ -881,7 +881,7 @@ hub.Hub = hub.Store.extend(
       function(tx, result) {
         if (result.rows.length > 0) {
           var row = result.rows.item(0),
-          record = hub.json.decode(row['bytes']);
+          record = JSON.parse(row['bytes']);
           // Bonsai.debug['row'] = row;
           self.dataSourceDidComplete(storeKey, record);
         } else {
@@ -1050,7 +1050,7 @@ hub.Hub = hub.Store.extend(
           dataByKey[sKey] = {
             type: row['type'],
             pk: row['key'],
-            bytes: hub.json.decode(row['bytes'])
+            bytes: JSON.parse(row['bytes'])
           };
         }
         var toDelete = currentKeys.copy().removeEach(targetKeys),
