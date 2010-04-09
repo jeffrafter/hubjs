@@ -86,9 +86,7 @@ hub.Enumerable = {
   },
   
   /**
-    Helper method returns the first object from a collection.  This is usually
-    used by bindings and other parts of the framework to extract a single 
-    object if the enumerable contains only one item.
+    Helper method returns the first object from a collection.
     
     If you override this method, you should implement it so that it will 
     always return the same value each time it is called.  If your enumerable

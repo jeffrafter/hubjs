@@ -788,14 +788,11 @@ hub.Observable = {
     This method looks for several private variables, which you can setup,
     to initialize:
     
-      - _observers: this should contain an array of key names for observers
-        you need to configure. FIXME: Should be prefixed with _hub_ or _kvo_.
+      - _hub_observers: this should contain an array of key names for observers
+        you need to configure.
         
-      - _bindings: this should contain an array of key names that configure
-        bindings. FIXME: Should be prefixed with _hub_ or _kvo_.
-        
-      - _properties: this should contain an array of key names for computed
-        properties. FIXME: Should be prefixed with _hub_ or _kvo_.
+      - _hub_properties: this should contain an array of key names for computed
+        properties.
         
     @returns {Object} this
   */
@@ -841,17 +838,6 @@ hub.Observable = {
             hub.ObserverQueue.addObserver(path, this, observer, root); 
           }
         }
-      }
-    }
-
-    // Add Bindings
-    this.bindings = []; // will be filled in by the bind() method.
-    if (keys = this._hub_bindings) {
-      for(loc=0;loc<keys.length;loc++) {
-        // get propertyKey
-        key = keys[loc] ; value = this[key] ;
-        var propertyKey = key.slice(0,-7) ; // contentBinding => content
-        this[key] = this.bind(propertyKey, value) ;
       }
     }
 
@@ -1045,53 +1031,17 @@ hub.Observable = {
     
     return true ; // finished successfully
   },
-
-  // ..........................................
-  // BINDINGS
-  // 
-    
-  /**  
-    Manually add a new binding to an object.  This is the same as doing
-    the more familiar propertyBinding: 'property.path' approach.
-    
-    @param {String} toKey the key to bind to
-    @param {Object} target target or property path to bind from
-    @param {String|Function} method method for target to bind from
-    @returns {hub.Binding} new binding instance
-  */
-  bind: function(toKey, target, method) {
-
-    var binding ;
-
-    // normalize...
-    if (method !== undefined) target = [target, method];
-
-    // if a string or array (i.e. tuple) is passed, convert this into a
-    // binding.  If a binding default was provided, use that.
-    var pathType = hub.typeOf(target) ;
-    if (pathType === hub.T_STRING || pathType === hub.T_ARRAY) {
-      binding = this[toKey + 'BindingDefault'] || hub.Binding;
-      binding = binding.beget().from(target) ;
-    } else binding = target ;
-
-    // finish configuring the binding and then connect it.
-    binding = binding.to(toKey, this).connect() ;
-    this.bindings.push(binding) ;
-    
-    return binding ;
-  },
   
-  /**  
+  /**
     didChangeFor makes it easy for you to verify that you haven't seen any
     changed values.  You need to use this if your method observes multiple
     properties.  To use this, call it like this:
-  
+    
     if (this.didChangeFor('render','height','width')) {
        // DO SOMETHING HERE IF CHANGED.
     }
   */  
   didChangeFor: function(context) { 
-    
     context = hub.hashFor(context) ; // get a hash key we can use in caches.
     
     // setup caches...
@@ -1099,7 +1049,7 @@ hub.Observable = {
     if (!valueCache) valueCache = this._hub_kvo_didChange_valueCache = {};
     var revisionCache = this._hub_kvo_didChange_revisionCache;
     if (!revisionCache) revisionCache=this._hub_kvo_didChange_revisionCache={};
-
+    
     // get the cache of values and revisions already seen in this context
     var seenValues = valueCache[context] || {} ;
     var seenRevisions = revisionCache[context] || {} ;
@@ -1128,8 +1078,6 @@ hub.Observable = {
     return ret ;
   },
 
-
-
   /**
     Sets the property only if the passed value is different from the
     current value.  Depending on how expensive a get() is on this property,
@@ -1143,7 +1091,7 @@ hub.Observable = {
     return (this.get(key) !== value) ? this.set(key, value) : this ;
   },
   
-  /**  
+  /**
     Navigates the property path, returning the value at that point.
     
     If any object in the path is undefined, returns undefined.

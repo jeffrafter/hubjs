@@ -23,8 +23,8 @@ hub.BENCHMARK_OBJECTS = false;
   including:
   
   - concating concatenatedProperties
-  - prepping a list of bindings, observers, and dependent keys
-  - caching local observers so they don't need to be manually constructed.
+  - prepping a list of observers and dependent keys
+  - caching local observers so they don't need to be manually constructed
 
   @param {Hash} base hash
   @param {Hash} extension
@@ -56,13 +56,12 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
     }
   }
 
-  // setup arrays for bindings, observers, and properties.  Normally, just
-  // save the arrays from the base.  If these need to be changed during 
-  // processing, then they will be cloned first.
-  var bindings = base._hub_bindings, clonedBindings = false;
-  var observers = base._hub_observers, clonedObservers = false;
-  var properties = base._hub_properties, clonedProperties = false;
-  var paths, pathLoc, local ;
+  // Set up the arrays for observers and properties.  Normally, just save the 
+  // arrays from the base.  If these need to be changed during processing, then 
+  // they will be cloned first.
+  var observers = base._hub_observers, clonedObservers = false,
+      properties = base._hub_properties, clonedProperties = false,
+      paths, pathLoc, local ;
 
   // outlets are treated a little differently because you can manually 
   // name outlets in the passed in hash. If this is the case, then clone
@@ -75,27 +74,14 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
 
   // now copy properties, add superclass to func.
   for(key in ext) {
-
     if (key === '_kvo_cloned') continue; // do not copy
+    if (!ext.hasOwnProperty(key)) continue ; // avoid copying builtin methods
 
-    // avoid copying builtin methods
-    if (!ext.hasOwnProperty(key)) continue ; 
-
-    // get the value.  use concats if defined
+    // Get the value.  Use concats if defined.
     var value = (concats.hasOwnProperty(key) ? concats[key] : null) || ext[key] ;
 
-    // Possibly add to a bindings.
-    if (key.slice(-7) === "Binding") {
-      if (!clonedBindings) {
-        bindings = (bindings || hub.EMPTY_ARRAY).slice() ;
-        clonedBindings = true ;
-      }
-
-      if (bindings === null) bindings = (base._hub_bindings || hub.EMPTY_ARRAY).slice();
-      bindings[bindings.length] = key ;
-
-    // Also add observers, outlets, and properties for functions...
-    } else if (value && (value instanceof Function)) {
+    // Add observers, outlets, and properties for functions...
+    if (value && (value instanceof Function)) {
 
       // add super to funcs.  Be sure not to set the base of a func to 
       // itself to avoid infinite loops.
@@ -156,11 +142,10 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
   }
 
 
-  // copy bindings, observers, and properties 
-  base._hub_bindings = bindings || [];
+  // copy observers and properties 
   base._hub_observers = observers || [] ;
   base._hub_properties = properties || [] ;
-  base.outlets = outlets || [];
+  base.outlets = outlets || []; // FIXME: Remove outlets support.
 
   return base ;
 } ;
@@ -168,8 +153,7 @@ hub._hub_object_extend = function _hub_object_extend(base, ext) {
 /**
   hub.Object is the root class for most classes defined by hub.js.  It builds 
   on top of the native object support provided by JavaScript to provide support 
-  for class-like inheritance, automatic bindings, properties observers, and 
-  more.
+  for class-like inheritance, properties observers, and more.
   
   Most of the classes you define in your model layer should inherit from 
   hub.Object or one of its subclasses, typically hub.Record.  If you are 
@@ -401,7 +385,7 @@ hub.Object.prototype = {
     You can call this method on an object to mixin one or more hashes of 
     properties on the receiver object.  In addition to simply copying 
     properties, this method will also prepare the properties for use in 
-    bindings, computed properties, etc.
+    key-value observing, computed properties, etc.
     
     If you plan to use this method, you should call it before you call
     the inherited init method from hub.Object or else your instance may not 
@@ -619,6 +603,8 @@ hub.Object.prototype = {
   },
 
   /**  
+    FIXME: Remove.
+    
     Activates any outlet connections in object and syncs any bindings.  This
     method is called automatically for view classes but may be used for any
     object.
@@ -627,7 +613,6 @@ hub.Object.prototype = {
   */
   awake: function(key) { 
     this.outlets.forEach(function(key) { this.get(key); },this) ;
-    this.bindings.invoke('sync'); 
   },
 
   /**
