@@ -45,11 +45,9 @@ hub.Record = hub.Object.extend(
     This is the primary key used to distinguish records.  If the keys match, 
     the records are assumed to be identical.
     
-    FIXME: This should default to 'id'.
-    
     @property {String}
   */
-  primaryKey: 'guid',
+  primaryKey: 'id',
   
   /**
     Returns the id for the record instance.  The id is used to uniquely 

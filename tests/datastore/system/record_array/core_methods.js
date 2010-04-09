@@ -14,7 +14,7 @@ module("hub.RecordArray core methods", {
     // setup dummy store
     store = hub.Store.create();
     storeKey = hub.Record.storeKeyFor('foo');
-    json = {  guid: "foo", foo: "bar" };
+    json = {  id: "foo", foo: "bar" };
     store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN); 
     
     

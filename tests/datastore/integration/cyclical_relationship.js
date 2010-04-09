@@ -51,32 +51,32 @@ module("Cyclical relationships", {
     });
     
     AB.Group.FIXTURES = [
-      { guid: 100, name: "G1" },
-      { guid: 101, name: "G2" }
+      { id: 100, name: "G1" },
+      { id: 101, name: "G2" }
     ];
 
     AB.Contact.FIXTURES = [
-      { guid: 1,
+      { id: 1,
         name: "G1-Fav1",
         group: 100,
         isFavorite: true },
 
-      { guid: 2,
+      { id: 2,
         name: "G1-Fav2",
         group: 100,
         isFavorite: true },
 
-      { guid: 3,
+      { id: 3,
         name: "G1-Norm1",
         group: 100,
         isFavorite: false },
 
-      { guid: 4,
+      { id: 4,
         name: "G2-Fav1",
         group: 101,
         isFavorite: true },
 
-      { guid: 5,
+      { id: 5,
         name: "G1-Norm1",
         group: 101,
         isFavorite: false }

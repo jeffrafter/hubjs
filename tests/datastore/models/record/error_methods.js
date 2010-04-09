@@ -19,8 +19,8 @@ module("hub.Record Error Methods", {
     store = hub.Store.create();
 
     var records = [
-      { guid: 1, name: 'Thing One' },
-      { guid: 2, name: 'Thing Two' }
+      { id: 1, name: 'Thing One' },
+      { id: 2, name: 'Thing Two' }
     ];
 
     var types = [ Application.Thing, Application.Thing ];

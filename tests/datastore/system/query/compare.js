@@ -24,11 +24,11 @@ module("hub.Query comparison of records", {
     
     // load some data
     MyApp.store.loadRecords(MyApp.Foo, [
-      { guid: 1, firstName: "John", lastName: "Doe", year: 1974 },
-      { guid: 2, firstName: "Jane", lastName: "Doe", year: 1975 },
-      { guid: 3, firstName: "Emily", lastName: "Parker", year: 1975, active: null },
-      { guid: 4, firstName: "Johnny", lastName: "Cash", active: false },
-      { guid: 5, firstName: "Bert", lastName: "Berthold", active: true }
+      { id: 1, firstName: "John", lastName: "Doe", year: 1974 },
+      { id: 2, firstName: "Jane", lastName: "Doe", year: 1975 },
+      { id: 3, firstName: "Emily", lastName: "Parker", year: 1975, active: null },
+      { id: 4, firstName: "Johnny", lastName: "Cash", active: false },
+      { id: 5, firstName: "Bert", lastName: "Berthold", active: true }
     ]);
     
     
@@ -86,10 +86,10 @@ test("building the order", function() {
   ok(q._hub_order[2].descending, 'descending should be true');
 });
 
-test("no order should result in comparison by guid", function() {
+test("no order should result in comparison by id", function() {
   q.orderBy = null;
   q.parse();
-  equals(q.compare(rec1,rec2), -1, 'guid 1 should be before guid 2');
+  equals(q.compare(rec1,rec2), -1, 'id 1 should be before id 2');
 });
 
 test("comparing non existant properties", function() {
@@ -126,8 +126,8 @@ test("comparing string properties", function() {
   equals(q.compare(rec1,rec2), -1, 'John should be before Jane with DESC');
 }); 
 
-test("comparing by equal properties should use guid for order", function() {
+test("comparing by equal properties should use id for order", function() {
   q.orderBy = "lastName";
   q.parse();
-  equals(q.compare(rec1,rec2), -1, 'guid 1 should be before guid 2');
+  equals(q.compare(rec1,rec2), -1, 'id 1 should be before id 2');
 });

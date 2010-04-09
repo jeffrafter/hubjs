@@ -7,6 +7,8 @@
 // ==========================================================================
 /*globals hub module test ok equals same MyApp */
 
+// TODO: Remove tabs throughout source code and unit tests
+
 // test normalize method for hub.Record
 var storeKeys, rec, rec2, rec3, rec4;
 module("hub.Record normalize method", {
@@ -17,14 +19,14 @@ module("hub.Record normalize method", {
     
     MyApp.Foo = hub.Record.extend({
       
-      guid: hub.Record.attr(String, { defaultValue: function() {
+      id: hub.Record.attr(String, { defaultValue: function() {
         var i, rnum, chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz",
           strLen = 8, ret = '';
-    		for (i=0; i<strLen; i++) {
-    			rnum = Math.floor(Math.random() * chars.length);
-    			ret += chars.substring(rnum,rnum+1);
-    		}
-    		return ret;
+        for (i=0; i<strLen; i++) {
+          rnum = Math.floor(Math.random() * chars.length);
+          ret += chars.substring(rnum,rnum+1);
+        }
+        return ret;
       } }),
       
       // test simple reading of a pass-through prop
@@ -61,19 +63,19 @@ module("hub.Record normalize method", {
     
     storeKeys = MyApp.store.loadRecords(MyApp.Foo, [
       { 
-        guid: 'foo1', 
+        id: 'foo1', 
         firstName: 123, 
         anArray: ['one', 'two', 'three']
       },
       
       { 
-        guid: 'foo2', 
+        id: 'foo2', 
         firstName: "Jane",
         relatedTo: 'foo1'
       },
       
       {
-        guid: 'foo3'
+        id: 'foo3'
       }
       
     ]);
@@ -139,7 +141,7 @@ test("normalizing with includeNull flag" ,function() {
 test("normalizing a new record with toOne should reflect id in data hash" ,function() {
 
   var recHash = { 
-    guid: 'foo4', 
+    id: 'foo4', 
     firstName: "Jack",
     relatedTo: 'foo1'
   };
@@ -160,7 +162,7 @@ test("normalizing a new record with toOne should reflect id in data hash" ,funct
 test("normalizing a new record with toMany should reflect id in data hash" ,function() {
 
   var recHash = { 
-    guid: 'foo5', 
+    id: 'foo5', 
     firstName: "Andrew",
     relatedToMany: ['foo1', 'foo2']
   };
@@ -181,7 +183,7 @@ test("normalizing a new record with toMany should reflect id in data hash" ,func
 test("normalizing a new record with toOne that has broken relationship" ,function() {
 
   var recHash = { 
-    guid: 'foo5', 
+    id: 'foo5', 
     firstName: "Andrew",
     relatedTo: 'foo10' // does not exist
   };
@@ -200,7 +202,7 @@ test("normalizing a new record with toOne that has broken relationship" ,functio
 test("normalizing a new record with toOne with relationship to wrong recordType" ,function() {
 
   var recHash = { 
-    guid: 'bar1', 
+    id: 'bar1', 
     firstName: "Andrew",
     relatedTo: 'foo1' // does exist but wrong recordType
   };
@@ -216,7 +218,7 @@ test("normalizing a new record with toOne with relationship to wrong recordType"
   
 });
 
-test("normalizing a new record with no guid should work with defaultValue" ,function() {
+test("normalizing a new record with no id should work with defaultValue" ,function() {
   
   var recHash = { 
     firstName: "Andrew",
@@ -226,14 +228,14 @@ test("normalizing a new record with no guid should work with defaultValue" ,func
   var newRecord = MyApp.store.createRecord(MyApp.Foo, recHash);
   MyApp.store.commitRecords();
   
-  var firstGuid = newRecord.get('guid');
+  var firstId = newRecord.get('id');
   
   equals(newRecord.get('firstName'), 'Andrew', 'firstName should be Andrew');
   
   newRecord.normalize();
   
-  var findRecord = MyApp.store.find(MyApp.Foo, firstGuid);
+  var findRecord = MyApp.store.find(MyApp.Foo, firstId);
   
-  equals(findRecord.get('guid'), firstGuid, 'guid should be the same as first');
+  equals(findRecord.get('id'), firstId, 'id should be the same as first');
   
 });

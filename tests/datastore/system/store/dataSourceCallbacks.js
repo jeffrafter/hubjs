@@ -20,97 +20,97 @@ module("hub.Store#dataSourceCallbacks", {
     store = hub.Store.create();
     
     json1 = {
-      guid: "commitGUID1",
+      id: "commitGUID1",
       string: "string",
       number: 23,
       bool:   true
     };
     json2 = {
-      guid: "commitGUID2",
+      id: "commitGUID2",
       string: "string",
       number: 23,
       bool:   true
     };
     json3 = {
-      guid: "commitGUID3",
+      id: "commitGUID3",
       string: "string",
       number: 23,
       bool:   true
     };
     json4 = {
-      guid: "commitGUID4",
+      id: "commitGUID4",
       string: "string",
       number: 23,
       bool:   true
     };
     json5 = {
-      guid: "commitGUID5",
+      id: "commitGUID5",
       string: "string",
       number: 23,
       bool:   true
     };
     json6 = {
-      guid: "commitGUID6",
+      id: "commitGUID6",
       string: "string",
       number: 23,
       bool:   true
     };
     json7 = {
-      guid: "commitGUID7",
+      id: "commitGUID7",
       string: "string",
       number: 23,
       bool:   true
     };
     json8 = {
-      guid: "commitGUID8",
+      id: "commitGUID8",
       string: "string",
       number: 23,
       bool:   true
     };
     json9 = {
-      guid: "commitGUID9",
+      id: "commitGUID9",
       string: "string",
       number: 23,
       bool:   true
     };
     json10 = {
-      guid: "commitGUID10",
+      id: "commitGUID10",
       string: "string",
       number: 23,
       bool:   true
     };
     json11 = {
-      guid: "commitGUID11",
+      id: "commitGUID11",
       string: "string",
       number: 23,
       bool:   true
     };
     json12 = {
-      guid: "commitGUID12",
+      id: "commitGUID12",
       string: "string",
       number: 23,
       bool:   true
     };
     json13 = {
-      guid: "commitGUID13",
+      id: "commitGUID13",
       string: "string",
       number: 23,
       bool:   true
     };
     json14 = {
-      guid: "commitGUID14",
+      id: "commitGUID14",
       string: "string",
       number: 23,
       bool:   true
     };
     json15 = {
-      guid: "commitGUID15",
+      id: "commitGUID15",
       string: "string",
       number: 23,
       bool:   true
     };
     json16 = {
-      guid: "commitGUID16",
+      id: "commitGUID16",
       string: "string",
       number: 23,
       bool:   true

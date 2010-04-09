@@ -62,11 +62,11 @@ module("hub.Query querying find() on a store", {
     MyApp.store = hub.Store.create().from(MyApp.DataSource);
     
     var records = [
-      { guid: 1, firstName: "John", lastName: "Doe", married: true },
-      { guid: 2, firstName: "Jane", lastName: "Doe", married: false },
-      { guid: 3, firstName: "Emily", lastName: "Parker", bornIn: 1975, married: true },
-      { guid: 4, firstName: "Johnny", lastName: "Cash", married: true },
-      { guid: 5, firstName: "Bert", lastName: "Berthold", married: true }
+      { id: 1, firstName: "John", lastName: "Doe", married: true },
+      { id: 2, firstName: "Jane", lastName: "Doe", married: false },
+      { id: 3, firstName: "Emily", lastName: "Parker", bornIn: 1975, married: true },
+      { id: 4, firstName: "Johnny", lastName: "Cash", married: true },
+      { id: 5, firstName: "Bert", lastName: "Berthold", married: true }
     ];
     
     // load some data
@@ -271,7 +271,7 @@ test("loading more data into the store should propagate to record array", functi
   
   
   var newStoreKeys = MyApp.store.loadRecords(MyApp.Foo, [
-    { guid: 10, firstName: "John", lastName: "Johnson" }
+    { id: 10, firstName: "John", lastName: "Johnson" }
   ]);
   
   
@@ -288,7 +288,7 @@ test("loading more data into the store should propagate to record array with que
 
   
   var newStoreKeys = MyApp.store.loadRecords(MyApp.Foo, [
-    { guid: 10, firstName: "John", lastName: "Johnson" }
+    { id: 10, firstName: "John", lastName: "Johnson" }
   ]);
   
   
@@ -299,7 +299,7 @@ test("loading more data into the store should propagate to record array with que
   // subsequent updates to store keys should also work
   
   var newStoreKeys2 = MyApp.store.loadRecords(MyApp.Foo, [
-    { guid: 11, firstName: "John", lastName: "Norman" }
+    { id: 11, firstName: "John", lastName: "Norman" }
   ]);
   
   
@@ -315,9 +315,9 @@ test("Loading records after hub.Query should show up", function() {
   equals(records.objectAt(0).get('firstName'), 'John', 'name should be John');
   
   var recordsToLoad = [
-    { guid: 20, firstName: "John", lastName: "Johnson" },
-    { guid: 21, firstName: "John", lastName: "Anderson" },
-    { guid: 22, firstName: "Barbara", lastName: "Jones" }
+    { id: 20, firstName: "John", lastName: "Johnson" },
+    { id: 21, firstName: "John", lastName: "Anderson" },
+    { id: 22, firstName: "Barbara", lastName: "Jones" }
   ];
   
   
@@ -338,7 +338,7 @@ test("Loading records after getting empty record array based on hub.Query should
   equals(records.get('length'), 0, 'record length should be 0');
   
   var recordsToLoad = [
-    { guid: 20, firstName: "Maria", lastName: "Johnson" }
+    { id: 20, firstName: "Maria", lastName: "Johnson" }
   ];
   
   
@@ -396,9 +396,9 @@ test("Using find() with hub.Query on store with no data source should work", fun
   equals(records.get('length'), 0, 'record length should be 0');
   
   recordsToLoad = [
-    { guid: 20, firstName: "John", lastName: "Johnson" },
-    { guid: 21, firstName: "John", lastName: "Anderson" },
-    { guid: 22, firstName: "Barbara", lastName: "Jones" }
+    { id: 20, firstName: "John", lastName: "Johnson" },
+    { id: 21, firstName: "John", lastName: "Anderson" },
+    { id: 22, firstName: "Barbara", lastName: "Jones" }
   ];
 
   MyApp.store3.loadRecords(MyApp.Foo, recordsToLoad);
@@ -432,7 +432,7 @@ test("Using orderBy in hub.Query returned from find() and loading more records t
   
   
   newStoreKeys2 = MyApp.store.loadRecords(MyApp.Foo, [
-    { guid: 11, firstName: "Anna", lastName: "Petterson" }
+    { id: 11, firstName: "Anna", lastName: "Petterson" }
   ]);
   
   
@@ -454,7 +454,7 @@ test("Using orderBy in hub.Query and loading more records to the store", functio
   equals(records.objectAt(0).get('firstName'), 'Bert', 'name should be Bert');
   
   MyApp.store.loadRecords(MyApp.Foo, [
-    { guid: 11, firstName: "Anna", lastName: "Petterson" }
+    { id: 11, firstName: "Anna", lastName: "Petterson" }
   ]);
   
   
@@ -493,7 +493,7 @@ test("Chaining find() queries and loading more records", function() {
   equals(records.get('length'), 1, 'record length should be 1');
   
   MyApp.store.loadRecords(MyApp.Foo, [
-    { guid: 11, firstName: "John", lastName: "Doe" }
+    { id: 11, firstName: "John", lastName: "Doe" }
   ]);
   
   
@@ -511,8 +511,8 @@ test("creating record appears in future find()", function() {
   
   hub.run(function() {
     store.loadRecords(Rec, 
-      [ { title: "A", guid: 1 }, 
-        { title: "B", guid: 2 } ]);
+      [ { title: "A", id: 1 }, 
+        { title: "B", id: 2 } ]);
   });
   
   equals(store.find(Rec).get('length'), 2, 'should have two initial record');

@@ -42,7 +42,7 @@ module("hub.RecordAttribute core methods", {
     
     storeKeys = MyApp.store.loadRecords(MyApp.Foo, [
       { 
-        guid: 'foo1', 
+        id: 'foo1', 
         firstName: "John", 
         lastName: "Doe", 
         date: "2009-03-01T20:30-08:00",
@@ -52,7 +52,7 @@ module("hub.RecordAttribute core methods", {
       },
       
       { 
-        guid: 'foo2', 
+        id: 'foo2', 
         firstName: "Jane", 
         lastName: "Doe", 
         relatedTo: 'foo1',
@@ -62,7 +62,7 @@ module("hub.RecordAttribute core methods", {
       },
       
       { 
-        guid: 'foo3', 
+        id: 'foo3', 
         firstName: "Alex", 
         lastName: "Doe", 
         relatedToComputed: 'bar1',
@@ -72,7 +72,7 @@ module("hub.RecordAttribute core methods", {
       },
       
       {
-        guid: 'foo4',
+        id: 'foo4',
         firstName: 'Joe',
         lastName:  'Schmo',
         barId: 'bar1'
@@ -81,8 +81,8 @@ module("hub.RecordAttribute core methods", {
     ]);
     
     MyApp.store.loadRecords(MyApp.Bar, [
-      { guid: 'bar1', city: "Chicago", foo: "foo1" },
-      { guid: "bar2", city: "New York", foo: 'foo3' }
+      { id: 'bar1', city: "Chicago", foo: "foo1" },
+      { id: "bar2", city: "New York", foo: 'foo3' }
     ]);
     
     
@@ -102,13 +102,13 @@ module("hub.RecordAttribute core methods", {
 // READING
 // 
 
-test("getting toOne relationship should map guid to a real record", function() {
+test("getting toOne relationship should map id to a real record", function() {
   var rec2 = MyApp.store.find(MyApp.Foo, 'foo2');
   equals(rec2.get('id'), 'foo2', 'precond - should find record 2');
   equals(rec2.get('relatedTo'), rec, 'should get rec1 instance for rec2.relatedTo');
 });
 
-test("getting toOne relationship from computed attribute should map guid to a real record", function() {
+test("getting toOne relationship from computed attribute should map id to a real record", function() {
   var rec3 = MyApp.store.find(MyApp.Foo, 'foo3');
   equals(rec3.get('id'), 'foo3', 'precond - should find record 3');
   equals(rec3.get('relatedToComputed'), bar, 'should get bar1 instance for rec3.relatedToComputed');
@@ -128,7 +128,7 @@ test("reading a keyed relationship", function(){
 // WRITING
 // 
 
-test("writing to a to-one relationship should update set guid", function() {
+test("writing to a to-one relationship should update set id", function() {
   var rec2 = MyApp.store.find(MyApp.Foo, 'foo2');
   equals(rec2.get('id'), 'foo2', 'precond - should find record 2');
 
@@ -142,7 +142,7 @@ test("writing to a to-one relationship should update set guid", function() {
 
 });
 
-test("writing to a to-one computed relationship should update set guid", function() {
+test("writing to a to-one computed relationship should update set id", function() {
   var rec3 = MyApp.store.find(MyApp.Foo, 'foo3');
   equals(rec3.get('id'), 'foo3', 'precond - should find record 2');
   equals(rec3.get('relatedToComputed'), bar, 'precond - should get bar1 instance for rec3.relatedToComputed');

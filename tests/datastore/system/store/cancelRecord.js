@@ -17,13 +17,13 @@ module("hub.Store#cancelRecord", {
     store = hub.Store.create();
     
     json1 = {
-      guid: "cancelGUID1",
+      id: "cancelGUID1",
       string: "string",
       number: 23,
       bool:   true
     };
     json2 = {
-      guid: "cancelGUID2",
+      id: "cancelGUID2",
       string: "string",
       number: 23,
       bool:   true

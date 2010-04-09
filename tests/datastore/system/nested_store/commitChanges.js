@@ -145,7 +145,7 @@ test("commiting a changed record should immediately notify outstanding records i
   
     
   var store = hub.Store.create();
-  var prec  = store.createRecord(Rec, { foo: "bar", guid: 1 });
+  var prec  = store.createRecord(Rec, { foo: "bar", id: 1 });
   
   var child = store.chain();
   var crec  = child.find(Rec, prec.get('id'));

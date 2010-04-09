@@ -15,7 +15,7 @@ module("hub.RecordArray core methods", {
     store = hub.Store.create();
 
     storeKey = hub.Record.storeKeyFor('foo');
-    json = {  guid: "foo", foo: "foo" };
+    json = {  id: "foo", foo: "foo" };
     
     store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN); 
     
@@ -69,7 +69,7 @@ test("calling storeDidChangeStoreKeys() with a matching recordType", function() 
   // do it this way instead of using store.createRecord() to isolate the 
   // method call.
   storeKey = hub.Record.storeKeyFor("bar");
-  json     = {  guid: "bar", foo: "bar" };
+  json     = {  id: "bar", foo: "bar" };
   store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
   
   equals(recs.get('needsFlush'), false, 'PRECOND - should not need flush');
@@ -98,7 +98,7 @@ test("calling storeDidChangeStoreKeys() with a non-mathcing recordType", functio
       Bar = hub.Record.extend();
       
   storeKey = Foo.storeKeyFor('foo2');
-  json = { guid: "foo2" };
+  json = { id: "foo2" };
   
   store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
 
@@ -109,7 +109,7 @@ test("calling storeDidChangeStoreKeys() with a non-mathcing recordType", functio
 
   // now simulate adding a Bar record
   storeKey = Bar.storeKeyFor('bar');
-  json = { guid: "bar" };
+  json = { id: "bar" };
   store.writeDataHash(storeKey, json, hub.Record.READY_CLEAN);
   
   recs.storeDidChangeStoreKeys([storeKey], hub.Set.create().add(Bar));

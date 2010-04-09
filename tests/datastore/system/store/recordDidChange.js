@@ -17,25 +17,25 @@ module("hub.Store#recordDidChange", {
       store = hub.Store.create();
 
       json1 = {
-        guid: "commitGUID1",
+        id: "commitGUID1",
         string: "string",
         number: 23,
         bool:   true
       };
       json2 = {
-        guid: "commitGUID2",
+        id: "commitGUID2",
         string: "string",
         number: 23,
         bool:   true
       };
       json3 = {
-        guid: "commitGUID3",
+        id: "commitGUID3",
         string: "string",
         number: 23,
         bool:   true
       };
       json4 = {
-        guid: "commitGUID4",
+        id: "commitGUID4",
         string: "string",
         number: 23,
         bool:   true

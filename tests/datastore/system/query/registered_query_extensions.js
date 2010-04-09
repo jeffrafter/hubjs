@@ -20,11 +20,11 @@ module("hub.Query registered query extensions", {
     
     // load some data
     MyApp.store.loadRecords(MyApp.Foo, [
-      { guid: 1, firstName: "John", lastName: "Doe", year: 1974 },
-      { guid: 2, firstName: "Jane", lastName: "Doe", year: 1975 },
-      { guid: 3, firstName: "Emily", lastName: "Parker", year: 1975, active: null },
-      { guid: 4, firstName: "Johnny", lastName: "Cash", active: false },
-      { guid: 5, firstName: "Bert", lastName: "Jules", active: true }
+      { id: 1, firstName: "John", lastName: "Doe", year: 1974 },
+      { id: 2, firstName: "Jane", lastName: "Doe", year: 1975 },
+      { id: 3, firstName: "Emily", lastName: "Parker", year: 1975, active: null },
+      { id: 4, firstName: "Johnny", lastName: "Cash", active: false },
+      { id: 5, firstName: "Bert", lastName: "Jules", active: true }
     ]);
     
     rec1 = MyApp.store.find(MyApp.Foo,1);

@@ -16,37 +16,37 @@ module("hub.Store#destroyRecord", {
     store = hub.Store.create();
     
     json1 = {
-      guid: "destroyGUID1",
+      id: "destroyGUID1",
       string: "string",
       number: 23,
       bool:   true
     };
     json2 = {
-      guid: "destroyGUID2",
+      id: "destroyGUID2",
       string: "string",
       number: 23,
       bool:   true
     };
     json3 = {
-      guid: "destroyGUID3",
+      id: "destroyGUID3",
       string: "string",
       number: 23,
       bool:   true
     };
     json4 = {
-      guid: "destroyGUID4",
+      id: "destroyGUID4",
       string: "string",
       number: 23,
       bool:   true
     };
     json5 = {
-      guid: "destroyGUID5",
+      id: "destroyGUID5",
       string: "string",
       number: 23,
       bool:   true
     };
     json6 = {
-      guid: "destroyGUID6",
+      id: "destroyGUID6",
       string: "string",
       number: 23,
       bool:   true

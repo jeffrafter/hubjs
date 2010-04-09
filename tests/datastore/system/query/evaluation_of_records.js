@@ -24,11 +24,11 @@ module("hub.Query evaluation of records", {
     
     // load some data
     MyApp.store.loadRecords(MyApp.Foo, [
-      { guid: 1, firstName: "John", lastName: "Doe", married: true },
-      { guid: 2, firstName: "Jane", lastName: "Doe", married: false },
-      { guid: 3, firstName: "Emily", lastName: "Parker", bornIn: 1975, married: true },
-      { guid: 4, firstName: "Johnny", lastName: "Cash", married: true },
-      { guid: 5, firstName: "Bert", lastName: "Berthold", married: true }
+      {id: 1, firstName: "John", lastName: "Doe", married: true },
+      {id: 2, firstName: "Jane", lastName: "Doe", married: false },
+      {id: 3, firstName: "Emily", lastName: "Parker", bornIn: 1975, married: true },
+      {id: 4, firstName: "Johnny", lastName: "Cash", married: true },
+      {id: 5, firstName: "Bert", lastName: "Berthold", married: true }
     ]);
     
     rec1 = MyApp.store.find(MyApp.Foo,1);

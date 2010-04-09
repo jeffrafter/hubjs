@@ -18,7 +18,7 @@ module("hub.Record#writeAttribute", {
       number: 123,
       bool: true,
       array: [1,2,3],
-      guid: 1
+      id: 1
     };
     
     foo = store.createRecord(Foo, json);
@@ -98,9 +98,9 @@ test("Writing to an attribute in chained store sets correct status", function() 
 });
 
 
-test("Writing a new guid", function(){
+test("Writing a new id", function(){
   equals(foo.get('id'), 1, 'foo.id should be 1');
-  foo.set('guid', 2);
+  foo.set('id', 2);
   equals(foo.get('id'), 2, 'foo.id should be 2');
 });
 

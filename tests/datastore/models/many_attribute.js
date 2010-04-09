@@ -67,21 +67,21 @@ module("hub.ManyAttribute core methods", {
     });
     
     storeKeys = MyApp.store.loadRecords(MyApp.Foo, [
-      { guid: 1, 
+      { id: 1, 
         firstName: "John", 
         lastName: "Doe",
         barToMany: ['bar1'],
         barToOne:  ['bar1', 'bar2'] 
       },
       
-      { guid: 2, 
+      { id: 2, 
         firstName: "Jane", 
         lastName: "Doe",
         barToMany: ['bar1', 'bar2'],
         barToOne:  [] 
       },
       
-      { guid: 3, 
+      { id: 3, 
         firstName: "Emily", 
         lastName: "Parker", 
         fooMany: [1,2],
@@ -89,7 +89,7 @@ module("hub.ManyAttribute core methods", {
         barToOne: [] 
       },
       
-      { guid: 4,
+      { id: 4,
         firstName: "Johnny",
         lastName: "Cash",
         fooIds: [1,2]
@@ -97,9 +97,9 @@ module("hub.ManyAttribute core methods", {
     ]);
     
     MyApp.store.loadRecords(MyApp.Bar, [
-      { guid: "bar1", name: "A", fooToMany: [1,2], fooToOne: 1 },
-      { guid: "bar2", name: "Z", fooToMany: [2,3], fooToOne: 1 },
-      { guid: "bar3", name: "C" }
+      { id: "bar1", name: "A", fooToMany: [1,2], fooToOne: 1 },
+      { id: "bar2", name: "Z", fooToMany: [2,3], fooToOne: 1 },
+      { id: "bar3", name: "C" }
     ]);
     
     foo1 = rec = MyApp.store.find(MyApp.Foo, 1);
@@ -127,14 +127,14 @@ test("pass-through should return builtin value" ,function() {
   equals(rec.get('firstName'), 'John', 'reading prop should get attr value');
 });
 
-test("getting toMany relationship should map guid to real records", function() {
+test("getting toMany relationship should map id to real records", function() {
   var rec3 = MyApp.store.find(MyApp.Foo, 3);
   equals(rec3.get('id'), 3, 'precond - should find record 3');
   equals(rec3.get('fooMany').objectAt(0), rec, 'should get rec1 instance for rec3.fooMany');
   equals(rec3.get('fooMany').objectAt(1), rec2, 'should get rec2 instance for rec3.fooMany');
 });
 
-test("getting toMany relationship should map guid to real records when using different key", function() {
+test("getting toMany relationship should map id to real records when using different key", function() {
   var rec4 = MyApp.store.find(MyApp.Foo, 4);
   equals(rec4.get('id'), 4, 'precond - should find record 4');
   equals(rec4.get('fooManyKeyed').objectAt(0), rec, 'should get rec1 instance for rec4.fooManyKeyed');
@@ -177,7 +177,7 @@ test("reading a null relation", function() {
 // WRITING
 // 
 
-test("writing to a to-many relationship should update set guids", function() {
+test("writing to a to-many relationship should update set ids", function() {
   var rec3 = MyApp.store.find(MyApp.Foo, 3);
   equals(rec3.get('id'), 3, 'precond - should find record 3');
   equals(rec3.get('fooMany').objectAt(0), rec, 'should get rec1 instance for rec3.fooMany');
@@ -188,17 +188,17 @@ test("writing to a to-many relationship should update set guids", function() {
   equals(rec3.get('fooMany').objectAt(1), rec4, 'should get rec4 instance for rec3.fooMany');
 });
 
-test("writing to a to-many relationship should update set guids when using a different key", function() {
+test("writing to a to-many relationship should update set ids when using a different key", function() {
   var rec4 = MyApp.store.find(MyApp.Foo, 4);
   equals(rec4.get('id'), 4, 'precond - should find record 4');
   equals(rec4.get('fooManyKeyed').objectAt(0), rec, 'should get rec1 instance for rec4.fooManyKeyed');
 
   rec4.set('fooManyKeyed', [rec2, rec3]);
 
-  ok(rec4.get('fooIds').isEqual([2,3]), 'should get array of guids (2, 3) for rec4.fooIds');
+  ok(rec4.get('fooIds').isEqual([2,3]), 'should get array of ids (2, 3) for rec4.fooIds');
 });
 
-test("pushing an object to a to-many relationship attribute should update set guids", function() {
+test("pushing an object to a to-many relationship attribute should update set ids", function() {
   var rec3 = MyApp.store.find(MyApp.Foo, 3);
   equals(rec3.get('id'), 3, 'precond - should find record 3');
   equals(rec3.get('fooMany').length(), 2, 'should be 2 foo instances related');

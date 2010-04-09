@@ -25,11 +25,11 @@ Spin.Plan.module("hub.ManyArray core methods", {
     // load some data
     storeIds = [1,2,3,4];
     MyApp.store.loadRecords(MyApp.Foo, [
-      { guid: 1, firstName: "John", lastName: "Doe", age: 32 },
-      { guid: 2, firstName: "Jane", lastName: "Doe", age: 30 },
-      { guid: 3, firstName: "Emily", lastName: "Parker", age: 7 },
-      { guid: 4, firstName: "Johnny", lastName: "Cash", age: 17 },
-      { guid: 50, firstName: "Holder", fooMany: storeIds }
+      { id: 1, firstName: "John", lastName: "Doe", age: 32 },
+      { id: 2, firstName: "Jane", lastName: "Doe", age: 30 },
+      { id: 3, firstName: "Emily", lastName: "Parker", age: 7 },
+      { id: 4, firstName: "Johnny", lastName: "Cash", age: 17 },
+      { id: 50, firstName: "Holder", fooMany: storeIds }
     ]);
      
     storeKey = MyApp.store.storeKeyFor(MyApp.Foo, 1);
@@ -91,7 +91,7 @@ test("modifying the underlying storeId should change the returned materialized r
   equals(recs.objectAt(0), rec, 'recs.objectAt(0) should materialize record');  
   
   // create a new record.
-  var rec2 = MyApp.store.createRecord(MyApp.Foo, { guid: 5, firstName: "Fred" });
+  var rec2 = MyApp.store.createRecord(MyApp.Foo, { id: 5, firstName: "Fred" });
   var storeId2 = rec2.get('id');
   
   // add to beginning of storeKey array
@@ -126,7 +126,7 @@ test("adding a record to the ManyArray should pass through storeIds", function()
   equals(recs.objectAt(0), rec, 'recs.objectAt(0) should materialize record');  
   
   // create a new record.
-  var rec2 = MyApp.store.createRecord(MyApp.Foo, { guid: 5, firstName: "rec2" });
+  var rec2 = MyApp.store.createRecord(MyApp.Foo, { id: 5, firstName: "rec2" });
   var storeId2 = rec2.get('id');
   
   // add record to beginning of record array
@@ -164,7 +164,7 @@ test("changing the underlying storeIds should notify observers of records", func
 test("swapping storeIds array should change ManyArray and observers", function() {
 
   // setup alternate storeKeys
-  var rec2 = MyApp.store.createRecord(MyApp.Foo, { guid: 5, firstName: "rec2" });
+  var rec2 = MyApp.store.createRecord(MyApp.Foo, { id: 5, firstName: "rec2" });
   var storeId2 = rec2.get('id');
   var storeIds2 = [storeId2];
   

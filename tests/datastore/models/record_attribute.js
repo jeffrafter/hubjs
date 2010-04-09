@@ -70,7 +70,7 @@ module("hub.RecordAttribute core methods", {
     
     storeKeys = MyApp.store.loadRecords(MyApp.Foo, [
       { 
-        guid: 'foo1', 
+        id: 'foo1', 
         firstName: "John", 
         lastName: "Doe", 
         date: "2009-03-01T20:30-08:00",
@@ -79,7 +79,7 @@ module("hub.RecordAttribute core methods", {
       },
       
       { 
-        guid: 'foo2', 
+        id: 'foo2', 
         firstName: "Jane", 
         lastName: "Doe", 
         relatedTo: 'foo1',
@@ -90,7 +90,7 @@ module("hub.RecordAttribute core methods", {
       },
       
       { 
-        guid: 'foo3', 
+        id: 'foo3', 
         firstName: "Alex", 
         lastName: "Doe", 
         relatedToComputed: 'bar1',
@@ -101,7 +101,7 @@ module("hub.RecordAttribute core methods", {
     ]);
     
     MyApp.store.loadRecords(MyApp.Bar, [
-      { guid: 'bar1', city: "Chicago", parent: 'foo2', relatedMany: ['foo1', 'foo2'] }
+      { id: 'bar1', city: "Chicago", parent: 'foo2', relatedMany: ['foo1', 'foo2'] }
     ]);
     
     

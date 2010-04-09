@@ -36,7 +36,7 @@ test("create a record", function() {
   var sk;
   var rec = hub.Record.create();
   hash = {
-    guid: "1234abcd",
+    id: "1234abcd",
     string: "abcd",
     number: 1,
     bool:   false
@@ -51,13 +51,13 @@ test("create a record", function() {
   ok(rec, "a record was created");
   sk=store.storeKeyFor(hub.Record, rec.id());
   equals(store.readDataHash(sk), hash, "data hashes are equivalent");
-  equals(rec.id(), "1234abcd", "guids are the same");
+  equals(rec.id(), "1234abcd", "ids are the same");
 
   rec = store.createRecord(hub.Record, hash2, "priKey");
   ok(rec, "a record with a custom id was created");
   sk=store.storeKeyFor(hub.Record, "priKey");
   equals(store.readDataHash(sk), hash2, "data hashes are equivalent");
-  equals(rec.id(), "priKey", "guids are the same");
+  equals(rec.id(), "priKey", "ids are the same");
   
   equals(store.changelog.length, 2, "The changelog has the following number of entries:");
   
@@ -66,8 +66,8 @@ test("create a record", function() {
 
 test("Creating an empty (null) record should make the hash available", function() {
   
-  store.createRecord(MyRecordType, null, 'guid8');
-  var storeKey = store.storeKeyFor(MyRecordType, 'guid8');
+  store.createRecord(MyRecordType, null, 'id8');
+  var storeKey = store.storeKeyFor(MyRecordType, 'id8');
   
   ok(store.readDataHash(storeKey), 'data hash should not be empty/undefined');
   

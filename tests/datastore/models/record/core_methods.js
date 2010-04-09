@@ -30,7 +30,7 @@ module("hub.Record core methods", {
       number: 123,
       bool: true,
       array: [1,2,3],
-      guid: 1
+      id: 1
     };
     
     MyApp.foo = MyApp.store.createRecord(MyApp.Foo, MyApp.json);

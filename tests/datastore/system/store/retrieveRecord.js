@@ -17,49 +17,49 @@ module("hub.Store#retrieveRecord", {
     store = hub.Store.create();
     
     json1 = {
-      guid: "retrieveGUID1",
+      id: "retrieveGUID1",
       string: "string",
       number: 23,
       bool:   true
     };
     json2 = {
-      guid: "retrieveGUID2",
+      id: "retrieveGUID2",
       string: "string",
       number: 23,
       bool:   true
     };
     json3 = {
-      guid: "retrieveGUID3",
+      id: "retrieveGUID3",
       string: "string",
       number: 23,
       bool:   true
     };
     json4 = {
-      guid: "retrieveGUID4",
+      id: "retrieveGUID4",
       string: "string",
       number: 23,
       bool:   true
     };
     json5 = {
-      guid: "retrieveGUID5",
+      id: "retrieveGUID5",
       string: "string",
       number: 23,
       bool:   true
     };
     json6 = {
-      guid: "retrieveGUID6",
+      id: "retrieveGUID6",
       string: "string",
       number: 23,
       bool:   true
     };
     json7 = {
-      guid: "retrieveGUID7",
+      id: "retrieveGUID7",
       string: "string",
       number: 23,
       bool:   true
     };
     json8 = {
-      guid: "retrieveGUID8",
+      id: "retrieveGUID8",
       string: "string",
       number: 23,
       bool:   true

@@ -11,9 +11,6 @@
 var store, storeKey, foo1, foo2, bar1, bar2, baz, barChild, MyApp, q;
 module("hub.Query comparison of records", {
   setup: function() {
-    
-    
-    
     // setup dummy app and store
     MyApp = hub.Object.create({
       store: hub.Store.create()
@@ -27,24 +24,22 @@ module("hub.Query comparison of records", {
     
     // load some data
     MyApp.store.loadRecords(MyApp.Foo, [
-      { guid: 1, firstName: "John", lastName: "Doe", year: 1974 },
-      { guid: 2, firstName: "Jane", lastName: "Doe", year: 1975 }
+      { id: 1, firstName: "John", lastName: "Doe", year: 1974 },
+      { id: 2, firstName: "Jane", lastName: "Doe", year: 1975 }
     ]);
     
     MyApp.store.loadRecords(MyApp.Bar, [
-      { guid: 3, firstName: "Emily", lastName: "Parker", year: 1975, active: null },
-      { guid: 4, firstName: "Johnny", lastName: "Cash", active: false }
+      { id: 3, firstName: "Emily", lastName: "Parker", year: 1975, active: null },
+      { id: 4, firstName: "Johnny", lastName: "Cash", active: false }
     ]);
     
     MyApp.store.loadRecords(MyApp.Baz, [
-      { guid: 5, firstName: "Bert", lastName: "Berthold", active: true }
+      { id: 5, firstName: "Bert", lastName: "Berthold", active: true }
     ]);
-
+    
     MyApp.store.loadRecords(MyApp.BarChild, [
-      { guid: 6, firstName: "Bert", lastName: "Ernie", active: true }
+      { id: 6, firstName: "Bert", lastName: "Ernie", active: true }
     ]);
-    
-    
     
     foo1 = MyApp.store.find(MyApp.Foo,1);
     foo2 = MyApp.store.find(MyApp.Foo,2);
@@ -52,7 +47,6 @@ module("hub.Query comparison of records", {
     bar2 = MyApp.store.find(MyApp.Bar,4);
     barChild = MyApp.store.find(MyApp.BarChild, 6);
     baz  = MyApp.store.find(MyApp.Baz,5);
-    
   },
   
   teardown: function() {

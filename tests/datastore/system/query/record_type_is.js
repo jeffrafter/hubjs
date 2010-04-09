@@ -21,7 +21,7 @@ module("hub.Query comparison of record types", {
     
     // load some data
     GLOBAL.MyApp.store.loadRecords(GLOBAL.MyApp.Foo, [
-      { guid: 1, firstName: "John", lastName: "Doe" }
+      { id: 1, firstName: "John", lastName: "Doe" }
     ]);
     
     rec = GLOBAL.MyApp.store.find(GLOBAL.MyApp.Foo,1);

@@ -102,10 +102,10 @@ module("Sample Model from an address book app", {
       // array.
       groups: function(key, groups) {
 
-        // if groups is replaced, write back guids
+        // if groups is replaced, write back ids
         // also, each group record should have it's contacts invalidated.
         if (groups !== undefined) {
-          this.writeAttribute('groups', groups.getEach('guid')) ;
+          this.writeAttribute('groups', groups.getEach('id')) ;
           groups.invoke('notifyPropertyChange', 'contacts');
         }
         return this.get('store').records(this.readAttribute('groups'));

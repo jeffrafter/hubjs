@@ -35,7 +35,7 @@ module("Sample Model from a webmail app", {
         only: hub.w('subject date from to')
       }),
       
-      // load the list of messages.  We use the mailbox guid to load the 
+      // load the list of messages.  We use the mailbox id to load the 
       // messages.  Messages use a foreign key to move the message around.
       // an edit should cause this fetched property to reload.
       //
@@ -47,7 +47,7 @@ module("Sample Model from a webmail app", {
     
     // A message has a subject, date, sender, mailboxes, and messageDetail
     // which is a to-one relationship.  mailboxes is kept as an array of 
-    // guids.
+    // ids.
     Mail.Message = hub.Record.extend({
 
       date:        hub.Record.attr(Date, { isRequired: true }),

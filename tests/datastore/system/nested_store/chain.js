@@ -96,7 +96,7 @@ test("chained store changes should propagate reliably", function() {
   var parent = hub.Store.create(), rec, store, rec2;
 
   hub.run(function() {
-    parent.loadRecords(Rec, [{ title: "foo", guid: 1 }]);
+    parent.loadRecords(Rec, [{ title: "foo", id: 1 }]);
   });
   
   rec = parent.find(Rec, 1);
