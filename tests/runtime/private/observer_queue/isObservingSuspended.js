@@ -9,7 +9,7 @@
 
 var callCount, obj;
 
-module("hub.Observers.isObservingSuspended", {
+module("hub.ObserverQueue.isObservingSuspended", {
   setup: function() {
     callCount = 0;
     
@@ -24,15 +24,15 @@ module("hub.Observers.isObservingSuspended", {
 });
 
 test("suspending observers stops notification", function() {
-  hub.Observers.suspendPropertyObserving();
-  hub.Observers.suspendPropertyObserving();
+  hub.ObserverQueue.suspendPropertyObserving();
+  hub.ObserverQueue.suspendPropertyObserving();
   obj.set("foo");
   equals(callCount, 0, 'should not notify observer while suspended');
 
-  hub.Observers.resumePropertyObserving();
+  hub.ObserverQueue.resumePropertyObserving();
   equals(callCount, 0, 'should not notify observer while still suspended');
   
-  hub.Observers.resumePropertyObserving();
+  hub.ObserverQueue.resumePropertyObserving();
   equals(callCount, 1, 'should notify observer when resumed');
   
 });
@@ -44,7 +44,7 @@ test("suspending observers stops notification", function() {
 // this test verifies a specific bug in the hub.Observing.propertyDidChange method.
 test("suspended notifications should work when nesting property change groups", function() {
   
-  hub.Observers.suspendPropertyObserving();
+  hub.ObserverQueue.suspendPropertyObserving();
   obj.beginPropertyChanges();
   obj.set("foo");
   equals(callCount, 0, 'should not notify observer while suspended');
@@ -52,6 +52,6 @@ test("suspended notifications should work when nesting property change groups", 
   obj.endPropertyChanges();
   equals(callCount, 0, 'should not notify observer while suspended');
 
-  hub.Observers.resumePropertyObserving();
+  hub.ObserverQueue.resumePropertyObserving();
   equals(callCount, 1, 'should notify observer when resumed');
 });
