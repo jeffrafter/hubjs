@@ -8,8 +8,6 @@
 /*global hub */
 
 /**
-  FIXME: Do we really need this with hub.js?
-  
   @class
   @extends hub.DataSource
 */

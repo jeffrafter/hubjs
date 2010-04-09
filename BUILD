@@ -6,7 +6,7 @@
 # To generate a custom build of hub.js, modify this BUILD file to include the 
 # list of files you need/want in the correct order.
 # 
-# NOTE: In a production build, lines matching /^debug[/].*/ will be 
+# NOTE: In a production build, lines matching /^development[/].*/ will be 
 # skipped, and calls to hub_assert(), hub_precondition(), hub_postconditon(), 
 # hub_invariant(), and hub_error() will be removed from the code completely. 
 # Use hub.allege() when you want an assertion to remain in production code 
@@ -15,7 +15,7 @@
 
 license.js
 bootstrap.js
-debug/assert.js
+development/assert.js
 core.js
 private/observer_set.js
 mixins/observable.js
@@ -44,7 +44,7 @@ system/sparse_array.js
 data_sources/data_source.js
 data_sources/cascade.js
 records/record.js
-data_sources/fixtures.js
+development/fixtures.js
 records/record_attribute.js
 records/fetched_attribute.js
 records/many_attribute.js
