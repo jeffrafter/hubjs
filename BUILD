@@ -28,7 +28,6 @@ system/range_observer.js
 # unknownProperty() on Array is used.
 mixins/array.js
 
-mixins/comparable.js
 mixins/copyable.js
 mixins/delegate_support.js
 mixins/freezable.js
