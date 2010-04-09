@@ -36,11 +36,8 @@ system/set.js
 system/object.js
 private/chain_observer.js
 private/observer_queue.js
-system/binding.js
 system/error.js
-system/run_loop.js
 system/index_set.js
-system/selection_set.js
 system/sparse_array.js
 
 
