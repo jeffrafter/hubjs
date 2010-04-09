@@ -1925,23 +1925,24 @@ hub.Store = hub.Object.extend(
     @returns {Boolean} true if push was allowed
   */
   pushRetrieve: function(recordType, id, dataHash, storeKey) {
-    var K = hub.Record, status;
+    var K = hub.Record, status ;
     
-    if(storeKey===undefined) storeKey = recordType.storeKeyFor(id);
-    hub_precondition(typeof storeKey === hub.T_NUMBER);
-    status = this.readStatus(storeKey);
-    if(status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROYED_CLEAN || status==K.BUSY_LOADING) {
+    if (storeKey===undefined) storeKey = recordType.storeKeyFor(id) ;
+    hub_assert(typeof storeKey === hub.T_NUMBER) ;
+    
+    status = this.readStatus(storeKey) ;
+    if (status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROYED_CLEAN || status==K.BUSY_LOADING) {
+      status = K.READY_CLEAN ;
       
-      status = K.READY_CLEAN;
-      if(dataHash===undefined) this.writeStatus(storeKey, status) ;
+      if (dataHash===undefined) this.writeStatus(storeKey, status) ;
       else this.writeDataHash(storeKey, dataHash, status) ;
-
-      this.dataHashDidChange(storeKey);
       
-      return true;
+      this.dataHashDidChange(storeKey) ;
+      return true ;
+    } else {
+      // A conflict occurred.
+      return false ;
     }
-    //conflicted (ready)
-    return false;
   },
   
   /**
@@ -1954,21 +1955,22 @@ hub.Store = hub.Object.extend(
     @returns {Boolean} true if push was allowed
   */
   pushDestroy: function(recordType, id, storeKey) {
-    var K = hub.Record, status;
-
-    if(storeKey===undefined){
-      storeKey = recordType.storeKeyFor(id);
-    }
-    hub_precondition(typeof storeKey === hub.T_NUMBER);
-    status = this.readStatus(storeKey);
-    if(status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROY_CLEAN){
-      status = K.DESTROY_CLEAN;
-      this.removeDataHash(storeKey, status) ;
-      this.dataHashDidChange(storeKey);
+    var K = hub.Record, status ;
+    
+    if (storeKey===undefined) storeKey = recordType.storeKeyFor(id) ;
+    hub_assert(typeof storeKey === hub.T_NUMBER) ;
+    
+    status = this.readStatus(storeKey) ;
+    if (status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROY_CLEAN) {
+      // status = K.DESTROY_CLEAN ;
+      
+      this.removeDataHash(storeKey, K.DESTROY_CLEAN) ;
+      this.dataHashDidChange(storeKey) ;
       return true;
+    } else {
+      // A conflict occurred.
+      return false ;
     }
-    //conflicted (destroy)
-    return false;
   },
   
   /**
@@ -1982,27 +1984,29 @@ hub.Store = hub.Object.extend(
     @returns {Boolean} true if push was allowed
   */
   pushError: function(recordType, id, error, storeKey) {
-    var K = hub.Record, status, errors = this.recordErrors;
+    var K = hub.Record, status, errors = this.recordErrors ;
     
-    if(storeKey===undefined) storeKey = recordType.storeKeyFor(id);
-    hub_precondition(typeof storeKey === hub.T_NUMBER);
-    status = this.readStatus(storeKey);
+    if (storeKey===undefined) storeKey = recordType.storeKeyFor(id) ;
+    hub_assert(typeof storeKey === hub.T_NUMBER) ;
     
-    if(status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROY_CLEAN){
-      status = K.ERROR;
+    status = this.readStatus(storeKey) ;
+    if (status==K.EMPTY || status==K.ERROR || status==K.READY_CLEAN || status==K.DESTROY_CLEAN) {
+      // status = K.ERROR ;
       
-      // Add the error to the array of record errors (for lookup later on if necessary).
+      // Add the error to the array of record errors (for lookup later on if 
+      // necessary).
       if (error && error.isError) {
-        if (!errors) errors = this.recordErrors = [];
+        if (!errors) errors = this.recordErrors = [] ;
         errors[storeKey] = error;
       }
       
-      this.writeStatus(storeKey, status) ;
-      this.dataHashDidChange(storeKey, null, true);
-      return true;
+      this.writeStatus(storeKey, K.ERROR) ;
+      this.dataHashDidChange(storeKey, null, true) ;
+      return true ;
+    } else {
+      // A conflict occurred.
+      return false ;
     }
-    //conflicted (error)
-    return false;
   },
   
   // ..........................................................
