@@ -99,21 +99,21 @@ test("calling with array of storeKeys will edit all store keys", function() {
   
 });
 
-test("calling dataHashDidChange twice with different statusOnly values before flush is called should trigger a non-statusOnly flush if any of the statusOnly values were false", function() {
-  
-
-  // Create a phony record because that's the only way the 'hasDataChanges'
-  // data structure will be used.
-  var record = hub.Record.create({ id: 514 }) ;
-  var storeKey = hub.Record.storeKeyFor(514) ;
-  record = store.materializeRecord(storeKey) ;
-  store.dataHashDidChange(storeKey, null, false) ;
-  store.dataHashDidChange(storeKey, null, true) ;
-  
-  ok(store.recordPropertyChanges.hasDataChanges.contains(storeKey), 'recordPropertyChanges.hasDataChanges should contain the storeKey %@'.fmt(storeKey)) ;
-
-  
-});
+// test("calling dataHashDidChange twice with different statusOnly values before flush is called should trigger a non-statusOnly flush if any of the statusOnly values were false", function() {
+//   
+// 
+//   // Create a phony record because that's the only way the 'hasDataChanges'
+//   // data structure will be used.
+//   var record = hub.Record.create({ id: 514 }) ;
+//   var storeKey = hub.Record.storeKeyFor(514) ;
+//   record = store.materializeRecord(storeKey) ;
+//   store.dataHashDidChange(storeKey, null, false) ;
+//   store.dataHashDidChange(storeKey, null, true) ;
+//   
+//   ok(store.recordPropertyChanges.hasDataChanges.contains(storeKey), 'recordPropertyChanges.hasDataChanges should contain the storeKey %@'.fmt(storeKey)) ;
+// 
+//   
+// });
 
 test("calling _notifyRecordPropertyChange twice, once with a key and once without, before flush is called should invalidate all cached properties when flush is finally called", function() {
   
