@@ -1160,7 +1160,7 @@ hub.Hub = hub.Store.extend(
         } else {
           self.createHub.call(self, tx, {
             version: 'empty',
-            creator: hub.get('currentTask'),
+            creator: self.get('currentTask'),
             editor: ''
           });
         }
@@ -1250,7 +1250,7 @@ hub.Hub = hub.Store.extend(
     Add State check, and only run when not touching DB.
     If not in correct state, then add to FIFO queue, and invokeLater sendToDB
   */
-  sendToDB: function(func, noDB, onFinish, internal, hub) {
+  sendToDB: function(func, noDB, onFinish, internal, isHub) {
     hub_precondition(this.kindOf && this.kindOf(hub.Hub)); // Make sure we are in the correct context.
     hub_precondition(this.dbState !== 'c', "Database is in error state.");
     var self = this,
@@ -1268,8 +1268,9 @@ hub.Hub = hub.Store.extend(
       500);
       return;
     }
+
     this.goDbState("b");
-    if (hub) {
+    if (isHub) {
       dbName = "SproutHub";
       dbDesc = "SproutHub Metadata";
     } else {
@@ -1281,7 +1282,7 @@ hub.Hub = hub.Store.extend(
       self.invokeLater.apply(self);
       return;
     }
-    if (!hub && !self.settingUp && !self._hub.setup) {
+    if (!isHub && !self.settingUp && !self._hub.setup) {
       self.setup();
     }
     if (self._dbs[dbName]) {
@@ -1335,7 +1336,7 @@ hub.Hub = hub.Store.extend(
             // Just just need to test for 1 table, thanks to transactions we should
             // have all or none.
             new_db.transaction(function(tx) {
-              tx.executeSql(hub.fmt("SELECT COUNT(*) FROM %@", hub ? "hub": "data"), [],
+              tx.executeSql(hub.fmt("SELECT COUNT(*) FROM %@", isHub ? "hub": "data"), [],
               function(tx) {
                 hub.debug("We have our data tables.");
                 self._dbs[dbName] = new_db;
@@ -1343,7 +1344,7 @@ hub.Hub = hub.Store.extend(
               },
               function(tx, err) {
                 hub.debug("We don't have the data table ...");
-                if (hub) {
+                if (isHub) {
                   self._createHubTables(tx);
                 } else {
                   self._createStoreTables(tx);
