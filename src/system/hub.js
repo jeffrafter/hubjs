@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global hub hub_precondition hub_error google Gears */
+/*global hub hub_precondition hub_error hub_assert google Gears */
 
 // FIXME: Code is not using proper prefixes in private properties and methods.
 // FIXME: Code does not parse with the PEG grammar!
@@ -49,10 +49,10 @@ hub.Hub = hub.Store.extend(
       }
     }
   */
-  _keysByType: {},
-  _recordsByKey: {},
-  _types: [],
-  _sourceByType: {},
+  _hub_keysByType: {},
+  _hub_recordsByKey: {},
+  _hub_types: [],
+  _hub_sourceByType: {},
 
   uti: "com.sprouthub.app",
   _hub: {
@@ -104,6 +104,177 @@ hub.Hub = hub.Store.extend(
   delegate: null,
 
   // ..........................................................
+  // CHANGESET SUPPORT
+  // 
+  
+  /**
+    Applies the changeset but does not commit the changes. Use 
+    commitChangeset() if you want the changeset committed immediately.
+    
+    @param created {Hash|Array} An array of new objects to insert, or a hash 
+        with three keys: created, updated, deleted, each containing an array.
+    @param updated {Array} An array of existing objects to update.
+    @param deleted {Array} An array of existing objects to delete.
+    @returns {String} the commit id if the commit was successful, null if not
+  */
+  applyChangeset: function(created, updated, deleted) {
+    var idx, len, dataHash, recordType, storeKey, id, primaryKey,
+        status, K = hub.Record, changelog, defaultVal, Store = hub.Store ;
+    
+    // normalize arguments
+    if (typeof created === hub.T_HASH) {
+      updated = created.updated ;
+      deleted = created.deleted ;
+      created = created.created ; // created must be set last
+    }
+    
+    hub_precondition(typeof created === hub.T_ARRAY) ;
+    hub_precondition(typeof updated === hub.T_ARRAY) ;
+    hub_precondition(typeof deleted === hub.T_ARRAY) ;
+    
+    // Do not apply the changeset unless the Hub is clean.
+    if (!this.get('isClean')) return false ;
+    
+    // Set up these shared properties outside the loop.
+    changelog = this.changelog ;
+    if (!changelog) changelog = hub.Set.create() ;
+    
+    // Create new records.
+    for (idx=0, len=created.length; idx<len; ++idx) {
+      dataHash = created[idx] ;
+      recordType = hub.objectForPropertyPath[dataHash.type] ;
+      primaryKey = recordType.prototype.primaryKey ;
+      id = dataHash[primaryKey] ;
+      
+      // Don't use createRecord() here. We don't want to materialize the record.
+      // Don't use pushRetrieve() here; it doesn't register as "new".
+      // TODO: The following is copied from createRecord(). DRY it up.
+      
+      // Get the storeKey - base on id if available.
+      storeKey = id ? recordType.storeKeyFor(id) : Store.generateStoreKey() ;
+      
+      // FIXME: This assertion belongs in the two methods called above.
+      hub_assert(typeof storeKey === hub.T_NUMBER) ;
+      
+      // Check the state and do the right thing.
+      status = this.readStatus(storeKey);
+      
+      // Any busy or ready state or destroyed dirty state is not allowed.
+      if ((status & K.BUSY)  || 
+          (status & K.READY) || 
+          (status == K.DESTROYED_DIRTY)) { 
+        throw id ? K.RECORD_EXISTS_ERROR : K.BAD_STATE_ERROR ;
+        
+      // Allow error or destroyed state only with id.
+      } else if (!id && (status==hub.DESTROYED_CLEAN || status==hub.ERROR)) {
+        throw K.BAD_STATE_ERROR ;
+      }
+      
+      // Add dataHash and set up initial status -- also save recordType.
+      this.writeDataHash(storeKey, (dataHash ? dataHash : {}), K.READY_NEW) ;
+      
+      Store.replaceRecordTypeFor(storeKey, recordType) ;
+      this.dataHashDidChange(storeKey) ;
+      
+      // Record is now in a committable state -- add storeKey to changelog.
+      changelog.add(storeKey) ;
+    }
+    
+    // Update existing records.
+    for (idx=0, len=updated.length; idx<len; ++idx) {
+      dataHash = updated[idx] ;
+      recordType = hub.objectForPropertyPath[dataHash.type] ;
+      primaryKey = recordType.prototype.primaryKey ;
+      id = dataHash[primaryKey] ;
+      storeKey = recordType.storeKeyFor(id) ;
+      
+      // Monkey-patch the internals of hub.Store and friends.
+      recordType.storeKeysById()[id] = storeKey ;
+      Store.idsByStoreKey[storeKey] = id ;
+      Store.recordTypesByStoreKey[storeKey] = recordType ;
+      
+      // Manually adjust the status.
+      this.writeDataHash(storeKey, dataHash, K.READY_DIRTY) ;
+      this.dataHashDidChange(storeKey) ;
+      
+      // Record is now in a committable state -- add storeKey to changelog.
+      changelog.add(storeKey) ;
+    }
+    
+    // Delete existing records.
+    for (idx=0, len=deleted.length; idx<len; ++idx) {
+      dataHash = deleted[idx] ;
+      recordType = hub.objectForPropertyPath[dataHash.type] ;
+      primaryKey = recordType.prototype.primaryKey ;
+      id = dataHash[primaryKey] ;
+      storeKey = recordType.storeKeyFor(id) ;
+      
+      // remove the data hash, set new status
+      this.writeStatus(storeKey, K.DESTROYED_DIRTY) ;
+      this.dataHashDidChange(storeKey) ;
+      
+      // Record is now in a committable state -- add storeKey to changelog.
+      changelog.add(storeKey) ;
+    }
+    
+    return true ; // FIXME: Actually handle problems.
+  },
+  
+  /**
+    Calls this.applyChangset() and then immediately commits the changes. This 
+    is usually the method you want to call.
+    
+    @param created {Hash|Array} An array of new objects to insert, or a hash 
+        with three keys: created, updated, deleted, each containing an array.
+    @param updated {Array} An array of existing objects to update.
+    @param deleted {Array} An array of existing objects to delete.
+    @returns {String} the commit id if the commit was successful, null if not
+  */
+  commitChangeset: function(created, updated, deleted) {
+    var ret;
+    
+    try {
+      ret = this.applyChangset(created, updated, deleted) ;
+    } catch (e) {
+      hub.debug('ERROR', e) ;
+      ret = false ;
+    }
+    
+    if (!ret) return null ; // failed to apply the changeset
+    
+    try {
+      ret = this.commitRecords() ;
+    } catch (e2) {
+      hub.debug('ERROR', e2) ;
+      ret = false ;
+    }
+    
+    return ret ? this.get('currentCommit') : null ;
+   },
+  
+  /**
+    Returns a hash with three keys: created, updated, deleted, each key 
+    containing an array of object hashes in the respective categories needed 
+    to take a datastore at the from commit id and advance it to the to commit 
+    id.
+    
+    @param from {String} the commit id to use as a starting point
+    @param to {String} the commit id to generate a changeset to
+    @returns {Hash} a hash with three keys: created, updated, and deleted
+  */
+  computeChangeset: function(from, to) {
+    // check the changeset cache first
+    var csCache = this._hub_changesetCache ;
+    if (csCache && csCache[0] === from && csCache[1] === to) {
+      hub_assert(typeof csCache[2] === hub.T_HASH) ;
+      return csCache[2] ;
+    } else {
+      // actually compute the changeset
+      throw "FIXME: Not implemented." ;
+    }
+  },
+  
+  // ..........................................................
   // Store Functions
   //
   addPack: function(pack, version) {
@@ -125,31 +296,41 @@ hub.Hub = hub.Store.extend(
     return ourKeys; // This is now a list of keys that we have, and the server dosn't
   },
   // before commit change, get new storekeys.
+  
   /**
     Committing Records is all or nothing, we don't need keys or ids.
   */
   commitRecords: function(recordTypes, ids, storeKeys, params) {
     var statuses = this.statuses,
-    len = statuses.length,
-    K = hub.Record,
-    S = hub.Store,
-    oldKeys = [],
-    idx,
-    ret,
-    storeKey;
-    recordTypes = [];
-    storeKeys = [];
+        len = statuses.length,
+        K = hub.Record,
+        S = hub.Store,
+        oldKeys = [],
+        idx, ret, storeKey,
+        changeset, created = [], updated = [], deleted = [],
+        hash, recordType;
+
+    recordTypes = [] ;
+    storeKeys = [] ;
 
     for (storeKey in statuses) {
-      storeKey = parseInt(storeKey, 10); // FIXME! ... I shouldn't have to parseInt
-      hub_precondition(typeof storeKey === hub.T_NUMBER);
+      storeKey = parseInt(storeKey, 10) ; // FIXME: Shouldn't have to use parseInt() here.
+      hub_assert(typeof storeKey === hub.T_NUMBER) ;
+      
       // collect status and process
-      status = statuses[storeKey];
+      status = statuses[storeKey] ;
 
       if ((status == K.EMPTY) || (status == K.ERROR)) {
-        throw K.NOT_FOUND_ERROR;
+        throw K.NOT_FOUND_ERROR ;
       }
       else {
+        // TODO: Compute and cache a change set here. Calls to 
+        // computeChangeset() should check the cache and return it immediately. 
+        // This will efficiently handle the most common situation where we need 
+        // to tell an external store about a new commit that was already 
+        // up-to-date with the previous commit.
+        
+        // TODO: Why are clean records being handled (and not skipped)?
         if (status == K.READY_CLEAN) {
           storeKeys.push(storeKey);
           recordTypes.push(S.recordTypeFor(storeKey));
@@ -157,33 +338,60 @@ hub.Hub = hub.Store.extend(
           this.dataHashDidChange(storeKey, null, true);
 
         } else if (status == K.READY_NEW) {
-          this.writeStatus(storeKey, K.BUSY_CREATING);
-          this.dataHashDidChange(storeKey, null, true);
-          storeKeys.push(storeKey);
-          recordTypes.push(S.recordTypeFor(storeKey));
+          this.writeStatus(storeKey, K.BUSY_CREATING) ;
+          this.dataHashDidChange(storeKey, null, true) ;
+          storeKeys.push(storeKey) ;
+          recordType = S.recordTypeFor(storeKey) ;
+          recordTypes.push(recordType) ;
+          
+          // Save for changeset cache.
+          hash = hub.clone(this.readDataHash(storeKey)) ;
+          hash['type'] = recordType.recordTypeName ;
+          created.push(hash) ;
 
         } else if (status == K.READY_DIRTY) {
           // We need to make a new store key, for the changed data.
-          var newKey = this.changeStoreKey(storeKey);
-          this.writeStatus(newKey, K.BUSY_COMMITTING);
-          this.dataHashDidChange(newKey, null, true);
-          storeKeys.push(newKey);
-          oldKeys.push(storeKey);
-          var rt = S.recordTypeFor(storeKey);
-          if (rt) recordTypes.push(rt);
+          var newKey = this.changeStoreKey(storeKey) ;
+          this.writeStatus(newKey, K.BUSY_COMMITTING) ;
+          this.dataHashDidChange(newKey, null, true) ;
+          storeKeys.push(newKey) ;
+          oldKeys.push(storeKey) ;
+          recordType = S.recordTypeFor(storeKey) ;
+          if (recordType) recordTypes.push(recordType) ;
+          
+          // Save for changeset cache.
+          hash = hub.clone(this.readDataHash(storeKey)) ;
+          hash['type'] = recordType.recordTypeName ;
+          updated.push(hash) ;          
 
         } else if (status & K.DESTROYED) {
-          this.writeStatus(storeKey, K.BUSY_DESTROYING);
-          this.dataHashDidChange(storeKey, null, true);
-          // We don't need to do anything, so just kill it.
+          this.writeStatus(storeKey, K.BUSY_DESTROYING) ;
+          this.dataHashDidChange(storeKey, null, true) ;
+          
+          // Save for changeset cache.
+          hash = hub.clone(this.readDataHash(storeKey)) ;
+          hash['type'] = recordType.recordTypeName ;
+          deleted.push(hash) ;
+
+          // Packs don't store destroy records, so just kill it.
           this.dataSourceDidDestroy(storeKey);
 
         }
         // ignore K.READY_CLEAN, K.BUSY_LOADING, K.BUSY_CREATING, K.BUSY_COMMITTING, 
-        // K.BUSY_REFRESH_CLEAN, K_BUSY_REFRESH_DIRTY, KBUSY_DESTROYING
+        // K.BUSY_REFRESH_CLEAN, K_BUSY_REFRESH_DIRTY, K.BUSY_DESTROYING
       }
-
     }
+    
+    // create the changeset
+    changeset = {
+      created: created,
+      updated: updated,
+      deleted: deleted
+    };
+    
+    // cache it for later (we'll need to fill in the "to" commit later)
+    this._hub_changesetCache = [this.get('currentCommit'), null, changeset] ;
+    
     if (storeKeys.length > 0) {
 
       var set = hub.CoreSet.create([storeKey]);
@@ -267,8 +475,8 @@ hub.Hub = hub.Store.extend(
   from: function() {
     hub_error("DEPRECATED: from is not supported on a hub");
   },
-  _getDataSource: function() {
-    hub.debug("DEPRECATED: _getDataSource is not supported on a hub");
+  _hub_getDataSource: function() {
+    hub.debug("DEPRECATED: _hub_getDataSource is not supported on a hub");
     hub_precondition(this.kindOf(hub.Hub));
     return this;
   },
@@ -333,34 +541,36 @@ hub.Hub = hub.Store.extend(
         recordTypeName: recordType.recordTypeName,
         created_on: currentTime
       };
-      if (!this._keysByType[props.recordTypeName]) {
-        this._keysByType[props.recordTypeName] = [];
-        this._types.push(props.recordTypeName);
+      if (!this._hub_keysByType[props.recordTypeName]) {
+        this._hub_keysByType[props.recordTypeName] = [];
+        this._hub_types.push(props.recordTypeName);
       }
-      this._keysByType[props.recordTypeName].push(props.key);
-      this._recordsByKey[props.key] = props;
+      this._hub_keysByType[props.recordTypeName].push(props.key);
+      this._hub_recordsByKey[props.key] = props;
     }
 
     var store_bytes = JSON.stringify("store"),
-    store_key,
-    store_time = currentTime,
-    insert_data_sql = self.insertSQL['Data']; // 7
+        store_key,
+        store_time = currentTime,
+        insert_data_sql = self.insertSQL['Data']; // 7
+    
     // It's time to insert the data
     hub.debug("* addRecords");
     this.sendToDB(function(tx) {
       self.goState(2);
       var typeMetaKeys = [],
       typeMetaByKey = {};
+      
       // Then Types Types
-      self._types.forEach(function(type) {
+      self._hub_types.forEach(function(type) {
         var type_bytes = JSON.stringify(type),
         type_time = currentTime,
         childMetaDataKeys = [],
         metaDataByKey = {};
 
         // Walk through each instance
-        self._keysByType[type].forEach(function(instanceKey) {
-          var data = self._recordsByKey[instanceKey];
+        self._hub_keysByType[type].forEach(function(instanceKey) {
+          var data = self._hub_recordsByKey[instanceKey];
           // hub.debug(hub.fmt("saving data for: %@", data.storeKey));
           tx.executeSql(insert_data_sql, [data.key, data.created_on, data.storage, data.bytes, 0, data.storeKey, commit_id],
           function() {
@@ -371,6 +581,7 @@ hub.Hub = hub.Store.extend(
             hub.debug(error);
           });
           var meta_data, ret, instkey;
+          
           // Generate first pass key and store data
           ret = self.metaData[data.recordId];
           if (!ret) {
@@ -401,6 +612,7 @@ hub.Hub = hub.Store.extend(
           totalStorage += data.storage;
           self.dataSourceDidComplete(data.storeKey, null, data.recordId);
         }); // end each instance
+        
         // Add The Record Type.
         var type_key = hub.SHA256("" + type_bytes + childMetaDataKeys.sort().join(""));
         tx.executeSql(insert_data_sql, [type_key, type_time, 0, type_bytes, 1, null, commit_id],
@@ -447,6 +659,7 @@ hub.Hub = hub.Store.extend(
         }
 
       }); // end each type
+      
       // Now create the Store
       store_key = hub.SHA256("" + store_bytes + typeMetaKeys.sort().join(""));
       tx.executeSql(insert_data_sql, [store_key, store_time, store_bytes.length, store_bytes, 0, null, commit_id],
@@ -482,7 +695,7 @@ hub.Hub = hub.Store.extend(
         commit_id: commit_id
       });
       // hub.debug("Commit'd!");
-      tx.executeSql("UPDATE data SET metadata_count = (SELECT COUNT(*) FROM meta_data where target = data.key)", [], undefined, self._error);
+      tx.executeSql("UPDATE data SET metadata_count = (SELECT COUNT(*) FROM meta_data where target = data.key)", [], undefined, self._hub_error);
 
     },
     null,
@@ -511,7 +724,15 @@ hub.Hub = hub.Store.extend(
     var insertCommitValues = [key, p.name, p.commit_id, p.meta_uti, p.meta_creator, p.meta_editor, // 6
     p.merger, p.created_on, ancestorCount, totalStorage, p.commit_storage, // 5
     p.history_storage, p.data, p.meta_data, p.committer, ancestors]; // 5 = 16
-    this.set('currentCommit', key);
+    
+    // make the changeset cache valid now that we know the new commit id
+    var csCache = this._hub_changesetCache ;
+    if (csCache && csCache[0] === this.get('currentCommit')) {
+      csCache[1] = key ; // makes the cache valid
+    } // don't remove the cache -- an in-flight commit may have overwritten it
+    
+    this.set('currentCommit', key) ;
+    
     this.commitKeys.add(key);
     this.commitIdsByKey[key] = p.commit_id;
 
@@ -530,11 +751,11 @@ hub.Hub = hub.Store.extend(
 
       tx.executeSql(updateSql, updateValues,
       function(tx, res) {},
-      self._error);
+      self._hub_error);
 
       tx.executeSql(insertHubCommitSql, insertHubCommitValues,
       function(tx, res) {},
-      self._error);
+      self._hub_error);
       self._hub.head = key;
 
     },
@@ -545,7 +766,7 @@ hub.Hub = hub.Store.extend(
       hub.debug("Added Commit");
       self.sendPack.call(self, key, p.commit_id);
     },
-    self._error);
+    self._hub_error);
   },
 
   addMetaData: function(tx, params) {
@@ -588,10 +809,10 @@ hub.Hub = hub.Store.extend(
     return hub.SHA256(string);
   },
   cleanup: function() {
-    this._keysByType = {};
-    this._recordsByKey = {};
-    this._types = [];
-    this._sourceByType = {};
+    this._hub_keysByType = {};
+    this._hub_recordsByKey = {};
+    this._hub_types = [];
+    this._hub_sourceByType = {};
     this.goState(0); // finish up.
   },
 
@@ -602,8 +823,8 @@ hub.Hub = hub.Store.extend(
     // pull out instances.
   },
 
-  _sendPackURL: '/packs/?pk=%@',
-  _receivePackURL: '/packs/?pk=%@',
+  _hub_sendPackURL: '/packs/?pk=%@',
+  _hub_receivePackURL: '/packs/?pk=%@',
 
   sendPack: function(version, commit_id) {
     var state = this.state;
@@ -648,7 +869,7 @@ hub.Hub = hub.Store.extend(
           pack.push(item);
         }
         toAdd["data"] = true;
-        self._sendPack.call(self, version, pack, toAdd);
+        self._hub_sendPack.call(self, version, pack, toAdd);
       });
       tx.executeSql("SELECT * FROM meta_data WHERE commit_id = ?", [commit_id],
       function(tx, result) {
@@ -667,7 +888,7 @@ hub.Hub = hub.Store.extend(
           pack.push(item);
         }
         toAdd["metaData"] = true;
-        self._sendPack.call(self, version, pack, toAdd);
+        self._hub_sendPack.call(self, version, pack, toAdd);
       });
       hub.debug(hub.fmt("Finding commit with id: %@", commit_id));
       tx.executeSql("SELECT * FROM commits WHERE commit_id = ?", [commit_id],
@@ -686,16 +907,16 @@ hub.Hub = hub.Store.extend(
         };
         pack.push(item);
         toAdd["commit"] = true;
-        self._sendPack.call(self, version, pack, toAdd);
+        self._hub_sendPack.call(self, version, pack, toAdd);
       });
     });
     this.goState(0);
 
   },
-  _sendPack: function(version, pack, toAdd) {
+  _hub_sendPack: function(version, pack, toAdd) {
     if (toAdd.data && toAdd.metaData && toAdd.commit) {
       var dataHash = pack,
-      url = hub.fmt(this._sendPackURL, version);
+      url = hub.fmt(this._hub_sendPackURL, version);
       hub.debug("Calling packCommited call back");
       // if (this.get('hasSocket')) { // Send Via Socket if we have one.
       //   SproutDB.webSocket.send(version+":"+JSON.stringify(pack)) ;
@@ -723,7 +944,7 @@ hub.Hub = hub.Store.extend(
   // },
   getPack: function(version, doCheckout) {
     var self = this,
-    url = hub.fmt(this._receivePackURL, version);
+    url = hub.fmt(this._hub_receivePackURL, version);
     if (!doCheckout) doCheckout = false;
     hub.Request.getUrl(url).set('isJSON', true).notify(this, this.receivePack, {
       version: version,
@@ -899,11 +1120,11 @@ hub.Hub = hub.Store.extend(
   sync: function() {
     var self = this;
     // get list of remote commits.
-    hub.Request.getUrl(self.packListUrl).set('isJSON', true).notify(this, this._didGetPackList, {
+    hub.Request.getUrl(self.packListUrl).set('isJSON', true).notify(this, this._hub_didGetPackList, {
       dataSource: self
     }).send();
   },
-  _didGetPackList: function(request, params) {
+  _hub_didGetPackList: function(request, params) {
     // Local commits: self.commitKeys {hub.CoreSet}
     var self = params.dataSource,
     localKeys = this.commitKeys,
@@ -952,7 +1173,7 @@ hub.Hub = hub.Store.extend(
           viewFun(hubs);
         }
       },
-      self._error);
+      self._hub_error);
     },
     null, null, true, true);
   },
@@ -980,7 +1201,7 @@ hub.Hub = hub.Store.extend(
       function(tx, res) {
 
 },
-      self._error);
+      self._hub_error);
     });
   },
 
@@ -994,15 +1215,16 @@ hub.Hub = hub.Store.extend(
 
   // TODO: add forced ... at some point.
   checkout: function(version, params) {
-    hub_precondition(this.kindOf && this.kindOf(hub.Hub));
+    hub_precondition(this.kindOf && this.kindOf(hub.Hub)) ;
+    
     if (!version) {
       this.checkoutLatest();
-      return;
+      return; // FIXME: Need to return a Boolean here.
     }
     if (!params) params = {};
     if (this.get('checkingOut') === version) {
       hub.debug("Already checking out this version");
-      return false;
+      return true ;
     }
     if (this.state !== 0) {
       alert("Checkout called with wrong state: (" + this.state + ")");
@@ -1010,7 +1232,7 @@ hub.Hub = hub.Store.extend(
     }
     if (this.get('currentCommit') === version) {
       hub.debug("Already checked out this version");
-      return false;
+      return true ;
     }
     this.set('checkingOut', version);
     this.goState(4);
@@ -1141,7 +1363,7 @@ hub.Hub = hub.Store.extend(
     function(tx, res) {
       hub.debug(hub.fmt("Created Hub: %@: %@", self._hub.name, self._hub.key));
     },
-    self._error);
+    self._hub_error);
   },
 
   startUp: function() {
@@ -1178,10 +1400,10 @@ hub.Hub = hub.Store.extend(
           }
           // hub.debug(self.commitKeys.toString()) ;
         },
-        self._error);
+        self._hub_error);
 
       },
-      self._error);
+      self._hub_error);
 
     },
     null, self.setup, true, true); // sendToDB('hub')
@@ -1209,7 +1431,7 @@ hub.Hub = hub.Store.extend(
         self.setMaxStoreKey(max);
         self.checkoutLatest.call(self);
       },
-      self._error);
+      self._hub_error);
 
       // Get the current max commit count.
       tx.executeSql("SELECT MAX(commit_id) as max FROM commits", [],
@@ -1218,7 +1440,7 @@ hub.Hub = hub.Store.extend(
         if (isNaN(max)) max = 0;
         self.currentCommitId = max;
       },
-      self._error);
+      self._hub_error);
 
       tx.executeSql("SELECT commit_id, key FROM commits", [],
       function(tx, res) {
@@ -1230,7 +1452,7 @@ hub.Hub = hub.Store.extend(
           self.commitIdsByKey[row['key']] = parseInt(row['commit_id'], 10);
         }
       },
-      self._error);
+      self._hub_error);
     },
     null,
     function() {
@@ -1242,10 +1464,10 @@ hub.Hub = hub.Store.extend(
     true); // sendToDB(store)
   },
 
-  _dbs: {},
+  _hub_dbs: {},
   // Holds databases for 'SproutHub' and <hubKey>
-  _sqlQueue: [],
-  _sqlInternalQueue: [],
+  _hub_sqlQueue: [],
+  _hub_sqlInternalQueue: [],
   /** 
     Add State check, and only run when not touching DB.
     If not in correct state, then add to FIFO queue, and invokeLater sendToDB
@@ -1255,11 +1477,11 @@ hub.Hub = hub.Store.extend(
     hub_precondition(this.dbState !== 'c', "Database is in error state.");
     var self = this,
     dbName, dbDesc;
-    if (this.dbState === "b" || (this.state === 4 && this._sqlInternalQueue.length > 0 && !internal)) {
+    if (this.dbState === "b" || (this.state === 4 && this._hub_sqlInternalQueue.length > 0 && !internal)) {
       if (internal) {
-        this._sqlInternalQueue.push(arguments);
+        this._hub_sqlInternalQueue.push(arguments);
       } else {
-        this._sqlQueue.push(arguments);
+        this._hub_sqlQueue.push(arguments);
       }
       // this.invokeLast("invokeSendToDB");
       setTimeout(function() {
@@ -1285,9 +1507,9 @@ hub.Hub = hub.Store.extend(
     if (!isHub && !self.settingUp && !self._hub.setup) {
       self.setup();
     }
-    if (self._dbs[dbName]) {
+    if (self._hub_dbs[dbName]) {
       hub.debug("Running Query with existing database.");
-      self._dbs[dbName].transaction(function(tx) {
+      self._hub_dbs[dbName].transaction(function(tx) {
         func(tx);
       },
       function(error) {
@@ -1365,11 +1587,11 @@ hub.Hub = hub.Store.extend(
       return false;
     }
     self.invokeCount = 0;
-    if (self._sqlInternalQueue.length > 0) {
-      args = this._sqlInternalQueue.shift();
+    if (self._hub_sqlInternalQueue.length > 0) {
+      args = this._hub_sqlInternalQueue.shift();
       return self.sendToDB.apply(self, args);
-    } else if (self._sqlQueue.length > 0) {
-      args = this._sqlQueue.shift();
+    } else if (self._hub_sqlQueue.length > 0) {
+      args = this._hub_sqlQueue.shift();
       return self.sendToDB.apply(self, args);
     }
   },
@@ -1377,7 +1599,7 @@ hub.Hub = hub.Store.extend(
   /*
     Generic Error callback.
   */
-  _error: function(tx, e, msg) {
+  _hub_error: function(tx, e, msg) {
     hub.debug("Error!: " + msg);
     hub.debug(e);
     return false;
@@ -1401,10 +1623,10 @@ hub.Hub = hub.Store.extend(
   _createStoreTables: function(tx, error) {
     // There is no tables ... yet
     hub.debug("start creating data tables.");
-    tx.executeSql("CREATE TABLE 'actor' (email TEXT, public_key TEXT)", [], null, this._error);
-    tx.executeSql("CREATE TABLE 'data' (key TEXT, store_key INTEGER, created_on TEXT, storage INTEGER, bytes BLOB, metadata_count INTEGER, commit_id INTEGER)", [], null, this._error);
-    tx.executeSql("CREATE TABLE 'meta_data' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, target_uti TEXT, target_creator TEXT, target_editor TEXT, target_position INTEGER, storage INTEGER, source TEXT, target TEXT, data_key TEXT, commit_id INTEGER)", [], null, this._error);
-    tx.executeSql("CREATE TABLE 'commits' (key TEXT, name TEXT, commit_id INTEGER, commit_uti TEXT, commit_creator TEXT, commit_editor TEXT, merger TEXT, created_on INTEGER, ancestor_count INTEGER, total_storage INTEGER, commit_storage INTEGER, history_storage INTEGER, data_key TEXT, data_uti TEXT, data_editor TEXT, data_creator TEXT, commit_data TEXT, committer TEXT, ancestors TEXT)", [], null, this._error);
+    tx.executeSql("CREATE TABLE 'actor' (email TEXT, public_key TEXT)", [], null, this._hub_error);
+    tx.executeSql("CREATE TABLE 'data' (key TEXT, store_key INTEGER, created_on TEXT, storage INTEGER, bytes BLOB, metadata_count INTEGER, commit_id INTEGER)", [], null, this._hub_error);
+    tx.executeSql("CREATE TABLE 'meta_data' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, target_uti TEXT, target_creator TEXT, target_editor TEXT, target_position INTEGER, storage INTEGER, source TEXT, target TEXT, data_key TEXT, commit_id INTEGER)", [], null, this._hub_error);
+    tx.executeSql("CREATE TABLE 'commits' (key TEXT, name TEXT, commit_id INTEGER, commit_uti TEXT, commit_creator TEXT, commit_editor TEXT, merger TEXT, created_on INTEGER, ancestor_count INTEGER, total_storage INTEGER, commit_storage INTEGER, history_storage INTEGER, data_key TEXT, data_uti TEXT, data_editor TEXT, data_creator TEXT, commit_data TEXT, committer TEXT, ancestors TEXT)", [], null, this._hub_error);
     tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueDataKey" ON "data" ("key");');
     tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueDataStoreKey" ON "data" ("store_key");');
     tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueCommitKey" ON "commits" ("key");');
@@ -1413,11 +1635,11 @@ hub.Hub = hub.Store.extend(
   
   _createHubTables: function(tx, error) {
     hub.debug("start creating hub tables.");
-    tx.executeSql("CREATE TABLE 'hub' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, is_private INTEGER, is_archived INTEGER, head TEXT, forked_from TEXT, meta_data TEXT)", [], null, this._error);
-    tx.executeSql("CREATE TABLE 'hub_commit' (hub TEXT, 'commit' TEXT)", [], null, this._error);
-    tx.executeSql("CREATE TABLE 'hub_reference' (name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, hub TEXT, 'commit' TEXT, committer TEXT, meta_data TEXT)", [], null, this._error);
-    tx.executeSql("CREATE TABLE 'hub_committer' (is_owner TEXT, hub TEXT, committer TEXT, head TEXT)", [], null, this._error);
-    tx.executeSql("CREATE TABLE 'hub_observer' (hub TEXT, observer TEXT)", [], null, this._error);
+    tx.executeSql("CREATE TABLE 'hub' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, is_private INTEGER, is_archived INTEGER, head TEXT, forked_from TEXT, meta_data TEXT)", [], null, this._hub_error);
+    tx.executeSql("CREATE TABLE 'hub_commit' (hub TEXT, 'commit' TEXT)", [], null, this._hub_error);
+    tx.executeSql("CREATE TABLE 'hub_reference' (name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, hub TEXT, 'commit' TEXT, committer TEXT, meta_data TEXT)", [], null, this._hub_error);
+    tx.executeSql("CREATE TABLE 'hub_committer' (is_owner TEXT, hub TEXT, committer TEXT, head TEXT)", [], null, this._hub_error);
+    tx.executeSql("CREATE TABLE 'hub_observer' (hub TEXT, observer TEXT)", [], null, this._hub_error);
     tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueHubKey" ON "hub" ("key");');
     hub.debug("finish creating hub tables.");
   }
