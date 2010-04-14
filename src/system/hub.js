@@ -118,6 +118,9 @@ hub.Hub = hub.Store.extend(
     @returns {String} the commit id if the commit was successful, null if not
   */
   applyChangeset: function(created, updated, deleted) {
+    var idx, len, dataHash, recordType, storeKey, id, primaryKey,
+        status, K = hub.Record, changelog, defaultVal, Store = hub.Store ;
+    
     // normalize arguments
     if (typeof created === hub.T_HASH) {
       updated = created.updated ;
@@ -129,10 +132,92 @@ hub.Hub = hub.Store.extend(
     hub_precondition(typeof updated === hub.T_ARRAY) ;
     hub_precondition(typeof deleted === hub.T_ARRAY) ;
     
-    // we can only apply a changeset to a clean Hub
+    // Do not apply the changeset unless the Hub is clean.
     if (!this.get('isClean')) return false ;
     
-    throw "FIXME: Not implemented." ;
+    // Set up these shared properties outside the loop.
+    changelog = this.changelog ;
+    if (!changelog) changelog = hub.Set.create() ;
+    
+    // Create new records.
+    for (idx=0, len=created.length; idx<len; ++idx) {
+      dataHash = created[idx] ;
+      recordType = hub.objectForPropertyPath[dataHash.type] ;
+      primaryKey = recordType.prototype.primaryKey ;
+      id = dataHash[primaryKey] ;
+      
+      // Don't use createRecord() here. We don't want to materialize the record.
+      // Don't use pushRetrieve() here; it doesn't register as "new".
+      // TODO: The following is copied from createRecord(). DRY it up.
+      
+      // Get the storeKey - base on id if available.
+      storeKey = id ? recordType.storeKeyFor(id) : Store.generateStoreKey() ;
+      
+      // FIXME: This assertion belongs in the two methods called above.
+      hub_assert(typeof storeKey === hub.T_NUMBER) ;
+      
+      // Check the state and do the right thing.
+      status = this.readStatus(storeKey);
+      
+      // Any busy or ready state or destroyed dirty state is not allowed.
+      if ((status & K.BUSY)  || 
+          (status & K.READY) || 
+          (status == K.DESTROYED_DIRTY)) { 
+        throw id ? K.RECORD_EXISTS_ERROR : K.BAD_STATE_ERROR ;
+        
+      // Allow error or destroyed state only with id.
+      } else if (!id && (status==hub.DESTROYED_CLEAN || status==hub.ERROR)) {
+        throw K.BAD_STATE_ERROR ;
+      }
+      
+      // Add dataHash and set up initial status -- also save recordType.
+      this.writeDataHash(storeKey, (dataHash ? dataHash : {}), K.READY_NEW) ;
+      
+      Store.replaceRecordTypeFor(storeKey, recordType) ;
+      this.dataHashDidChange(storeKey) ;
+      
+      // Record is now in a committable state -- add storeKey to changelog.
+      changelog.add(storeKey) ;
+    }
+    
+    // Update existing records.
+    for (idx=0, len=created.length; idx<len; ++idx) {
+      dataHash = created[idx] ;
+      recordType = hub.objectForPropertyPath[dataHash.type] ;
+      primaryKey = recordType.prototype.primaryKey ;
+      id = dataHash[primaryKey] ;
+      storeKey = recordType.storeKeyFor(id) ;
+      
+      // Monkey-patch the internals of hub.Store and friends.
+      recordType.storeKeysById()[id] = storeKey ;
+      Store.idsByStoreKey[storeKey] = id ;
+      Store.recordTypesByStoreKey[storeKey] = recordType ;
+      
+      // Manually adjust the status.
+      this.writeDataHash(storeKey, dataHash, K.READY_DIRTY) ;
+      this.dataHashDidChange(storeKey) ;
+      
+      // Record is now in a committable state -- add storeKey to changelog.
+      changelog.add(storeKey) ;
+    }
+    
+    // Delete existing records.
+    for (idx=0, len=created.length; idx<len; ++idx) {
+      dataHash = created[idx] ;
+      recordType = hub.objectForPropertyPath[dataHash.type] ;
+      primaryKey = recordType.prototype.primaryKey ;
+      id = dataHash[primaryKey] ;
+      storeKey = recordType.storeKeyFor(id) ;
+      
+      // remove the data hash, set new status
+      this.writeStatus(storeKey, K.DESTROYED_DIRTY) ;
+      this.dataHashDidChange(storeKey) ;
+      
+      // Record is now in a committable state -- add storeKey to changelog.
+      changelog.add(storeKey) ;
+    }
+    
+    return true ; // FIXME: Actually handle problems.
   },
   
   /**
@@ -146,14 +231,21 @@ hub.Hub = hub.Store.extend(
     @returns {String} the commit id if the commit was successful, null if not
   */
   commitChangeset: function(created, updated, deleted) {
-    var ret = this.applyChangset(created, updated, deleted) ;
+    var ret;
+    
+    try {
+      ret = this.applyChangset(created, updated, deleted) ;
+    } catch (e) {
+      hub.debug('ERROR', e) ;
+      ret = false ;
+    }
     
     if (!ret) return null ; // failed to apply the changeset
     
     try {
       ret = this.commitRecords() ;
-    } catch (e) {
-      hub.debug('ERROR', e) ;
+    } catch (e2) {
+      hub.debug('ERROR', e2) ;
       ret = false ;
     }
     
@@ -1124,15 +1216,16 @@ hub.Hub = hub.Store.extend(
 
   // TODO: add forced ... at some point.
   checkout: function(version, params) {
-    hub_precondition(this.kindOf && this.kindOf(hub.Hub));
+    hub_precondition(this.kindOf && this.kindOf(hub.Hub)) ;
+    
     if (!version) {
       this.checkoutLatest();
-      return;
+      return; // FIXME: Need to return a Boolean here.
     }
     if (!params) params = {};
     if (this.get('checkingOut') === version) {
       hub.debug("Already checking out this version");
-      return false;
+      return true ;
     }
     if (this.state !== 0) {
       alert("Checkout called with wrong state: (" + this.state + ")");
@@ -1140,7 +1233,7 @@ hub.Hub = hub.Store.extend(
     }
     if (this.get('currentCommit') === version) {
       hub.debug("Already checked out this version");
-      return false;
+      return true ;
     }
     this.set('checkingOut', version);
     this.goState(4);

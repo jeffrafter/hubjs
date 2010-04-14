@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global hub hub_precondition */
+/*global hub hub_precondition hub_assert */
 
 /**
   hub.Store is where you can find all of your attribute hashes. Stores can be 
@@ -383,7 +383,7 @@ hub.Store = hub.Object.extend(
   
   /**
     Replaces the data hash for the storeKey.  This will lock the data hash and
-    mark them as cloned.  This will also call dataHashDidChange() for you.
+    mark them as cloned.
     
     Note that the hash you set here must be a different object from the 
     original data hash.  Once you make a change here, you must also call
@@ -399,13 +399,14 @@ hub.Store = hub.Object.extend(
   */
   writeDataHash: function(storeKey, hash, status) {
     hub_precondition(typeof storeKey === hub.T_NUMBER);
+    
     // update dataHashes and optionally status.
-    if (hash) this.dataHashes[storeKey] = hash;
+    if (hash) this.dataHashes[storeKey] = hash ;
     if (status) this.statuses[storeKey] = status ;
     
     // also note that this hash is now editable
-    var editables = this.editables;
-    if (!editables) editables = this.editables = [];
+    var editables = this.editables ;
+    if (!editables) editables = this.editables = [] ;
     editables[storeKey] = 1 ; // use number for dense array support
     
     return this ;
@@ -1195,7 +1196,7 @@ hub.Store = hub.Object.extend(
     if (!changelog) changelog = this.changelog = hub.Set.create();
     
     ((status & K.DIRTY) ? changelog.add(storeKey) : changelog.remove(storeKey));
-    this.changelog=changelog;
+    this.changelog=changelog; // FIXME: This seems like a no-op.
     
     // if commit records is enabled
     if(this.get('commitRecordsAutomatically')){
@@ -1936,11 +1937,13 @@ hub.Store = hub.Object.extend(
     @param {Class} recordType the hub.Record subclass
     @param {Object} id the record id or null
     @param {Hash} dataHash data hash to load
-    @param {Number} storeKey optional store key.  
+    @param {Number} storeKey optional store key.
     @returns {Boolean} true if push was allowed
   */
   pushRetrieve: function(recordType, id, dataHash, storeKey) {
     var K = hub.Record, status ;
+    
+    // FIXME: The docs say we allow a null id here, but we don't handle it!
     
     if (storeKey===undefined) storeKey = recordType.storeKeyFor(id) ;
     hub_assert(typeof storeKey === hub.T_NUMBER) ;
