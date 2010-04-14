@@ -182,7 +182,7 @@ hub.Hub = hub.Store.extend(
     
     // Update existing records.
     for (idx=0, len=updated.length; idx<len; ++idx) {
-      dataHash = created[idx] ;
+      dataHash = updated[idx] ;
       recordType = hub.objectForPropertyPath[dataHash.type] ;
       primaryKey = recordType.prototype.primaryKey ;
       id = dataHash[primaryKey] ;
@@ -203,7 +203,7 @@ hub.Hub = hub.Store.extend(
     
     // Delete existing records.
     for (idx=0, len=deleted.length; idx<len; ++idx) {
-      dataHash = created[idx] ;
+      dataHash = deleted[idx] ;
       recordType = hub.objectForPropertyPath[dataHash.type] ;
       primaryKey = recordType.prototype.primaryKey ;
       id = dataHash[primaryKey] ;
