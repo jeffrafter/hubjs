@@ -111,12 +111,24 @@ hub.Hub = hub.Store.extend(
     Applies the changeset but does not commit the changes. Use 
     commitChangeset() if you want the changeset committed immediately.
     
-    @param created {Array} An array of new objects to insert.
+    @param created {Hash|Array} An array of new objects to insert, or a hash 
+        with three keys: created, updated, deleted, each containing an array.
     @param updated {Array} An array of existing objects to update.
     @param deleted {Array} An array of existing objects to delete.
     @returns {String} the commit id if the commit was successful, null if not
   */
   applyChangeset: function(created, updated, deleted) {
+    // normalize arguments
+    if (typeof created === hub.T_HASH) {
+      updated = created.updated ;
+      deleted = created.deleted ;
+      created = created.created ; // created must be set last
+    }
+    
+    hub_precondition(typeof created === hub.T_ARRAY) ;
+    hub_precondition(typeof updated === hub.T_ARRAY) ;
+    hub_precondition(typeof deleted === hub.T_ARRAY) ;
+    
     // we can only apply a changeset to a clean Hub
     if (!this.get('isClean')) return false ;
     
@@ -127,7 +139,8 @@ hub.Hub = hub.Store.extend(
     Calls this.applyChangset() and then immediately commits the changes. This 
     is usually the method you want to call.
     
-    @param created {Array} An array of new objects to insert.
+    @param created {Hash|Array} An array of new objects to insert, or a hash 
+        with three keys: created, updated, deleted, each containing an array.
     @param updated {Array} An array of existing objects to update.
     @param deleted {Array} An array of existing objects to delete.
     @returns {String} the commit id if the commit was successful, null if not
