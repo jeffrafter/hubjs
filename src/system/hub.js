@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global hub hub_precondition hub_error hub_allege google Gears */
+/*global hub hub_precondition hub_error hub_assert google Gears */
 
 // FIXME: Code is not using proper prefixes in private properties and methods.
 // FIXME: Code does not parse with the PEG grammar!
@@ -158,7 +158,15 @@ hub.Hub = hub.Store.extend(
     @returns {Hash} a hash with three keys: created, updated, and deleted
   */
   computeChangeset: function(from, to) {
-    throw "FIXME: Not implemented." ;
+    // check the changeset cache first
+    var csCache = this._hub_changesetCache ;
+    if (csCache && csCache[0] === from && csCache[1] === to) {
+      hub_assert(typeof csCache[2] === hub.T_HASH) ;
+      return csCache[2] ;
+    } else {
+      // actually compute the changeset
+      throw "FIXME: Not implemented." ;
+    }
   },
   
   // ..........................................................
@@ -193,20 +201,22 @@ hub.Hub = hub.Store.extend(
         K = hub.Record,
         S = hub.Store,
         oldKeys = [],
-        idx,
-        ret,
-        storeKey;
-        recordTypes = [];
-        storeKeys = [];
+        idx, ret, storeKey,
+        changeset, created = [], updated = [], deleted = [],
+        hash, recordType;
+
+    recordTypes = [] ;
+    storeKeys = [] ;
 
     for (storeKey in statuses) {
-      storeKey = parseInt(storeKey, 10); // FIXME! ... I shouldn't have to parseInt
-      hub_precondition(typeof storeKey === hub.T_NUMBER);
+      storeKey = parseInt(storeKey, 10) ; // FIXME: Shouldn't have to use parseInt() here.
+      hub_assert(typeof storeKey === hub.T_NUMBER) ;
+      
       // collect status and process
-      status = statuses[storeKey];
+      status = statuses[storeKey] ;
 
       if ((status == K.EMPTY) || (status == K.ERROR)) {
-        throw K.NOT_FOUND_ERROR;
+        throw K.NOT_FOUND_ERROR ;
       }
       else {
         // TODO: Compute and cache a change set here. Calls to 
@@ -223,33 +233,60 @@ hub.Hub = hub.Store.extend(
           this.dataHashDidChange(storeKey, null, true);
 
         } else if (status == K.READY_NEW) {
-          this.writeStatus(storeKey, K.BUSY_CREATING);
-          this.dataHashDidChange(storeKey, null, true);
-          storeKeys.push(storeKey);
-          recordTypes.push(S.recordTypeFor(storeKey));
+          this.writeStatus(storeKey, K.BUSY_CREATING) ;
+          this.dataHashDidChange(storeKey, null, true) ;
+          storeKeys.push(storeKey) ;
+          recordType = S.recordTypeFor(storeKey) ;
+          recordTypes.push(recordType) ;
+          
+          // Save for changeset cache.
+          hash = hub.clone(this.readDataHash(storeKey)) ;
+          hash['type'] = recordType.recordTypeName ;
+          created.push(hash) ;
 
         } else if (status == K.READY_DIRTY) {
           // We need to make a new store key, for the changed data.
-          var newKey = this.changeStoreKey(storeKey);
-          this.writeStatus(newKey, K.BUSY_COMMITTING);
-          this.dataHashDidChange(newKey, null, true);
-          storeKeys.push(newKey);
-          oldKeys.push(storeKey);
-          var rt = S.recordTypeFor(storeKey);
-          if (rt) recordTypes.push(rt);
+          var newKey = this.changeStoreKey(storeKey) ;
+          this.writeStatus(newKey, K.BUSY_COMMITTING) ;
+          this.dataHashDidChange(newKey, null, true) ;
+          storeKeys.push(newKey) ;
+          oldKeys.push(storeKey) ;
+          recordType = S.recordTypeFor(storeKey) ;
+          if (recordType) recordTypes.push(recordType) ;
+          
+          // Save for changeset cache.
+          hash = hub.clone(this.readDataHash(storeKey)) ;
+          hash['type'] = recordType.recordTypeName ;
+          updated.push(hash) ;          
 
         } else if (status & K.DESTROYED) {
-          this.writeStatus(storeKey, K.BUSY_DESTROYING);
-          this.dataHashDidChange(storeKey, null, true);
-          // We don't need to do anything, so just kill it.
+          this.writeStatus(storeKey, K.BUSY_DESTROYING) ;
+          this.dataHashDidChange(storeKey, null, true) ;
+          
+          // Save for changeset cache.
+          hash = hub.clone(this.readDataHash(storeKey)) ;
+          hash['type'] = recordType.recordTypeName ;
+          deleted.push(hash) ;
+
+          // Packs don't store destroy records, so just kill it.
           this.dataSourceDidDestroy(storeKey);
 
         }
         // ignore K.READY_CLEAN, K.BUSY_LOADING, K.BUSY_CREATING, K.BUSY_COMMITTING, 
-        // K.BUSY_REFRESH_CLEAN, K_BUSY_REFRESH_DIRTY, KBUSY_DESTROYING
+        // K.BUSY_REFRESH_CLEAN, K_BUSY_REFRESH_DIRTY, K.BUSY_DESTROYING
       }
-
     }
+    
+    // create the changeset
+    changeset = {
+      created: created,
+      updated: updated,
+      deleted: deleted
+    };
+    
+    // cache it for later (we'll need to fill in the "to" commit later)
+    this._hub_changesetCache = [this.get('currentCommit'), null, changeset] ;
+    
     if (storeKeys.length > 0) {
 
       var set = hub.CoreSet.create([storeKey]);
@@ -583,7 +620,15 @@ hub.Hub = hub.Store.extend(
     var insertCommitValues = [key, p.name, p.commit_id, p.meta_uti, p.meta_creator, p.meta_editor, // 6
     p.merger, p.created_on, ancestorCount, totalStorage, p.commit_storage, // 5
     p.history_storage, p.data, p.meta_data, p.committer, ancestors]; // 5 = 16
-    this.set('currentCommit', key);
+    
+    // make the changeset cache valid now that we know the new commit id
+    var csCache = this._hub_changesetCache ;
+    if (csCache && csCache[0] === this.get('currentCommit')) {
+      csCache[1] = key ; // makes the cache valid
+    } // don't remove the cache -- an in-flight commit may have overwritten it
+    
+    this.set('currentCommit', key) ;
+    
     this.commitKeys.add(key);
     this.commitIdsByKey[key] = p.commit_id;
 
