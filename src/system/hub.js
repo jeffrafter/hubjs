@@ -5,7 +5,7 @@
 //            Portions ©2008-2009 Apple Inc. All rights reserved.
 // License:   Licensed under an MIT license (see license.js).
 // ==========================================================================
-/*global hub hub_precondition hub_error google Gears */
+/*global hub hub_precondition hub_error hub_allege google Gears */
 
 // FIXME: Code is not using proper prefixes in private properties and methods.
 // FIXME: Code does not parse with the PEG grammar!
@@ -117,6 +117,9 @@ hub.Hub = hub.Store.extend(
     @returns {String} the commit id if the commit was successful, null if not
   */
   applyChangeset: function(created, updated, deleted) {
+    // we can only apply a changeset to a clean Hub
+    if (!this.get('isClean')) return false ;
+    
     throw "FIXME: Not implemented." ;
   },
   
@@ -130,7 +133,18 @@ hub.Hub = hub.Store.extend(
     @returns {String} the commit id if the commit was successful, null if not
   */
   commitChangeset: function(created, updated, deleted) {
-    throw "FIXME: Not implemented." ;
+    var ret = this.applyChangset(created, updated, deleted) ;
+    
+    if (!ret) return null ; // failed to apply the changeset
+    
+    try {
+      ret = this.commitRecords() ;
+    } catch (e) {
+      hub.debug('ERROR', e) ;
+      ret = false ;
+    }
+    
+    return ret ? this.get('currentCommit') : null ;
    },
   
   /**
@@ -169,20 +183,21 @@ hub.Hub = hub.Store.extend(
     return ourKeys; // This is now a list of keys that we have, and the server dosn't
   },
   // before commit change, get new storekeys.
+  
   /**
     Committing Records is all or nothing, we don't need keys or ids.
   */
   commitRecords: function(recordTypes, ids, storeKeys, params) {
     var statuses = this.statuses,
-    len = statuses.length,
-    K = hub.Record,
-    S = hub.Store,
-    oldKeys = [],
-    idx,
-    ret,
-    storeKey;
-    recordTypes = [];
-    storeKeys = [];
+        len = statuses.length,
+        K = hub.Record,
+        S = hub.Store,
+        oldKeys = [],
+        idx,
+        ret,
+        storeKey;
+        recordTypes = [];
+        storeKeys = [];
 
     for (storeKey in statuses) {
       storeKey = parseInt(storeKey, 10); // FIXME! ... I shouldn't have to parseInt
@@ -194,6 +209,13 @@ hub.Hub = hub.Store.extend(
         throw K.NOT_FOUND_ERROR;
       }
       else {
+        // TODO: Compute and cache a change set here. Calls to 
+        // computeChangeset() should check the cache and return it immediately. 
+        // This will efficiently handle the most common situation where we need 
+        // to tell an external store about a new commit that was already 
+        // up-to-date with the previous commit.
+        
+        // TODO: Why are clean records being handled (and not skipped)?
         if (status == K.READY_CLEAN) {
           storeKeys.push(storeKey);
           recordTypes.push(S.recordTypeFor(storeKey));
