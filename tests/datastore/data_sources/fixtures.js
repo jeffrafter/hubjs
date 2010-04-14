@@ -7,6 +7,8 @@
 // ==========================================================================
 /*globals GLOBAL hub module ok equals same test MyApp Sample */
 
+// FIXME: The folder structure for all tests should watch the hierachy in /src
+
 var store, fds, storeKey1,storeKey2;
 
 module("hub.FixturesDataSource", {
