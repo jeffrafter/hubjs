@@ -188,9 +188,9 @@ hub.Hub = hub.Store.extend(
 
       var set = hub.CoreSet.create([storeKey]);
       set.addEach(oldKeys);
-      this._notifyRecordArrays(set, hub.CoreSet.create(recordTypes));
+      this._hub_notifyRecordArrays(set, hub.CoreSet.create(recordTypes));
 
-      ret = this._commitRecords(storeKeys, params);
+      ret = this._hub_commitRecords(storeKeys, params);
     }
     //remove all commited changes from changelog
     if (ret) {
@@ -198,7 +198,7 @@ hub.Hub = hub.Store.extend(
     }
     return ret;
   },
-  _commitRecords: function(keys, params) {
+  _hub_commitRecords: function(keys, params) {
     if (!this._hub.key) {
       this._hub.key = hub.uuid();
       this.ensureHubName();
@@ -305,8 +305,8 @@ hub.Hub = hub.Store.extend(
     var i = keys.length,
     self = this,
     // FIXME: This should reference a User and Device object
-    currentTask = hub.get('currentTask'),
-    currentActor = hub.get('currentActor'),
+    currentTask = hub.get('currentTask') || '',
+    currentActor = hub.get('currentActor') || '',
     currentTime = new Date().getTime(),
     totalStorage = 0;
     // Loop through our records creating new 
@@ -330,7 +330,7 @@ hub.Hub = hub.Store.extend(
         bytes: json,
         storage: json.length,
         key: hub.SHA256(json),
-        recordTypeName: recordType.toString(),
+        recordTypeName: recordType.recordTypeName,
         created_on: currentTime
       };
       if (!this._keysByType[props.recordTypeName]) {
@@ -1308,73 +1308,44 @@ hub.Hub = hub.Store.extend(
         self.goDbState("a");
         return self.invokeSendToDB.apply(self);
       }
-      var errmsg = "Sorry, No DB today.",
-      new_db = null;
-      try {
-        if (window.openDatabaseSync || window.openDatabase || (google.gears.factory && google.gears.factory.create)) {
-          if (window.openDatabaseSync) {
-            new_db = window.openDatabaseSync(dbName, "1.1", dbDesc, 5000000);
-            new_db.addListener("commit",
-            function() {
-              hub.debug("COMMIT");
-            });
-
-            new_db.addListener("update",
-            function(operation, database, table, rowid) {
-              hub.debug("update " + operation + " " + database + "." + table + " " + rowid);
-            });
-          } else if (window.openDatabase) {
-            new_db = window.openDatabase(dbName, "1.1", dbDesc, 5000000);
-          } else {
-            // Must be google gears
-            new_db = Gears.openDatabase(dbName, "1.1");
-          }
-          if (!new_db) {
-            alert(errmsg + " Couldn't open, maybe bad version or run out of DB quota.");
-          } else {
-            // We have a database, now test to see if we have a table.
-            // Just just need to test for 1 table, thanks to transactions we should
-            // have all or none.
-            new_db.transaction(function(tx) {
-              tx.executeSql(hub.fmt("SELECT COUNT(*) FROM %@", isHub ? "hub": "data"), [],
-              function(tx) {
-                hub.debug("We have our data tables.");
-                self._dbs[dbName] = new_db;
-                func(tx);
-              },
-              function(tx, err) {
-                hub.debug("We don't have the data table ...");
-                if (isHub) {
-                  self._createHubTables(tx);
-                } else {
-                  self._createStoreTables(tx);
-                }
-                // tx.executeSql('COMMIT') ;
-                // tx.executeSql('BEGIN TRANSACTION') ;
-                func(tx);
-                hub.debug('end callback');
-                return false; // Let the transaction know that we handelled the error.
-              });
-            },
-            function(error) {
-              hub.debug("ERROR: Transaction Errored! " + error.message);
-              self.goDbState("c");
-              hub_error("transaction error");
-              // self.invokeSendToDB.apply(self);
-            },
-            function() {
-              if (onFinish) onFinish.apply(self);
-              self.goDbState("a");
-              self.invokeSendToDB.apply(self);
-            });
-          }
-        } else if (window.google.factory && window.google.factory.create) {
-
-} else {
-          alert(errmsg + " Your browser doesn't support it.");
-        }
-      } catch(err) {
-        alert(errmsg + " Something bad happened: " + err);
+      db = hub.Database.connect(dbName, dbDesc);
+      new_db = db.database();
+      if (new_db) {
+        // We have a database, now test to see if we have a table.
+        // Just just need to test for 1 table, thanks to transactions we should
+        // have all or none.
+        new_db.transaction(
+        function(tx) {
+          tx.executeSql(hub.fmt("SELECT COUNT(*) FROM %@", isHub ? "hub": "data"), [], 
+          function(tx) {
+            hub.debug("We have our data tables.");
+            self._dbs[name] = db;
+            func(tx);
+          },
+          function(tx, err) {
+            hub.debug("We don't have the data table ...");
+            if (isHub) {
+              self._createHubTables(tx);
+            } else {
+              self._createStoreTables(tx);
+            }
+            // tx.executeSql('COMMIT') ;
+            // tx.executeSql('BEGIN TRANSACTION') ;
+            func(tx);
+            hub.debug('end callback');
+            return false; // Let the transaction know that we handelled the error.
+          });
+        },
+        function(error) {
+          hub.debug("ERROR: Transaction Errored! " + error.message);
+          self.goDbState("c");
+          hub_error("transaction error");
+        },
+        function() {
+          if (onFinish) onFinish.apply(self);
+          self.goDbState("a");
+          self.invokeSendToDB.apply(self);
+        });
       }
     }
   },
