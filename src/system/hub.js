@@ -755,7 +755,7 @@ hub.Hub = hub.Store.extend(
       //       version: version
       //     }).send(dataHash) ;
       // }
-      this.packCommitted(version, JSON.stringify(pack));
+      this.packCommitted(version, pack);
     } else {
       hub.debug("Not yet sending pack.");
     }
