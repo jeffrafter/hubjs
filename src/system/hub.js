@@ -108,8 +108,8 @@ hub.Hub = hub.Store.extend(
   // 
   
   /**
-    Applies the changeset but does not commit the changes. Use commitChangset() 
-    if you want the changes committed immediately.
+    Applies the changeset but does not commit the changes. Use 
+    commitChangeset() if you want the changeset committed immediately.
     
     @param created {Array} An array of new objects to insert.
     @param updated {Array} An array of existing objects to update.
