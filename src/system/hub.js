@@ -104,6 +104,50 @@ hub.Hub = hub.Store.extend(
   delegate: null,
 
   // ..........................................................
+  // CHANGESET SUPPORT
+  // 
+  
+  /**
+    Applies the changeset but does not commit the changes. Use commitChangset() 
+    if you want the changes committed immediately.
+    
+    @param created {Array} An array of new objects to insert.
+    @param updated {Array} An array of existing objects to update.
+    @param deleted {Array} An array of existing objects to delete.
+    @returns {String} the commit id if the commit was successful, null if not
+  */
+  applyChangeset: function(created, updated, deleted) {
+    throw "FIXME: Not implemented." ;
+  },
+  
+  /**
+    Calls this.applyChangset() and then immediately commits the changes. This 
+    is usually the method you want to call.
+    
+    @param created {Array} An array of new objects to insert.
+    @param updated {Array} An array of existing objects to update.
+    @param deleted {Array} An array of existing objects to delete.
+    @returns {String} the commit id if the commit was successful, null if not
+  */
+  commitChangeset: function(created, updated, deleted) {
+    throw "FIXME: Not implemented." ;
+   },
+  
+  /**
+    Returns a hash with three keys: created, updated, deleted, each key 
+    containing an array of object hashes in the respective categories needed 
+    to take a datastore at the from commit id and advance it to the to commit 
+    id.
+    
+    @param from {String} the commit id to use as a starting point
+    @param to {String} the commit id to generate a changeset to
+    @returns {Hash} a hash with three keys: created, updated, and deleted
+  */
+  computeChangeset: function(from, to) {
+    throw "FIXME: Not implemented." ;
+  },
+  
+  // ..........................................................
   // Store Functions
   //
   addPack: function(pack, version) {
@@ -711,7 +755,7 @@ hub.Hub = hub.Store.extend(
       //       version: version
       //     }).send(dataHash) ;
       // }
-      this.packCommitted(version, pack);
+      this.packCommitted(version, JSON.stringify(pack));
     } else {
       hub.debug("Not yet sending pack.");
     }
