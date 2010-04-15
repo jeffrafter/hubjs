@@ -41,6 +41,8 @@ hub.Database = hub.Object.extend(
           this._hub_db = window.openDatabase(this._hub_name, "1.1", this._hub_desc, 5000000) ;
         } else {
           // Must be google gears
+          // TODO this is broken
+          // TODO need air
           this._hub_db = Gears.openDatabase(this._hub_name, "1.1") ;
         }
         if (!this._hub_db) {
@@ -56,10 +58,33 @@ hub.Database = hub.Object.extend(
     }  
     return this ;
   },
- 
-  database: function() {
-    hub.debug("Returning database: " + this._hub_db);
-    return this._hub_db;
+   
+  /** 
+    Opens a transaction for the underlying database implementation. This 
+    is handled transparently for the various adapters.
+    
+    For example:
+    
+      var db = hub.Database.connect("things");
+      db.transaction(
+        function(tx) { 
+          tx.execute("UPDATE things SET found = 1");
+        },
+        function(error) {
+          hub_error(error);
+        },
+        function() {
+          hub.debug("Hey, everything went well");  
+        }
+      );
+        
+    @param {Function} callback function to execute in the transaction context
+    @param {Function} onError function to execute if the transaction fails
+    @param {Function} onFinish function to execute when the transaction completes
+  */
+  transaction: function(callback, onError, onFinish) {
+    hub.Transaction.create({ _hub_db: this._hub_db, callback: callback, 
+      onError: onError, onFinish: onFinish }) ;
   }
 });
   

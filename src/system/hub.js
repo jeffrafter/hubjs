@@ -513,8 +513,8 @@ hub.Hub = hub.Store.extend(
     var i = keys.length,
     self = this,
     // FIXME: This should reference a User and Device object
-    currentTask = hub.get('currentTask') || '',
-    currentActor = hub.get('currentActor') || '',
+    currentTask = 'foo',
+    currentActor = 'bar',
     currentTime = new Date().getTime(),
     totalStorage = 0;
     // Loop through our records creating new 
@@ -572,7 +572,7 @@ hub.Hub = hub.Store.extend(
         self._hub_keysByType[type].forEach(function(instanceKey) {
           var data = self._hub_recordsByKey[instanceKey];
           // hub.debug(hub.fmt("saving data for: %@", data.storeKey));
-          tx.executeSql(insert_data_sql, [data.key, data.created_on, data.storage, data.bytes, 0, data.storeKey, commit_id],
+          tx.execute(insert_data_sql, [data.key, data.created_on, data.storage, data.bytes, 0, data.storeKey, commit_id],
           function() {
             // hub.debug(hub.fmt("Saved instance data entry %@", data.key));
           },
@@ -615,7 +615,7 @@ hub.Hub = hub.Store.extend(
         
         // Add The Record Type.
         var type_key = hub.SHA256("" + type_bytes + childMetaDataKeys.sort().join(""));
-        tx.executeSql(insert_data_sql, [type_key, type_time, 0, type_bytes, 1, null, commit_id],
+        tx.execute(insert_data_sql, [type_key, type_time, 0, type_bytes, 1, null, commit_id],
         function() {
           // hub.debug(hub.fmt("Saved type data entry %@", type_key));
         },
@@ -662,7 +662,7 @@ hub.Hub = hub.Store.extend(
       
       // Now create the Store
       store_key = hub.SHA256("" + store_bytes + typeMetaKeys.sort().join(""));
-      tx.executeSql(insert_data_sql, [store_key, store_time, store_bytes.length, store_bytes, 0, null, commit_id],
+      tx.execute(insert_data_sql, [store_key, store_time, store_bytes.length, store_bytes, 0, null, commit_id],
       function() {
         // hub.debug(hub.fmt("Saved store data entry %@", type_key));
       },
@@ -695,7 +695,7 @@ hub.Hub = hub.Store.extend(
         commit_id: commit_id
       });
       // hub.debug("Commit'd!");
-      tx.executeSql("UPDATE data SET metadata_count = (SELECT COUNT(*) FROM meta_data where target = data.key)", [], undefined, self._hub_error);
+      tx.execute("UPDATE data SET metadata_count = (SELECT COUNT(*) FROM meta_data where target = data.key)", [], undefined, self._hub_error);
 
     },
     null,
@@ -749,18 +749,18 @@ hub.Hub = hub.Store.extend(
       updateSql = "UPDATE hub SET head = ?, name = ? WHERE key = ?",
       updateValues = [key, hubName, hubKey];
 
-      tx.executeSql(updateSql, updateValues,
+      tx.execute(updateSql, updateValues,
       function(tx, res) {},
       self._hub_error);
 
-      tx.executeSql(insertHubCommitSql, insertHubCommitValues,
+      tx.execute(insertHubCommitSql, insertHubCommitValues,
       function(tx, res) {},
       self._hub_error);
       self._hub.head = key;
 
     },
     null, null, true, true); // sendToDB('hub')
-    tx.executeSql(insertCommitSql, insertCommitValues,
+    tx.execute(insertCommitSql, insertCommitValues,
     function(tx, res) {
       // success
       hub.debug("Added Commit");
@@ -790,7 +790,7 @@ hub.Hub = hub.Store.extend(
     storage, params.source, params.target, params.data, params.commit_id]; //4 = 14
     // hub.debug(sql);
     // hub.debug(p);
-    tx.executeSql(sql, p,
+    tx.execute(sql, p,
     function(tx, res) {
       hub.debug("MetaData Added");
     },
@@ -847,18 +847,18 @@ hub.Hub = hub.Store.extend(
     self.sendToDB(function(tx) {
       var pack = [],
       toAdd = {};
-      tx.executeSql("SELECT * FROM data WHERE commit_id = ?", [commit_id],
-      function(tx, result) {
-        var i = result.rows.length,
+      tx.execute("SELECT * FROM data WHERE commit_id = ?", [commit_id],
+      function(tx, rows) {
+        var i = rows.length,
         row, item, key, data;
         while (i--) {
-          row = result.rows.item(i);
-          key = row.key;
+          row = result[i];
+          key = row['key'];
           data = {
-            metadata_count: row.metadata_count,
-            storage: parseInt(row.storage, 10),
-            created_on: parseInt(row.created_on, 10),
-            bytes: row.bytes
+            metadata_count: row['metadata_count'],
+            storage: parseInt(row['storage'], 10),
+            created_on: parseInt(row['created_on'], 10),
+            bytes: row['bytes']
           };
           item = {
             "pk": key,
@@ -871,15 +871,15 @@ hub.Hub = hub.Store.extend(
         toAdd["data"] = true;
         self._hub_sendPack.call(self, version, pack, toAdd);
       });
-      tx.executeSql("SELECT * FROM meta_data WHERE commit_id = ?", [commit_id],
-      function(tx, result) {
-        var j = result.rows.length,
+      tx.execute("SELECT * FROM meta_data WHERE commit_id = ?", [commit_id],
+      function(tx, rows) {
+        var j = rows.length,
         row, item, key;
         while (j--) {
-          row = result.rows.item(j);
-          key = row.key;
-          delete row.key;
-          delete row.commit_id;
+          row = rows[j];
+          key = row['key'];
+          delete row['key'];
+          delete row['commit_id'];
           item = {
             "pk": key,
             "model": "MetaData",
@@ -891,15 +891,15 @@ hub.Hub = hub.Store.extend(
         self._hub_sendPack.call(self, version, pack, toAdd);
       });
       hub.debug(hub.fmt("Finding commit with id: %@", commit_id));
-      tx.executeSql("SELECT * FROM commits WHERE commit_id = ?", [commit_id],
-      function(tx, result) {
-        var row = result.rows.item(0),
-        key = row.key,
+      tx.execute("SELECT * FROM commits WHERE commit_id = ?", [commit_id],
+      function(tx, rows) {
+        var row = rows[0],
+        key = row['key'],
         data;
         data = hub.clone(row);
-        delete data.key;
-        delete data.commit_id;
-        data.created_on = parseInt(data.created_on, 10);
+        delete data['key'];
+        delete data['commit_id'];
+        data['created_on'] = parseInt(data['created_on'], 10);
         var item = {
           "pk": key,
           "model": "Commit",
@@ -982,24 +982,24 @@ hub.Hub = hub.Store.extend(
         switch (item.model) {
         case 'Data':
           values = [
-          item.pk, new Date(data.created_on).getTime(), data.storage, data.bytes, data.metadata_count, hub.Store.generateStoreKey(), commit_id];
+          item.pk, new Date(data['created_on']).getTime(), data['storage'], data['bytes'], data['metadata_count'], hub.Store.generateStoreKey(), commit_id];
           break;
 
         case 'MetaData':
-          values = [item.pk, data.name, data.meta_uti, data.meta_creator, data.meta_editor, data.target_uti, data.target_creator, data.target_editor, data.target_position, data.storage, data.source, data.target, data.data_key, commit_id];
+          values = [item.pk, data['name'], data['meta_uti'], data['meta_creator'], data['meta_editor'], data['target_uti'], data['target_creator'], data['target_editor'], data['target_position'], data['storage'], data['source'], data['target'], data['data_key'], commit_id];
           break;
 
         case 'Commit':
-          values = [item.pk, data.name, commit_id, data.commit_uti, // 4
-          data.commit_creator, data.commit_editor, data.merger, // 3
-          new Date(data.created_on).getTime(), data.ancestor_count, data.total_storage, //3
-          data.commit_storage, data.history_storage, data.data_key, // 3
-          data.commit_data, data.committer, // 3
-          data.ancestors]; // 1
+          values = [item.pk, data['name'], commit_id, data['commit_uti'], // 4
+          data['commit_creator'], data['commit_editor'], data['merger'], // 3
+          new Date(data['created_on']).getTime(), data['ancestor_count'], data['total_storage'], //3
+          data['commit_storage'], data['history_storage'], data['data_key'], // 3
+          data['commit_data'], data['committer'], // 3
+          data['ancestors']]; // 1
           break;
         }
 
-        tx.executeSql(sql, values, undefined,
+        tx.execute(sql, values, undefined,
         function(tx, err) {
           hub.debug(err);
           hub.debug(sql);
@@ -1099,12 +1099,11 @@ hub.Hub = hub.Store.extend(
   retrieveRecord: function(storeKey, id) {
     hub.debug("* retrieveRecord");
     this.sendToDB(function(tx) {
-      tx.executeSql("SELECT * FROM data WHERE store_key = ?", [storeKey],
-      function(tx, result) {
-        if (result.rows.length > 0) {
-          var row = result.rows.item(0),
+      tx.execute("SELECT * FROM data WHERE store_key = ?", [storeKey],
+      function(tx, rows) {
+        if (rows.length > 0) {
+          var row = rows[0],
           record = JSON.parse(row['bytes']);
-          // Bonsai.debug['row'] = row;
           self.dataSourceDidComplete(storeKey, record);
         } else {
           hub_error();
@@ -1160,12 +1159,12 @@ hub.Hub = hub.Store.extend(
     var self = this;
     this.sendToDB(function(tx) {
       var sql = "SELECT * FROM hubs WHERE meta_uti = ?";
-      tx.executeSql(sql, [self.get('uti')],
-      function(tx, res) {
-        var i = res.rows.length,
+      tx.execute(sql, [self.get('uti')],
+      function(tx, rows) {
+        var i = rows.length,
         row, hub, hubs = [];
         while (i--) {
-          row = res.rows.item(i);
+          row = rows[i];
           hubs.unshift({
             key: row['key'],
             name: row['name']
@@ -1189,19 +1188,14 @@ hub.Hub = hub.Store.extend(
   },
 
   saveAsDialog: function() {
-
-},
+  },
+  
   saveAs: function(hubKey, hubName) {
     var self = this;
     this.sendToDB(function(tx) {
       var sql = "UPDATE hub SET name = ? WHERE key = ?",
       values = [hubName, hubKey];
-
-      tx.executeSql(sql, values,
-      function(tx, res) {
-
-},
-      self._hub_error);
+      tx.execute(sql, values, function(tx, res) {}, self._hub_error);
     });
   },
 
@@ -1256,14 +1250,14 @@ hub.Hub = hub.Store.extend(
     this.sendToDB(function(tx) {
       var storeKeySql = "SELECT data.store_key, data.key, commits.key as commitKey, src_md.name as type, data.bytes" + " FROM data" + " JOIN meta_data ON (data.key = meta_data.target)" + " JOIN meta_data AS src_md ON (meta_data.source = src_md.target)" + " JOIN commits ON (commits.commit_id = src_md.commit_id)" + " WHERE data.store_key IS NOT NULL" + " AND commits.key IN (?,?)",
       storeKeyValues = [currentCommit, version];
-      tx.executeSql(storeKeySql, storeKeyValues,
-      function(tx, res) {
-        var si = res.rows.length,
+      tx.execute(storeKeySql, storeKeyValues,
+      function(tx, rows) {
+        var si = rows.length,
         S = hub.Store,
         K = hub.Record,
         data, recordType, recordId, storeKeysById, storeKey, opts;
         while (si--) {
-          var row = res.rows.item(si),
+          var row = rows[si],
           sKey = parseInt(row['store_key'], 10);
           if (row['commitKey'] == currentCommit) {
             currentKeys.add(sKey);
@@ -1328,11 +1322,11 @@ hub.Hub = hub.Store.extend(
     this.sendToDB(function(tx) {
       // Select the first hub that is part of this application.
       var sql = "SELECT * FROM commits WHERE key = ?";
-      tx.executeSql(sql, [self._hub.head],
-      function(tx, res) {
-        if (res.rows.length > 0) {
+      tx.execute(sql, [self._hub.head],
+      function(tx, rows) {
+        if (rows.length > 0) {
           // We have a hub, so checkout the latest commit from that hub.
-          var row = res.rows.item(0);
+          var row = rows[0];
           commit = row['key'];
           self.databaseDesc = self.databaseName = row['hub_name'];
         }
@@ -1358,9 +1352,8 @@ hub.Hub = hub.Store.extend(
     insertHubValues = [self._hub.key, name, self.get('uti'), params.creator, params.editor || "", 0, 0, params.version, "", ""];
     self._hub.name = name;
     // TODO: Make sure this actually does stuff
-    // insertHubSql = "COMMIT; BEGIN TRANSACTION; "+insertHubSql+"; COMMIT; BEGIN TRANSACTION; ";
-    tx.executeSql(insertHubSql, insertHubValues,
-    function(tx, res) {
+    tx.execute(insertHubSql, insertHubValues,
+    function(tx, rows) {
       hub.debug(hub.fmt("Created Hub: %@: %@", self._hub.name, self._hub.key));
     },
     self._hub_error);
@@ -1371,10 +1364,10 @@ hub.Hub = hub.Store.extend(
     var self = this;
     hub.debug("* startUp hub");
     self.sendToDB(function(tx) {
-      tx.executeSql("SELECT * FROM hub WHERE meta_uti = ?", [self.get('uti')],
-      function(tx, res) {
-        if (res.rows.length > 0) {
-          var row = res.rows.item(0);
+      tx.execute("SELECT * FROM hub WHERE meta_uti = ?", [self.get('uti')],
+      function(tx, rows) {
+        if (rows.length > 0) {
+          var row = rows[0];
           self._hub.key = row['key'];
           self._hub['name'] = row['name'];
           self._hub.head = row['head'];
@@ -1387,13 +1380,13 @@ hub.Hub = hub.Store.extend(
           });
         }
 
-        tx.executeSql("SELECT * FROM hub_commit WHERE hub = ?", [self._hub.key],
-        function(tx, res) {
-          var i = res.rows.length,
+        tx.execute("SELECT * FROM hub_commit WHERE hub = ?", [self._hub.key],
+        function(tx, rows) {
+          var i = rows.length,
           row;
           // hub.debug(hub.fmt("^ adding %@ commits for hub %@", i, self._hub.key)) ;
           while (i--) {
-            row = res.rows.item(i);
+            row = rows[i];
             // hub.debug(hub.fmt("Adding commit %@", row['commit'])) ;
             self.commitKeys.add(row['commit']);
             self.commitIdsByKey[row['commit']] = parseInt(row['commit_id'], 10);
@@ -1418,11 +1411,11 @@ hub.Hub = hub.Store.extend(
     hub.debug("* startUp store");
     self.sendToDB(function(tx) {
       // Set the max storeKey for the store.
-      tx.executeSql("SELECT MAX(store_key)+1 AS max FROM data", [],
-      function(tx, results) {
+      tx.execute("SELECT MAX(store_key)+1 AS max FROM data", [],
+      function(tx, rows) {
         var max;
         try {
-          max = parseInt(results.rows.item(0)['max'], 10);
+          max = parseInt(rows[0]['max'], 10);
         } catch(e) {
           max = 1;
         }
@@ -1434,21 +1427,20 @@ hub.Hub = hub.Store.extend(
       self._hub_error);
 
       // Get the current max commit count.
-      tx.executeSql("SELECT MAX(commit_id) as max FROM commits", [],
-      function(tx, res) {
-        var max = parseInt(res.rows.item(0)['max'], 10);
+      tx.execute("SELECT MAX(commit_id) as max FROM commits", [],
+      function(tx, rows) {
+        var max = parseInt(rows[0]['max'], 10);
         if (isNaN(max)) max = 0;
         self.currentCommitId = max;
       },
       self._hub_error);
 
-      tx.executeSql("SELECT commit_id, key FROM commits", [],
-      function(tx, res) {
-        var i = res.rows.length,
+      tx.execute("SELECT commit_id, key FROM commits", [],
+      function(tx, rows) {
+        var i = rows.length,
         row;
         while (i--) {
-          row = res.rows.item(i);
-          // self.commitKeys.add(row['key']) ; // This is now done in startUp, from the hubs DB
+          row = rows[i];
           self.commitIdsByKey[row['key']] = parseInt(row['commit_id'], 10);
         }
       },
@@ -1530,18 +1522,17 @@ hub.Hub = hub.Store.extend(
         self.goDbState("a");
         return self.invokeSendToDB.apply(self);
       }
-      db = hub.Database.connect(dbName, dbDesc);
-      new_db = db.database();
+      new_db = hub.Database.connect(dbName, dbDesc);
       if (new_db) {
         // We have a database, now test to see if we have a table.
         // Just just need to test for 1 table, thanks to transactions we should
         // have all or none.
         new_db.transaction(
         function(tx) {
-          tx.executeSql(hub.fmt("SELECT COUNT(*) FROM %@", isHub ? "hub": "data"), [], 
+          tx.execute(hub.fmt("SELECT COUNT(*) FROM %@", isHub ? "hub": "data"), [], 
           function(tx) {
             hub.debug("We have our data tables.");
-            self._dbs[name] = db;
+            self._hub_dbs[name] = new_db;
             func(tx);
           },
           function(tx, err) {
@@ -1551,8 +1542,6 @@ hub.Hub = hub.Store.extend(
             } else {
               self._createStoreTables(tx);
             }
-            // tx.executeSql('COMMIT') ;
-            // tx.executeSql('BEGIN TRANSACTION') ;
             func(tx);
             hub.debug('end callback');
             return false; // Let the transaction know that we handelled the error.
@@ -1623,24 +1612,24 @@ hub.Hub = hub.Store.extend(
   _createStoreTables: function(tx, error) {
     // There is no tables ... yet
     hub.debug("start creating data tables.");
-    tx.executeSql("CREATE TABLE 'actor' (email TEXT, public_key TEXT)", [], null, this._hub_error);
-    tx.executeSql("CREATE TABLE 'data' (key TEXT, store_key INTEGER, created_on TEXT, storage INTEGER, bytes BLOB, metadata_count INTEGER, commit_id INTEGER)", [], null, this._hub_error);
-    tx.executeSql("CREATE TABLE 'meta_data' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, target_uti TEXT, target_creator TEXT, target_editor TEXT, target_position INTEGER, storage INTEGER, source TEXT, target TEXT, data_key TEXT, commit_id INTEGER)", [], null, this._hub_error);
-    tx.executeSql("CREATE TABLE 'commits' (key TEXT, name TEXT, commit_id INTEGER, commit_uti TEXT, commit_creator TEXT, commit_editor TEXT, merger TEXT, created_on INTEGER, ancestor_count INTEGER, total_storage INTEGER, commit_storage INTEGER, history_storage INTEGER, data_key TEXT, data_uti TEXT, data_editor TEXT, data_creator TEXT, commit_data TEXT, committer TEXT, ancestors TEXT)", [], null, this._hub_error);
-    tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueDataKey" ON "data" ("key");');
-    tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueDataStoreKey" ON "data" ("store_key");');
-    tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueCommitKey" ON "commits" ("key");');
-    tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueMetaKey" ON "meta_data" ("key");');
+    tx.execute("CREATE TABLE 'actor' (email TEXT, public_key TEXT)", [], null, this._hub_error);
+    tx.execute("CREATE TABLE 'data' (key TEXT, store_key INTEGER, created_on TEXT, storage INTEGER, bytes BLOB, metadata_count INTEGER, commit_id INTEGER)", [], null, this._hub_error);
+    tx.execute("CREATE TABLE 'meta_data' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, target_uti TEXT, target_creator TEXT, target_editor TEXT, target_position INTEGER, storage INTEGER, source TEXT, target TEXT, data_key TEXT, commit_id INTEGER)", [], null, this._hub_error);
+    tx.execute("CREATE TABLE 'commits' (key TEXT, name TEXT, commit_id INTEGER, commit_uti TEXT, commit_creator TEXT, commit_editor TEXT, merger TEXT, created_on INTEGER, ancestor_count INTEGER, total_storage INTEGER, commit_storage INTEGER, history_storage INTEGER, data_key TEXT, data_uti TEXT, data_editor TEXT, data_creator TEXT, commit_data TEXT, committer TEXT, ancestors TEXT)", [], null, this._hub_error);
+    tx.execute('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueDataKey" ON "data" ("key");');
+    tx.execute('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueDataStoreKey" ON "data" ("store_key");');
+    tx.execute('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueCommitKey" ON "commits" ("key");');
+    tx.execute('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueMetaKey" ON "meta_data" ("key");');
   },
   
   _createHubTables: function(tx, error) {
     hub.debug("start creating hub tables.");
-    tx.executeSql("CREATE TABLE 'hub' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, is_private INTEGER, is_archived INTEGER, head TEXT, forked_from TEXT, meta_data TEXT)", [], null, this._hub_error);
-    tx.executeSql("CREATE TABLE 'hub_commit' (hub TEXT, 'commit' TEXT)", [], null, this._hub_error);
-    tx.executeSql("CREATE TABLE 'hub_reference' (name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, hub TEXT, 'commit' TEXT, committer TEXT, meta_data TEXT)", [], null, this._hub_error);
-    tx.executeSql("CREATE TABLE 'hub_committer' (is_owner TEXT, hub TEXT, committer TEXT, head TEXT)", [], null, this._hub_error);
-    tx.executeSql("CREATE TABLE 'hub_observer' (hub TEXT, observer TEXT)", [], null, this._hub_error);
-    tx.executeSql('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueHubKey" ON "hub" ("key");');
+    tx.execute("CREATE TABLE 'hub' (key TEXT, name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, is_private INTEGER, is_archived INTEGER, head TEXT, forked_from TEXT, meta_data TEXT)", [], null, this._hub_error);
+    tx.execute("CREATE TABLE 'hub_commit' (hub TEXT, 'commit' TEXT)", [], null, this._hub_error);
+    tx.execute("CREATE TABLE 'hub_reference' (name TEXT, meta_uti TEXT, meta_creator TEXT, meta_editor TEXT, hub TEXT, 'commit' TEXT, committer TEXT, meta_data TEXT)", [], null, this._hub_error);
+    tx.execute("CREATE TABLE 'hub_committer' (is_owner TEXT, hub TEXT, committer TEXT, head TEXT)", [], null, this._hub_error);
+    tx.execute("CREATE TABLE 'hub_observer' (hub TEXT, observer TEXT)", [], null, this._hub_error);
+    tx.execute('CREATE UNIQUE INDEX IF NOT EXISTS "UniqueHubKey" ON "hub" ("key");');
     hub.debug("finish creating hub tables.");
   }
 });
