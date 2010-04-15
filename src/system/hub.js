@@ -7,7 +7,8 @@
 // ==========================================================================
 /*global hub hub_precondition hub_error hub_assert google Gears */
 
-// FIXME: Code is not using proper prefixes in private properties and methods.
+// FIXME: Remove the _hub private hash (promote to top-level) or better yet, 
+// do something similar to the hub.Record attirbutes hash.
 // FIXME: Code does not parse with the PEG grammar!
 
 /**
@@ -250,7 +251,7 @@ hub.Hub = hub.Store.extend(
     }
     
     return ret ? this.get('currentCommit') : null ;
-   },
+  },
   
   /**
     Returns a hash with three keys: created, updated, deleted, each key 
