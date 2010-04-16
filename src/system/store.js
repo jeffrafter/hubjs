@@ -67,7 +67,7 @@ hub.Store = hub.Object.extend(
     
     @property {Boolean}
   */
-  commitRecordsAutomatically: false,
+  commitRecordsAutomatically: true,
   
   // ..........................................................
   // DATA SOURCE SUPPORT
