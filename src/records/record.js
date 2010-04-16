@@ -990,3 +990,7 @@ hub.Record.mixin( /** @scope hub.Record */ {
   }
   
 });
+
+hub.attr = hub.Record.attr ;
+hub.toOne = hub.Record.toOne ;
+hub.toMany = hub.Record.toMany ;
