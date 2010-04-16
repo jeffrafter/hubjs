@@ -25,8 +25,6 @@ hub.Hub = hub.Store.extend(
   // Store the most current metadata for the records in the store.
   metaData: {},
 
-  hasSocket: false,
-
   currentCommit: null,
   checkingOut: null,
   currentCommitId: 0,
@@ -825,9 +823,6 @@ hub.Hub = hub.Store.extend(
     // pull out instances.
   },
 
-  _hub_sendPackURL: '/packs/?pk=%@',
-  _hub_receivePackURL: '/packs/?pk=%@',
-
   sendPack: function(version, commit_id) {
     var state = this.state;
     // if (state !== 0 && state !== 2) {
@@ -917,42 +912,19 @@ hub.Hub = hub.Store.extend(
   },
   _hub_sendPack: function(version, pack, toAdd) {
     if (toAdd.data && toAdd.metaData && toAdd.commit) {
-      var dataHash = pack,
-      url = hub.fmt(this._hub_sendPackURL, version);
-      hub.debug("Calling packCommited call back");
-      // if (this.get('hasSocket')) { // Send Via Socket if we have one.
-      //   SproutDB.webSocket.send(version+":"+JSON.stringify(pack)) ;
-      // } else { // Else send via ajax.
-      //   hub.Request.postUrl(url).set('isJSON', true)
-      //     .notify(this, this._didSendPack, {
-      //       version: version
-      //     }).send(dataHash) ;
-      // }
-      this.packCommitted(version, pack);
+      hub.debug("Calling packCommitted() callback") ;
+      this.packCommitted(version, pack) ;
     } else {
-      hub.debug("Not yet sending pack.");
+      hub.debug("Not yet sending pack.") ;
     }
   },
   packCommitted: function(version, pack) {
     hub.debug("No callback has been created for commits. " + "To be notified of commits assign a callback packCommitted(commitId, packData)");
   },
-  // _didSendPack: function(request, params) {
-  //   var response  = request.get('response') ;
-  //   if (hub.ok(response)) {
-  //     hub.debug('sendPack Success!') ;
-  //   } else {
-  //     hub.debug("sendPack FAILED!") ;
-  //   }
-  // },
   getPack: function(version, doCheckout) {
-    var self = this,
-    url = hub.fmt(this._hub_receivePackURL, version);
+    var self = this ;
     if (!doCheckout) doCheckout = false;
-    hub.Request.getUrl(url).set('isJSON', true).notify(this, this.receivePack, {
-      version: version,
-      dataSource: self,
-      doCheckout: doCheckout
-    }).send();
+    // FIXME: Retrieve pack from delegate.
   },
   receivePack: function(request, params) {
     var self = params.dataSource,
