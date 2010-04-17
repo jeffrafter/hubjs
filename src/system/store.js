@@ -1241,6 +1241,7 @@ hub.Store = hub.Object.extend(
     }else{
       len = storeKeys.length;
       for(idx=0;idx<len;idx++) {
+        // FIXME: This should use the hub.Array API
         storeKey = storeKeys ? storeKeys[idx] : undefined ;
         hub_precondition(typeof storeKey === hub.T_NUMBER);
         this.destroyRecord(undefined, undefined, storeKey);
