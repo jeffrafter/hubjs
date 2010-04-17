@@ -7,6 +7,10 @@
 // ==========================================================================
 /*global hub hub_precondition hub_assert */
 
+// TODO: Perhaps storeKeys should be called deviceKeys? That's what they're 
+// used for, and it would clearly distinguish them from the global 32-byte keys 
+// used internally in a hub.
+
 /**
   hub.Store is where you can find all of your attribute hashes. Stores can be 
   chained for editing purposes and committed back one chain level at a time 
