@@ -1647,3 +1647,6 @@ hub.Hub = hub.Store.extend(
     hub.debug("finish creating hub tables.");
   }
 });
+
+hub.Hub.prototype.insert = hub.Hub.prototype.createRecord ;
+hub.Hub.prototype.destroy = hub.Hub.prototype.deleteRecord ;

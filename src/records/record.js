@@ -994,3 +994,9 @@ hub.Record.mixin( /** @scope hub.Record */ {
 hub.attr = hub.Record.attr ;
 hub.toOne = hub.Record.toOne ;
 hub.toMany = hub.Record.toMany ;
+
+// FIXME: Flesh this out with the remaining Hub attributes.
+hub.AuthorAttribute = function(key, val) {
+  if (val) hub.debug("You can't change the author of a record.") ;
+  return hub.recordAuthor(this) ;
+}.property().cacheable();

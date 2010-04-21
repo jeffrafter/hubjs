@@ -1495,4 +1495,7 @@ hub.Query.registerQueryExtension = function(tokenName, token) {
 };
 
 // shorthand
-hub.Q = hub.Query.from ;
+hub.Q = function() {
+  var K = hub.Query ;
+  return K.create.apply(K, arguments) ;
+};
