@@ -114,7 +114,9 @@ hub.LocalStorageDataSource = hub.DataSource.extend(
         }
       );
     } else {
-      //TODO we need to initialize the database because we haven't yet.
+      // We need to initialize the database because we haven't yet.
+      self._hub_dbs[database] = hub.LocalStorage.connect(database, 
+        isHub ? "Hub Metadata" : database + " Storage")
     }
   },
 
