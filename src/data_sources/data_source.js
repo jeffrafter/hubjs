@@ -335,5 +335,17 @@ hub.DataSource = hub.Object.extend(
   destroyRecord: function(store, storeKey, params) {
     return false ;
   }  
+
+
+
+  //TODO: DOCUMENT these
+  setup: function(hub) {
+    return false ; // do not handle anything!
+  },
+  
+  startUp: function(hub) {
+    return false ; // do not handle anything!
+  },
+
     
 });

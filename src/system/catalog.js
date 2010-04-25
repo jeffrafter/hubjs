@@ -21,8 +21,6 @@
     // You may now access the myHubCatalog record arrays.
     var numOfCommits = myHubCatalog.commits.get('length') ;
   
-  Be sure to include catalog.hub.js first! This is not part of the normal 
-  hub.js install.
 */
 hub.Catalog = hub.Store.extend({
   

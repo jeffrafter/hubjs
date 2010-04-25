@@ -60,6 +60,7 @@ utils/uuid.js
 utils/sha256.js
 utils/buzhash.js
 utils/base64.js
+system/catalog.js
 system/database.js
 system/hub.js
 system/merge_hub.js

@@ -47,6 +47,11 @@ if (typeof window === 'undefined') {
       console.log(type + ": ") ;
       console.log(what) ; // Doing `what` separately prints out the structure.
     }
+    alert: function(what) {
+      //TODO: most alerts need to be converted to callbacks. 
+      //e.g., hubFailedToOpen(commit)
+      debug('ALERT', what);
+    }
   };
   
   // Prevent a console.log from blowing things up if we are on a browser that
